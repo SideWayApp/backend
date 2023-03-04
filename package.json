@@ -20,6 +20,7 @@
   "homepage": "https://github.com/SideWayApp/backend#readme",
   "dependencies": {
     "express": "^4.18.2",
+    "mongoose": "^7.0.0",
     "nodemon": "^2.0.20"
   }
 }
