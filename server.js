@@ -1,5 +1,5 @@
 const express = require('express');
-const directionsRoute = require('./Routes/directionsRoutes ');
+const directionsRoute = require('./Routes/directionsRoutes')
 const app = express();
 const PORT = 8080;
 app.use('/api', directionsRoute);
