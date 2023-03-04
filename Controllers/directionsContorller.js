@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 exports.getDirections = async (req, res) => {
-  const { origin, destination, mode, alternatives } = req.query;
+  const { origin, destination, mode, alternatives } = req.body;
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const url = 'https://maps.googleapis.com/maps/api/directions/json';
   const params = {

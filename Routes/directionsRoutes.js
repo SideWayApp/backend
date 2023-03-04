@@ -3,6 +3,6 @@ const directionsController = require('../Controllers/directionsContorller');
 
 const router = express.Router();
 
-router.get('/directions', directionsController.getDirections);
+router.post('/directions', directionsController.getDirections);
 
 module.exports = router;
