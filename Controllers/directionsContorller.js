@@ -16,7 +16,8 @@ exports.getDirections = async (req, res) => {
     const ret = response.data;
     let streetsArrayForDirection = [];
     ret.routes.map(route=>{
-      let streetsPerAlternative = [];
+      let streetsPerAlternative = new Set();
+      let arrPerAlt = [];
       route.legs.map(leg => {
         leg.steps.map(step=>{
           const instruction = step.html_instructions;
@@ -25,13 +26,14 @@ exports.getDirections = async (req, res) => {
           const arr = matches ? matches.map(match => match.replace(/<\/?b>/g, '')) : [];
           arr.map(elem => {
             if (elem.includes("St"))
-              streetsPerAlternative.push(elem)
+              streetsPerAlternative.add(elem)
+              arrPerAlt = Array.from(streetsPerAlternative);
           });
         });
-        streetsArrayForDirection.push(streetsPerAlternative);   
+        streetsArrayForDirection.push(arrPerAlt);   
       });
     });
-    // console.log(streetsArrayForDirection)
+    console.log(streetsArrayForDirection)
     res.send(streetsArrayForDirection);
   } catch (error) {
     console.error(error);
