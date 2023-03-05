@@ -14,22 +14,25 @@ exports.getDirections = async (req, res) => {
   try {
     const response = await axios.get(apiUrl);
     const ret = response.data;
-    let streets = new Set();
+    let streetsArrayForDirection = [];
     ret.routes.map(route=>{
-    route.legs.map(leg => {
+      let streetsPerAlternative = [];
+      route.legs.map(leg => {
         leg.steps.map(step=>{
-            streets.add(step.html_instructions);
-        })
-      })
+          const instruction = step.html_instructions;
+          const regex = /<b>(.*?)<\/b>/g;
+          const matches = instruction.match(regex);
+          const arr = matches ? matches.map(match => match.replace(/<\/?b>/g, '')) : [];
+          arr.map(elem => {
+            if (elem.includes("St"))
+              streetsPerAlternative.push(elem)
+          });
+        });
+        streetsArrayForDirection.push(streetsPerAlternative);   
+      });
     });
-    const streetsArray = Array.from(streets);
-    const streetRegex = /<b>([^<]+)\b\s*St<\/b>/gi;
-
-    const streetMatches = streetsArray.join(',').match(streetRegex);
-    const streets1 = streetMatches.map(match => match.replace(/<\/?b>/g, ''));
-
-    console.log(streets1);
-    
+    // console.log(streetsArrayForDirection)
+    res.send(streetsArrayForDirection);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
