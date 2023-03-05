@@ -29,7 +29,7 @@ exports.getDirections = async (req, res) => {
     const streets1 = streetMatches.map(match => match.replace(/<\/?b>/g, ''));
 
     console.log(streets1);
-
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
