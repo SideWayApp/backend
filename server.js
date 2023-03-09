@@ -7,6 +7,6 @@ const scraperRoutes = require("./Routes/scraperRoutes");
 app.use(cors());
 app.use(express.json());
 app.use("/api", directionsRoute);
-app.use("/api", scraperRoutes);
+app.use("/scrape", scraperRoutes);
 
 app.listen(PORT, console.log(`port is running on port ${PORT}...`));

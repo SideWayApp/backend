@@ -36,7 +36,7 @@ exports.getScarpedStreets = async (req, res) => {
   }
 };
 
-exports.getStreetsFromGis = async (req, res) => {
+exports.getStreetsFromTLVGis = async (req, res) => {
   try {
     const url =
       "https://gisn.tel-aviv.gov.il/GisOpenData/service.asmx/GetLayer?layerCode=507&layerWhere=&xmin=&ymin=&xmax=&ymax=&projection=";
