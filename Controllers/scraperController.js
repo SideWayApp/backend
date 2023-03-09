@@ -41,18 +41,18 @@ exports.getStreetsFromGis = async (req, res) => {
     const url =
       "https://gisn.tel-aviv.gov.il/GisOpenData/service.asmx/GetLayer?layerCode=507&layerWhere=&xmin=&ymin=&xmax=&ymax=&projection=";
     const data = await axios.get(url);
-    // console.log(data.data);
+    console.log(data.data);
     const features = data.data.features;
     const streets = [];
     features.forEach((f) => {
-      console.log(f.attributes);
+      //console.log(f.attributes);
       const tmp = f.attributes.shem_angli;
       if (!streets.includes(tmp)) {
         streets.push(tmp);
       }
     });
     res.send(streets);
-    console.log(streets);
+    // console.log(streets);
   } catch (error) {
     console.log(error);
   }
