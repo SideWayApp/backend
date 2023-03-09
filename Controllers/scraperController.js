@@ -37,22 +37,32 @@ exports.getScarpedStreets = async (req, res) => {
 };
 
 exports.getStreetsFromTLVGis = async (req, res) => {
+  //  data.data.features:
+  //   fieldAliases: {
+  //     oid_rechov: 'זיהוי ממג רחוב',
+  //     k_rechov: 'קוד רחוב',
+  //     t_rechov: 'שם רחוב',
+  //     shem_angli: 'שם אנגלי',
+  //     ms_lamas: 'מספר למ"ס',
+  //     t_sug: 'תיאור סוג כביש',
+  //     k_kivun: 'קוד כוון',
+  //     UniqueId: 'מזהה מערכת',
+  //     shem_arvit: 'שם בערבית'
+  //
+
   try {
     const url =
       "https://gisn.tel-aviv.gov.il/GisOpenData/service.asmx/GetLayer?layerCode=507&layerWhere=&xmin=&ymin=&xmax=&ymax=&projection=";
     const data = await axios.get(url);
-    console.log(data.data);
     const features = data.data.features;
     const streets = [];
     features.forEach((f) => {
-      //console.log(f.attributes);
       const tmp = f.attributes.shem_angli;
       if (!streets.includes(tmp)) {
         streets.push(tmp);
       }
     });
     res.send(streets);
-    // console.log(streets);
   } catch (error) {
     console.log(error);
   }
