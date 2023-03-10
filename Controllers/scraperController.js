@@ -1,5 +1,11 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const streetSchema = require("../Models/Street");
+
+const cities = {
+  TLV: "Tel-Aviv",
+  Rishon: "Rishon Le-Zion",
+};
 
 const scrapeStreetsData = async (url) => {
   try {
@@ -38,6 +44,8 @@ exports.getScarpedStreets = async (req, res) => {
 
 exports.getStreetsFromTLVGis = async (req, res) => {
   //  data.data.features:
+  //  for each
+  //  f.attributes:
   //   fieldAliases: {
   //     oid_rechov: 'זיהוי ממג רחוב',
   //     k_rechov: 'קוד רחוב',
@@ -57,9 +65,19 @@ exports.getStreetsFromTLVGis = async (req, res) => {
     const features = data.data.features;
     const streets = [];
     features.forEach((f) => {
-      const tmp = f.attributes.shem_angli;
-      if (!streets.includes(tmp)) {
-        streets.push(tmp);
+      console.log(f.attributes.t_sug);
+      const street = new streetSchema({
+        id: f.attributes.UniqueId,
+        name: f.attributes.shem_angli,
+        safe: 0,
+        city: cities.TLV,
+        clean: 0,
+        scenery: 0,
+        accessible: 0,
+        total: 0,
+      });
+      if (!streets.includes(street)) {
+        streets.push(street);
       }
     });
     res.send(streets);
