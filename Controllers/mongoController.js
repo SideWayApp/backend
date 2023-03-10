@@ -1,80 +1,66 @@
 const Street = require("../models/Street");
 const mongoose = require("mongoose");
 const { response, json } = require("express");
+const { create } = require("../models/Street");
 
 //get all streets
-const getAllStreets = async (req, res) => {
-  const streets = await Street.find({}).sort({ createdAt: -1 });
-
-  res.status(200).json(streets);
+const getAllStreets = async () => {
+  try {
+    const results = await Street.find({});
+    return results;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 //get single street
-const getSingleStreet = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ err: "No such item" });
+const getSingleStreet = async (streetName) => {
+  try {
+    const result = await Street.findOne({ name: streetName });
+    console.log(`Retrieved street "${streetName}":`, result);
+    return result;
+  } catch (err) {
+    console.error(err);
   }
-
-  const street = await Street.findById(id);
-
-  if (!street) {
-    return res.status(404).json({ err: "No such item" });
-  }
-
-  res.status(200).json(street);
 };
 
 //delete a street
-const deleteStreet = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ err: "No such item" });
+const deleteStreet = async (streetName) => {
+  try {
+    const result = await Street.deleteOne({ name: streetName });
+    console.log(`Deleted street "${streetName}":`, result);
+    return result;
+  } catch (err) {
+    console.error(err);
   }
-
-  const street = await Street.findOneAndDelete({ _id: id });
-
-  if (!street) {
-    res.status(404).json({ err: "No such item" });
-  }
-
-  res.status(200).json(street);
 };
 
 //update a street
-const updateStreet = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ err: "No such item" });
+const updateStreet = async (streetName, newStreet) => {
+  try {
+    const result = await Street.updateOne({ name: streetName }, newStreet);
+    console.log(`Updated street "${streetName}":`, result);
+    return result;
+  } catch (err) {
+    console.error(err);
   }
-
-  const street = await Street.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
-  );
-
-  if (!item) {
-    res.status(404).json({ err: "No such item" });
-  }
-
-  res.status(200).json(street);
 };
 
 const createStreets = async (streets) => {
   const arr = [];
   streets.forEach(async (element) => {
     if (element.name != null && element.name != "") {
-      const street = await new Street(element).save();
+      const street = await createStreet(element);
       arr.push(street);
     }
   });
 
   return arr;
+};
+
+const createStreet = async (street) => {
+  const ret = await new Street(street).save();
+  return ret;
 };
 
 module.exports = {
@@ -83,4 +69,5 @@ module.exports = {
   deleteStreet,
   updateStreet,
   createStreets,
+  createStreet,
 };
