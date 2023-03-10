@@ -26,61 +26,6 @@ const getSingleStreet = async (req, res) => {
   res.status(200).json(street);
 };
 
-//create new street
-const createStreet = async (req, res) => {
-  const { id, name, city, clean, safe, scenery, accessible, total } = req.body;
-
-  let emptyFields = [];
-
-  //check for all fileds
-  if (!id) {
-    emptyFields.push("id");
-  }
-  if (!name) {
-    emptyFields.push("name");
-  }
-  if (!city) {
-    emptyFields.push("city");
-  }
-  if (!clean) {
-    emptyFields.push("clean");
-  }
-  if (!safe) {
-    emptyFields.push("safe");
-  }
-  if (!scenery) {
-    emptyFields.push("scenery");
-  }
-  if (!accessible) {
-    emptyFields.push("accessible");
-  }
-  if (!total) {
-    emptyFields.push("total");
-  }
-  if (emptyFields.length > 0) {
-    return res
-      .status(400)
-      .json({ error: "Please fill all the fields", emptyFields });
-  }
-
-  //add doc to db
-  try {
-    const street = await Street.create({
-      id,
-      name,
-      city,
-      clean,
-      safe,
-      scenery,
-      accessible,
-      total,
-    });
-    res.status(200).json(street);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
 //delete a street
 const deleteStreet = async (req, res) => {
   const { id } = req.params;
@@ -120,10 +65,22 @@ const updateStreet = async (req, res) => {
   res.status(200).json(street);
 };
 
+const createStreets = async (streets) => {
+  const arr = [];
+  streets.forEach(async (element) => {
+    if (element.name != null && element.name != "") {
+      const street = await new Street(element).save();
+      arr.push(street);
+    }
+  });
+
+  return arr;
+};
+
 module.exports = {
   getAllStreets,
   getSingleStreet,
-  createStreet,
   deleteStreet,
   updateStreet,
+  createStreets,
 };
