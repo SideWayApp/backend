@@ -21,14 +21,16 @@ async function getStreetsInAlternative(index,origin,destination){
           const matches = instruction.match(regex);
           const arr = matches ? matches.map(match => match.replace(/<\/?b>/g, '')) : [];
           arr.map(elem => {
-            if (elem.includes("St"))
-              streetsPerAlternative.add(elem)
+            if (elem.includes("St")){
+              const formattedName = elem.replace(/\s*\bSt\b\.?$/, '');
+              streetsPerAlternative.add(formattedName)
               arrPerAlt = Array.from(streetsPerAlternative);
+            }
           });
         });
       });
     //console.log(streetsPerAlternative)
-    return streetsPerAlternative;
+    return arrPerAlt;
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
