@@ -10,6 +10,27 @@ app.use(express.json());
 app.use("/api", directionsRoute);
 app.use("/scrape", scraperRoutes);
 
+
+if (process.env.NODE_ENV === "development"){
+    const swaggerUI = require('swagger-ui-express')
+    const swaggerJsDoc = require("swagger-jsdoc")
+    const options = {
+        definition: {
+            openapi: "3.0.0",
+            info: {
+                title: "SideWays API",
+                version: "1.0.0",
+                description: "SideWays Library API",
+            },
+            servers: [{url:"http://localhost:" + process.env.PORT,},],
+        },
+        apis: ["./Routes/*.js"],
+    };
+    const specs = swaggerJsDoc(options);
+    app.use("/api-docs",swaggerUI.serve,swaggerUI.setup(specs))
+}
+
+
 //connect to db
 mongoose.set("strictQuery", true);
 mongoose
