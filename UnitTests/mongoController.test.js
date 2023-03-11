@@ -6,6 +6,7 @@ const {
   getAllStreets,
   deleteStreet,
   updateStreet,
+  getSingleStreet,
 } = require("../Controllers/mongoController");
 const Street = require("../models/Street");
 beforeAll(async () => {
@@ -55,6 +56,28 @@ describe("Testing Mongo Controller", () => {
     expect(updatedStreet.scenery).toEqual(updateSt.scenery);
     expect(updatedStreet.accessible).toEqual(updateSt.accessible);
     expect(updatedStreet.total).toEqual(newStreet.total);
+  });
+
+  test("should get a single street", async () => {
+    const streetData = {
+      name: "Main Street",
+      city: "Anytown",
+      clean: 5,
+      safe: 4,
+      scenery: 4,
+      accessible: 3,
+      total: 14,
+    };
+
+    const street = await getSingleStreet(streetData.name);
+    expect(street).toBeDefined();
+    expect(street.name).toBe(streetData.name);
+    expect(street.city).toBe(streetData.city);
+    expect(street.clean).toBe(streetData.clean);
+    expect(street.safe).toBe(streetData.safe);
+    expect(street.scenery).toBe(streetData.scenery);
+    expect(street.accessible).toBe(streetData.accessible);
+    expect(street.total).toBe(streetData.total);
   });
 
   test("should throw an error if required fields are missing", async () => {
