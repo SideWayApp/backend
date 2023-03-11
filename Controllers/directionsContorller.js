@@ -38,13 +38,21 @@ async function getStreetsInAlternative(index,origin,destination){
 };
 
 async function getBestAlternative(routes,origin,destination){
+  let maxWeight = 0;
+  let bestIndex = 0;
   for (let i =0; i< routes.length; i++){
-    console.log(i);
-    const streets = await getStreetsInAlternative(i,origin,destination);
-    console.log(streets);
+    const streetsInAlternative = await getStreetsInAlternative(i,origin,destination);
+    const totalWeightInAlternative = await getTotalWeightInAlternative(streetsInAlternative);
+    if (totalWeightInAlternative > maxWeight){
+      maxWeight = total;
+      bestIndex = index;
+    }
   }
+  return index;
 } 
-
+async function getTotalWeightInAlternative(streetsInAlternative){
+  return 0;
+}
 exports.getDirections = async (req, res) => {
 
   const { origin, destination} = req.body;
@@ -58,8 +66,8 @@ exports.getDirections = async (req, res) => {
     const response = await axios.get(apiUrl);
     const ret = response.data;
     let routes = ret.routes;
-    const bestAlternativeRoute = getBestAlternative(routes,origin,destination); 
-    res.send(routes);
+    const bestAlternativeRouteIndex = await getBestAlternative(routes,origin,destination); 
+    res.send(ret.routes[bestAlternativeRouteIndex]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
