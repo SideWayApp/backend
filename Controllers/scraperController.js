@@ -1,6 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const streetSchema = require("../Models/Street");
+const mongoController = require("../controllers/mongoController");
 
 const cities = {
   TLV: "Tel-Aviv",
@@ -63,24 +63,30 @@ exports.getStreetsFromTLVGis = async (req, res) => {
       "https://gisn.tel-aviv.gov.il/GisOpenData/service.asmx/GetLayer?layerCode=507&layerWhere=&xmin=&ymin=&xmax=&ymax=&projection=";
     const data = await axios.get(url);
     const features = data.data.features;
+    const names = [];
     const streets = [];
     features.forEach((f) => {
-      console.log(f.attributes.t_sug);
-      const street = new streetSchema({
-        id: f.attributes.UniqueId,
-        name: f.attributes.shem_angli,
+      if (!names.includes(f.attributes.shem_angli)) {
+        names.push(f.attributes.shem_angli);
+      }
+    });
+
+    names.forEach((name) => {
+      const street = {
+        name: name,
         safe: 0,
         city: cities.TLV,
         clean: 0,
         scenery: 0,
         accessible: 0,
         total: 0,
-      });
-      if (!streets.includes(street)) {
-        streets.push(street);
-      }
+      };
+
+      streets.push(street);
     });
-    res.send(streets);
+
+    const created = await mongoController.createStreets(streets);
+    res.send(created);
   } catch (error) {
     console.log(error);
   }
