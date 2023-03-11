@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --detectOpenHandles --forceExit",
     "start": "nodemon server.js"
   },
   "repository": {
@@ -20,10 +20,15 @@
   "homepage": "https://github.com/SideWayApp/backend#readme",
   "dependencies": {
     "axios": "^1.3.4",
+    "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongoose": "^7.0.0",
+    "mongoose": "^7.0.1",
     "nodemon": "^2.0.20"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
   }
 }
