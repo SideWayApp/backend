@@ -6,8 +6,11 @@ const {
   getAllStreets,
   deleteStreet,
   updateStreet,
+  getSingleStreet,
+  getTotalScoreForStreets,
 } = require("../Controllers/mongoController");
 const Street = require("../models/Street");
+const e = require("express");
 beforeAll(async () => {
   await Street.deleteMany({ name: "Main Street" });
 });
@@ -57,6 +60,28 @@ describe("Testing Mongo Controller", () => {
     expect(updatedStreet.total).toEqual(newStreet.total);
   });
 
+  test("should get a single street", async () => {
+    const streetData = {
+      name: "Main Street",
+      city: "Anytown",
+      clean: 5,
+      safe: 4,
+      scenery: 4,
+      accessible: 3,
+      total: 14,
+    };
+
+    const street = await getSingleStreet(streetData.name);
+    expect(street).toBeDefined();
+    expect(street.name).toBe(streetData.name);
+    expect(street.city).toBe(streetData.city);
+    expect(street.clean).toBe(streetData.clean);
+    expect(street.safe).toBe(streetData.safe);
+    expect(street.scenery).toBe(streetData.scenery);
+    expect(street.accessible).toBe(streetData.accessible);
+    expect(street.total).toBe(streetData.total);
+  });
+
   test("should throw an error if required fields are missing", async () => {
     const streetData = {
       name: "Main Street",
@@ -81,5 +106,30 @@ describe("Testing Mongo Controller", () => {
 
     const result2 = await deleteStreet("Main treet");
     expect(result2.deletedCount).toEqual(0);
+  });
+
+  test("should return a number", async () => {
+    const arr = ["LOUIS MARSHALL", "BRANDEIS", "PINKAS", "REMEZ"];
+    const fields = {
+      total: "total",
+      clean: "clean",
+      safe: "safe",
+      scenery: "scenery",
+      accessible: "accessible",
+    };
+    const total = await getTotalScoreForStreets(arr, fields.total);
+    expect(total).toBeDefined();
+    expect(typeof total).toBe("number");
+    const clean = await getTotalScoreForStreets(arr, fields.clean);
+    expect(clean).toBeDefined();
+    expect(typeof clean).toBe("number");
+    const safe = await getTotalScoreForStreets(arr, fields.safe);
+    expect(safe).toBeDefined();
+    expect(typeof safe).toBe("number");
+    const scenery = await getTotalScoreForStreets(arr, fields.scenery);
+    expect(scenery).toBeDefined();
+    expect(typeof scenery).toBe("number");
+    const accessible = await getTotalScoreForStreets(arr, fields.accessible);
+    expect(accessible).toBeDefined();
   });
 });

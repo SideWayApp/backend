@@ -48,19 +48,41 @@ const updateStreet = async (streetName, newStreet) => {
 
 const createStreets = async (streets) => {
   const arr = [];
-  streets.forEach(async (element) => {
-    if (element.name != null && element.name != "") {
-      const street = await createStreet(element);
-      arr.push(street);
-    }
-  });
+
+  await Promise.all(
+    streets.map(async (element) => {
+      console.log(`Creating street "${element.name}":`, element);
+      if (element.name != null && element.name != "") {
+        const street = await createStreet(element);
+        arr.push(street);
+      }
+    })
+  );
 
   return arr;
 };
 
 const createStreet = async (street) => {
-  const ret = await new Street(street).save();
-  return ret;
+  try {
+    const ret = await new Street(street).save();
+    return ret;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const getTotalScoreForStreets = async (streetNames, field) => {
+  try {
+    console.log("streetNames", streetNames);
+    const streets = await Street.find({
+      name: { $regex: new RegExp(streetNames.join("|"), "i") },
+    });
+    const totalScore = streets.reduce((acc, street) => acc + street[field], 0);
+    console.log(`Total score for ${field} in streets:`, totalScore);
+    return totalScore;
+  } catch (err) {
+    console.Error(err);
+  }
 };
 
 module.exports = {
@@ -70,4 +92,5 @@ module.exports = {
   updateStreet,
   createStreets,
   createStreet,
+  getTotalScoreForStreets,
 };
