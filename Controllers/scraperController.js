@@ -1,6 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const streetSchema = require("../Models/Street");
+const mongoController = require("../controllers/mongoController");
 
 const cities = {
   TLV: "Tel-Aviv",
@@ -63,25 +63,48 @@ exports.getStreetsFromTLVGis = async (req, res) => {
       "https://gisn.tel-aviv.gov.il/GisOpenData/service.asmx/GetLayer?layerCode=507&layerWhere=&xmin=&ymin=&xmax=&ymax=&projection=";
     const data = await axios.get(url);
     const features = data.data.features;
-    const streets = [];
+    const names = [];
     features.forEach((f) => {
-      console.log(f.attributes.t_sug);
-      const street = new streetSchema({
-        id: f.attributes.UniqueId,
-        name: f.attributes.shem_angli,
-        safe: 0,
-        city: cities.TLV,
-        clean: 0,
-        scenery: 0,
-        accessible: 0,
-        total: 0,
-      });
-      if (!streets.includes(street)) {
-        streets.push(street);
+      const tmp = f.attributes.t_rechov
+        .replace(/[^a-zA-Z\s\u0590-\u05FF]/g, "")
+        .trim();
+      if (!names.includes(tmp) && tmp !== "") {
+        names.push(tmp);
       }
     });
-    res.send(streets);
+    const pushStreets = async () => {
+      const streets = await Promise.all(
+        names.map(async (name) => {
+          const formattedName = await getFormatedStreetName(name);
+          return {
+            name: formattedName,
+            safe: 0,
+            city: cities.TLV,
+            clean: 0,
+            scenery: 0,
+            accessible: 0,
+            total: 0,
+          };
+        })
+      );
+      return streets;
+    };
+    const streets = await pushStreets();
+    console.log("Scraped Streets len: ", streets.length);
+
+    const created = await mongoController.createStreets(streets);
+    res.send(created);
   } catch (error) {
     console.log(error);
   }
+};
+
+const getFormatedStreetName = async (name) => {
+  try {
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const tmp = name + " " + cities.TLV;
+    const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${tmp}&components=country:IL&types=route&key=${apiKey}`;
+    const response = await axios.get(apiUrl);
+    return response.data.results[0].address_components[0].short_name;
+  } catch (error) {}
 };
