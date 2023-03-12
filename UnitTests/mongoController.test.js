@@ -7,8 +7,10 @@ const {
   deleteStreet,
   updateStreet,
   getSingleStreet,
+  getTotalScoreForStreets,
 } = require("../Controllers/mongoController");
 const Street = require("../models/Street");
+const e = require("express");
 beforeAll(async () => {
   await Street.deleteMany({ name: "Main Street" });
 });
@@ -104,5 +106,13 @@ describe("Testing Mongo Controller", () => {
 
     const result2 = await deleteStreet("Main treet");
     expect(result2.deletedCount).toEqual(0);
+  });
+
+  test("should return a number", async () => {
+    const arr = ["LOUIS MARSHALL", "BRANDEIS", "PINKAS", "REMEZ"];
+    const res = await getTotalScoreForStreets(arr);
+
+    expect(res).toBeDefined();
+    expect(typeof res).toBe("number");
   });
 });
