@@ -110,9 +110,26 @@ describe("Testing Mongo Controller", () => {
 
   test("should return a number", async () => {
     const arr = ["LOUIS MARSHALL", "BRANDEIS", "PINKAS", "REMEZ"];
-    const res = await getTotalScoreForStreets(arr);
-
-    expect(res).toBeDefined();
-    expect(typeof res).toBe("number");
+    const fields = {
+      total: "total",
+      clean: "clean",
+      safe: "safe",
+      scenery: "scenery",
+      accessible: "accessible",
+    };
+    const total = await getTotalScoreForStreets(arr, fields.total);
+    expect(total).toBeDefined();
+    expect(typeof total).toBe("number");
+    const clean = await getTotalScoreForStreets(arr, fields.clean);
+    expect(clean).toBeDefined();
+    expect(typeof clean).toBe("number");
+    const safe = await getTotalScoreForStreets(arr, fields.safe);
+    expect(safe).toBeDefined();
+    expect(typeof safe).toBe("number");
+    const scenery = await getTotalScoreForStreets(arr, fields.scenery);
+    expect(scenery).toBeDefined();
+    expect(typeof scenery).toBe("number");
+    const accessible = await getTotalScoreForStreets(arr, fields.accessible);
+    expect(accessible).toBeDefined();
   });
 });

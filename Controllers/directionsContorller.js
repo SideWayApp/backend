@@ -61,7 +61,8 @@ async function getBestAlternative(routes, origin, destination) {
 
 async function getTotalWeightInAlternative(streetsInAlternative) {
   const totalWeightInAlternative = await getTotalScoreForStreets(
-    streetsInAlternative
+    streetsInAlternative,
+    "total"
   );
   return totalWeightInAlternative;
 }

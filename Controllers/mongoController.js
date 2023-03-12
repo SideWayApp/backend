@@ -63,21 +63,25 @@ const createStreets = async (streets) => {
 };
 
 const createStreet = async (street) => {
-  const ret = await new Street(street).save();
-  return ret;
+  try {
+    const ret = await new Street(street).save();
+    return ret;
+  } catch (err) {
+    throw err;
+  }
 };
 
-const getTotalScoreForStreets = async (streetNames) => {
+const getTotalScoreForStreets = async (streetNames, field) => {
   try {
     console.log("streetNames", streetNames);
     const streets = await Street.find({
       name: { $regex: new RegExp(streetNames.join("|"), "i") },
     });
-    const totalScore = streets.reduce((acc, street) => acc + street.total, 0);
-    console.log("totalScore", totalScore);
+    const totalScore = streets.reduce((acc, street) => acc + street[field], 0);
+    console.log(`Total score for ${field} in streets:`, totalScore);
     return totalScore;
   } catch (err) {
-    console.error(err);
+    console.Error(err);
   }
 };
 
