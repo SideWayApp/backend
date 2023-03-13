@@ -24,7 +24,7 @@ async function getStreetsInAlternative(index,origin,destination,preference){
           const arr = matches ? matches.map(match => match.replace(/<\/?b>/g, '')) : [];
           arr.map(elem => {
             if (elem.includes("St")){
-              const formattedName = elem.replace(/\s*\bSt\b\.?$/, '');
+              const formattedName = elem.replace(/\s*\bSt\.?\s*$/i, '').trim() + " St";
               streetsPerAlternative.add(formattedName)
               arrPerAlt = Array.from(streetsPerAlternative);
             }
