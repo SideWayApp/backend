@@ -8,7 +8,7 @@ const {
   updateStreet,
   getSingleStreet,
   getTotalScoreForStreets,
-} = require("../Controllers/mongoController");
+} = require("../Controllers/mongoStreetsController");
 const Street = require("../models/Street");
 const e = require("express");
 beforeAll(async () => {
