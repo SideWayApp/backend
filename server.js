@@ -5,7 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const directionsRoute = require("./Routes/directionsRoutes");
 const scraperRoutes = require("./Routes/scraperRoutes");
-const mongoRoutes = require("./Routes/mongoRoutes");
+const mongoRoutes = require("./Routes/mongoStreetsRoutes");
 app.use(cors());
 app.use(express.json());
 app.use("/api", directionsRoute);

@@ -1,6 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const mongoController = require("../controllers/mongoController");
+const mongoController = require("./mongoStreetsController");
 
 const cities = {
   TLV: "Tel-Aviv",

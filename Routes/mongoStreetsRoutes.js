@@ -5,7 +5,7 @@ const {
   createStreet,
   deleteStreet,
   updateStreet,
-} = require("../controllers/mongoController");
+} = require("../Controllers/mongoStreetsController");
 
 const router = express.Router();
 /**
