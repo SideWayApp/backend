@@ -70,12 +70,20 @@ const getTotalScoreForStreets = async (streetNames, field) => {
     const streets = await Street.find({
       name: { $regex: new RegExp(streetNames.join("|"), "i") },
     });
-    console.log("streets found", streets.length);
+    const matchedStreets = [];
+    for (const street of streets) {
+      matchedStreets.push(street.name);
+    }
+    const uniqueNames = [
+      ...streetNames.filter((name) => !matchedStreets.includes(name)),
+    ];
+    console.log("matched streets", matchedStreets);
+    console.log(uniqueNames);
     const totalScore = streets.reduce((acc, street) => acc + street[field], 0);
     console.log(`Total score for ${field} in streets:`, totalScore);
     return totalScore;
   } catch (err) {
-    console.Error(err);
+    console.error(err);
   }
 };
 
