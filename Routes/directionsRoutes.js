@@ -18,6 +18,7 @@ const router = express();
 *       required:
 *         - origin
 *         - destination
+*         - preference
 *       properties:
 *         origin:
 *           type: string
@@ -25,9 +26,13 @@ const router = express();
 *         destination:
 *           type: string
 *           description: The Destination Address
+*         preference:
+*           type: string
+*           description: The preference
 *       example:
 *         origin: 'Hahelmonit 34, Rishon Le-Zion'
 *         destination: 'Eli Visel 2, Rihson Le-Zion'
+*         preference: 'clean'
 */
 
 /**
@@ -44,7 +49,7 @@ const router = express();
 *             $ref: '#/components/schemas/Directions'
 *     responses:
 *       200:
-*         description: The Streets list
+*         description: The Best Route
 */router.post('/directions', directionsController.getDirections);
 
 module.exports = router;
