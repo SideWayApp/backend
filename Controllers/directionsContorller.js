@@ -1,6 +1,8 @@
 const axios = require("axios");
 require("dotenv").config();
-const { getTotalScoreForStreets } = require("../Controllers/mongoController");
+const {
+  getTotalScoreForStreets,
+} = require("../Controllers/mongoStreetsController");
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 async function getStreetsInAlternative(index,origin,destination){

@@ -5,31 +5,31 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const directionsRoute = require("./Routes/directionsRoutes");
 const scraperRoutes = require("./Routes/scraperRoutes");
+const mongoRoutes = require("./Routes/mongoStreetsRoutes");
 app.use(cors());
 app.use(express.json());
 app.use("/api", directionsRoute);
 app.use("/scrape", scraperRoutes);
+app.use("/mongo", mongoRoutes);
 
-
-if (process.env.NODE_ENV === "development"){
-    const swaggerUI = require('swagger-ui-express')
-    const swaggerJsDoc = require("swagger-jsdoc")
-    const options = {
-        definition: {
-            openapi: "3.0.0",
-            info: {
-                title: "SideWays API",
-                version: "1.0.0",
-                description: "SideWays Library API",
-            },
-            servers: [{url:"http://localhost:" + process.env.PORT,},],
-        },
-        apis: ["./Routes/*.js"],
-    };
-    const specs = swaggerJsDoc(options);
-    app.use("/api-docs",swaggerUI.serve,swaggerUI.setup(specs))
+if (process.env.NODE_ENV === "development") {
+  const swaggerUI = require("swagger-ui-express");
+  const swaggerJsDoc = require("swagger-jsdoc");
+  const options = {
+    definition: {
+      openapi: "3.0.0",
+      info: {
+        title: "SideWays API",
+        version: "1.0.0",
+        description: "SideWays Library API",
+      },
+      servers: [{ url: "http://localhost:" + process.env.PORT }],
+    },
+    apis: ["./Routes/*.js"],
+  };
+  const specs = swaggerJsDoc(options);
+  app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 }
-
 
 //connect to db
 mongoose.set("strictQuery", true);
