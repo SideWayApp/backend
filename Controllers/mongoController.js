@@ -1,7 +1,4 @@
 const Street = require("../models/Street");
-const mongoose = require("mongoose");
-const { response, json } = require("express");
-const { create } = require("../models/Street");
 
 //get all streets
 const getAllStreets = async () => {
@@ -38,6 +35,7 @@ const deleteStreet = async (streetName) => {
 //update a street
 const updateStreet = async (streetName, newStreet) => {
   try {
+    console.log(`Updating street "${streetName}":`, newStreet);
     const result = await Street.updateOne({ name: streetName }, newStreet);
     console.log(`Updated street "${streetName}":`, result);
     return result;
