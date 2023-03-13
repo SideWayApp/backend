@@ -48,7 +48,6 @@ const updateStreet = async (streetName, newStreet) => {
 
 const createStreets = async (streets) => {
   const arr = [];
-
   await Promise.all(
     streets.map(async (element) => {
       console.log(`Creating street "${element.name}":`, element);
@@ -85,6 +84,33 @@ const getTotalScoreForStreets = async (streetNames, field) => {
   }
 };
 
+async function removeDuplicates() {
+  const pipeline = [
+    {
+      $group: {
+        _id: { name: "$name", city: "$city" },
+        count: { $sum: 1 },
+        ids: { $push: "$_id" },
+      },
+    },
+    {
+      $match: {
+        count: { $gt: 1 },
+      },
+    },
+  ];
+
+  const duplicates = await Street.aggregate(pipeline).exec();
+
+  for (const duplicate of duplicates) {
+    const idsToRemove = duplicate.ids.slice(1);
+    await Street.deleteMany({ _id: { $in: idsToRemove } });
+  }
+
+  console.log(`Removed ${duplicates.length} duplicates.`);
+  return duplicates;
+}
+
 module.exports = {
   getAllStreets,
   getSingleStreet,
@@ -93,4 +119,5 @@ module.exports = {
   createStreets,
   createStreet,
   getTotalScoreForStreets,
+  removeDuplicates,
 };
