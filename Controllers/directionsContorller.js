@@ -5,7 +5,7 @@ const {
 } = require("../Controllers/mongoStreetsController");
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-async function getStreetsInAlternative(index,origin,destination){
+async function getStreetsInAlternative(index,origin,destination,preference){
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const mode = "walking";
   const alternatives = true;
@@ -39,17 +39,18 @@ async function getStreetsInAlternative(index,origin,destination){
   }  
 };
 
-async function getBestAlternative(routes, origin, destination) {
+async function getBestAlternative(routes, origin, destination,preference) {
   let maxWeight = 0;
   let bestIndex = 0;
   for (let i = 0; i < routes.length; i++) {
     const streetsInAlternative = await getStreetsInAlternative(
       i,
       origin,
-      destination
+      destination,
+      preference
     );
     const totalWeightInAlternative = await getTotalWeightInAlternative(
-      streetsInAlternative
+      streetsInAlternative,preference
     );
     if (totalWeightInAlternative > maxWeight) {
       maxWeight = totalWeightInAlternative;
@@ -59,17 +60,17 @@ async function getBestAlternative(routes, origin, destination) {
   return bestIndex;
 }
 
-async function getTotalWeightInAlternative(streetsInAlternative) {
+async function getTotalWeightInAlternative(streetsInAlternative,preference) {
   const totalWeightInAlternative = await getTotalScoreForStreets(
     streetsInAlternative,
-    "total"
+    preference
   );
   return totalWeightInAlternative;
 }
 
 exports.getDirections = async (req, res) => {
-  const { origin, destination } = req.body;
-
+  const { origin, destination ,preference} = req.body;
+  console.log(preference)
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const mode = "walking";
   const alternatives = true;
@@ -82,9 +83,11 @@ exports.getDirections = async (req, res) => {
     const bestAlternativeRouteIndex = await getBestAlternative(
       routes,
       origin,
-      destination
+      destination,
+      preference
     );
     res.send(ret.routes[bestAlternativeRouteIndex]);
+    //res.send({index: bestAlternativeRouteIndex})
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
