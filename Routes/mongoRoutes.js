@@ -144,10 +144,61 @@ router.put("/updateStreetByName", async (req, res) => {
   res.send(updated);
 });
 
-//POST a new street
-router.post("/create", createStreet);
+/**
+ * @swagger
+ * /mongo/createStreet:
+ *   post:
+ *     summary: Create a new street
+ *     tags: [MongoDB]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Street'
+ *     responses:
+ *       '201':
+ *         description: Street created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Street'
+ *       '400':
+ *         description: Invalid input parameters
+ *       '500':
+ *         description: Internal server error
+ */
+router.post("/createStreet", async (req, res) => {
+  const newStreet = await createStreet(req.body);
+  res.send(newStreet);
+});
 
-//DELETE a street
-router.delete("/deleteStreetByName", deleteStreet);
+/**
+ * @swagger
+ * /mongo/deleteStreetByName:
+ *   delete:
+ *     summary: Delete a street by name
+ *     tags: [MongoDB]
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         required: true
+ *         description: Name of the street to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Street deleted successfully
+ *       '400':
+ *         description: Invalid input parameters
+ *       '404':
+ *         description: Street not found
+ *       '500':
+ *         description: Internal server error
+ */
+router.delete("/deleteStreetByName", async (req, res) => {
+  const deleted = await deleteStreet(req.query.name);
+  res.send(deleted);
+});
 
 module.exports = router;
