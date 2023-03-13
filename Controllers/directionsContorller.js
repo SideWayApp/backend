@@ -5,7 +5,7 @@ const {
 } = require("../Controllers/mongoStreetsController");
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-async function getStreetsInAlternative(index, origin, destination) {
+async function getStreetsInAlternative(index,origin,destination){
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const mode = "walking";
   const alternatives = true;
@@ -16,30 +16,28 @@ async function getStreetsInAlternative(index, origin, destination) {
     const ret = response.data;
     let streetsPerAlternative = new Set();
     let arrPerAlt = [];
-    ret.routes[index].legs.map((leg) => {
-      leg.steps.map((step) => {
-        const instruction = step.html_instructions;
-        const regex = /<b>(.*?)<\/b>/g;
-        const matches = instruction.match(regex);
-        const arr = matches
-          ? matches.map((match) => match.replace(/<\/?b>/g, ""))
-          : [];
-        arr.map((elem) => {
-          if (elem.includes("St")) {
-            const formattedName = elem.replace(/\s*\bSt\b\.?$/, "");
-            streetsPerAlternative.add(formattedName.toUpperCase());
-            arrPerAlt = Array.from(streetsPerAlternative);
-          }
+    ret.routes[index].legs.map(leg => {
+        leg.steps.map(step=>{
+          const instruction = step.html_instructions;
+          const regex = /<b>(.*?)<\/b>/g;
+          const matches = instruction.match(regex);
+          const arr = matches ? matches.map(match => match.replace(/<\/?b>/g, '')) : [];
+          arr.map(elem => {
+            if (elem.includes("St")){
+              const formattedName = elem.replace(/\s*\bSt\b\.?$/, '');
+              streetsPerAlternative.add(formattedName)
+              arrPerAlt = Array.from(streetsPerAlternative);
+            }
+          });
         });
       });
-    });
     //console.log(streetsPerAlternative)
     return arrPerAlt;
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-}
+    res.status(500).json({ message: 'Internal server error' });
+  }  
+};
 
 async function getBestAlternative(routes, origin, destination) {
   let maxWeight = 0;
