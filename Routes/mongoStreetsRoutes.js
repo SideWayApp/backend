@@ -11,7 +11,7 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: MongoDB
+ *   name: MongoDB Streets
  *   description: Endpoints for MongoDB operations
  */
 
@@ -61,7 +61,7 @@ const router = express.Router();
  * /mongo/getAllStreets:
  *   post:
  *     summary: Get all streets from the MongoDB database
- *     tags: [MongoDB]
+ *     tags: [MongoDB Streets]
  *     responses:
  *       200:
  *         description: A list of all streets
@@ -84,7 +84,7 @@ router.post("/getAllStreets", async (req, res) => {
  * /mongo/getStreetByName:
  *   post:
  *     summary: Get a single street by name from the MongoDB database
- *     tags: [MongoDB]
+ *     tags: [MongoDB Streets]
  *     parameters:
  *       - in: query
  *         name: name
@@ -115,7 +115,7 @@ router.post("/getStreetByName", async (req, res) => {
  * /mongo/updateStreetByName:
  *   put:
  *     summary: Update a street by name
- *     tags: [MongoDB]
+ *     tags: [MongoDB Streets]
  *     requestBody:
  *       required: true
  *       content:
@@ -149,7 +149,7 @@ router.put("/updateStreetByName", async (req, res) => {
  * /mongo/createStreet:
  *   post:
  *     summary: Create a new street
- *     tags: [MongoDB]
+ *     tags: [MongoDB Streets]
  *     requestBody:
  *       required: true
  *       content:
@@ -178,7 +178,7 @@ router.post("/createStreet", async (req, res) => {
  * /mongo/deleteStreetByName:
  *   delete:
  *     summary: Delete a street by name
- *     tags: [MongoDB]
+ *     tags: [MongoDB Streets]
  *     parameters:
  *       - name: name
  *         in: query

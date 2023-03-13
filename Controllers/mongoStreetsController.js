@@ -1,6 +1,5 @@
 const Street = require("../models/Street");
 
-//get all streets
 const getAllStreets = async () => {
   try {
     const results = await Street.find({});
@@ -10,7 +9,6 @@ const getAllStreets = async () => {
   }
 };
 
-//get single street
 const getSingleStreet = async (streetName) => {
   try {
     const result = await Street.findOne({ name: streetName });
@@ -21,7 +19,6 @@ const getSingleStreet = async (streetName) => {
   }
 };
 
-//delete a street
 const deleteStreet = async (streetName) => {
   try {
     const result = await Street.deleteOne({ name: streetName });
@@ -32,7 +29,6 @@ const deleteStreet = async (streetName) => {
   }
 };
 
-//update a street
 const updateStreet = async (streetName, newStreet) => {
   try {
     console.log(`Updating street "${streetName}":`, newStreet);
@@ -74,6 +70,7 @@ const getTotalScoreForStreets = async (streetNames, field) => {
     const streets = await Street.find({
       name: { $regex: new RegExp(streetNames.join("|"), "i") },
     });
+    console.log("streets found", streets.length);
     const totalScore = streets.reduce((acc, street) => acc + street[field], 0);
     console.log(`Total score for ${field} in streets:`, totalScore);
     return totalScore;
