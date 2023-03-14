@@ -5,6 +5,7 @@ const {
   createStreet,
   deleteStreet,
   updateStreet,
+  removeDuplicates,
 } = require("../Controllers/mongoStreetsController");
 
 const router = express.Router();
@@ -12,7 +13,7 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: MongoDB Streets
- *   description: Endpoints for MongoDB operations
+ *   description: Endpoints for MongoDB Streets operations
  */
 
 /**
@@ -199,6 +200,23 @@ router.post("/createStreet", async (req, res) => {
 router.delete("/deleteStreetByName", async (req, res) => {
   const deleted = await deleteStreet(req.query.name);
   res.send(deleted);
+});
+
+/**
+ * @swagger
+ * /mongo/removeDuplicates:
+ *   get:
+ *     summary: Remove duplicate streets
+ *     tags: [MongoDB Streets]
+ *     responses:
+ *       '200':
+ *         description: Duplicates removed successfully
+ *       '500':
+ *         description: Internal server error
+ */
+router.get("/removeDuplicates", async (req, res) => {
+  const dup = await removeDuplicates();
+  res.send(dup);
 });
 
 module.exports = router;

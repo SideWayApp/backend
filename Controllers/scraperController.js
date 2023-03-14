@@ -89,12 +89,14 @@ exports.getStreetsFromTLVGis = async (req, res) => {
   }
 };
 
-const pushStreets = async (names, city) => {
+exports.pushStreets = async (names, city) => {
   const streets = await Promise.all(
     names.map(async (name) => {
-      //  const formattedName = await getFormatedStreetName(name, city);
+      console.log("name: ", name);
+      const formattedName = await getFormatedStreetName(name, city);
+      console.log("formattedName", formattedName);
       return {
-        name: name,
+        name: formattedName,
         safe: 0,
         city: cities.TLV,
         clean: 0,
