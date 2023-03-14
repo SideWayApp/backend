@@ -116,6 +116,40 @@ async function removeDuplicates() {
   return duplicates;
 }
 
+const removeTotalScoreForStreets = async (streetNames) => {
+  try {
+    const streets = await Street.find({});
+
+    for (const street of streets) {
+      if (street.total != undefined) {
+        street.total = undefined;
+        console.log("street", street);
+        await street.save();
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const updateVirtualScore = async () => {
+  try {
+    const streets = await Street.find({});
+    const street = streets[50].total;
+    // street.total =
+    //   (street.clean + street.safe + street.accessible + street.scenery) / 4;
+    // await Street.updateOne({ _id: street._id }, street);
+    console.log("street", street);
+    // for (const street of streets) {
+    //   // street.total = (street.clean + street.safe + street.accessible + street.scenery)/4;
+    //   await street.save();
+    //   console.log("street", street);
+    // }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 module.exports = {
   getAllStreets,
   getSingleStreet,
@@ -125,4 +159,6 @@ module.exports = {
   createStreet,
   getTotalScoreForStreets,
   removeDuplicates,
+  removeTotalScoreForStreets,
+  updateVirtualScore,
 };

@@ -25,10 +25,12 @@ const streetSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  total: {
-    type: Number,
-    required: true,
-  },
+});
+
+// Define a virtual field for the 'total' score
+streetSchema.virtual("total").get(function () {
+  const sum = this.clean + this.safe + this.scenery + this.accessible;
+  return sum / 4;
 });
 
 const Street = mongoose.model("Street", streetSchema);

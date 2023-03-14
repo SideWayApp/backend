@@ -31,7 +31,6 @@ describe("Testing Mongo Controller", () => {
       safe: 3,
       scenery: 5,
       accessible: 2,
-      total: 14,
     };
 
     const newStreet = await createStreet(streetData);
@@ -43,7 +42,13 @@ describe("Testing Mongo Controller", () => {
     expect(newStreet.safe).toBe(streetData.safe);
     expect(newStreet.scenery).toBe(streetData.scenery);
     expect(newStreet.accessible).toBe(streetData.accessible);
-    expect(newStreet.total).toBe(streetData.total);
+    expect(newStreet.total).toBe(
+      (streetData.clean +
+        streetData.safe +
+        streetData.scenery +
+        streetData.accessible) /
+        4
+    );
 
     const updateSt = { clean: 5, safe: 4, scenery: 4, accessible: 3 };
     const update = await updateStreet(newStreet.name, updateSt);
@@ -57,7 +62,13 @@ describe("Testing Mongo Controller", () => {
     expect(updatedStreet.safe).toEqual(updateSt.safe);
     expect(updatedStreet.scenery).toEqual(updateSt.scenery);
     expect(updatedStreet.accessible).toEqual(updateSt.accessible);
-    expect(updatedStreet.total).toEqual(newStreet.total);
+    expect(updatedStreet.total).toEqual(
+      (updateSt.clean +
+        updateSt.safe +
+        updateSt.scenery +
+        updateSt.accessible) /
+        4
+    );
   });
 
   test("should get a single street", async () => {
@@ -68,7 +79,6 @@ describe("Testing Mongo Controller", () => {
       safe: 4,
       scenery: 4,
       accessible: 3,
-      total: 14,
     };
 
     const street = await getSingleStreet(streetData.name);
@@ -79,7 +89,13 @@ describe("Testing Mongo Controller", () => {
     expect(street.safe).toBe(streetData.safe);
     expect(street.scenery).toBe(streetData.scenery);
     expect(street.accessible).toBe(streetData.accessible);
-    expect(street.total).toBe(streetData.total);
+    expect(street.total).toBe(
+      (streetData.clean +
+        streetData.safe +
+        streetData.scenery +
+        streetData.accessible) /
+        4
+    );
   });
 
   test("should throw an error if required fields are missing", async () => {
