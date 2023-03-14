@@ -6,6 +6,8 @@ const {
   deleteStreet,
   updateStreet,
   removeDuplicates,
+  removeTotalScoreForStreets,
+  updateVirtualScore,
 } = require("../Controllers/mongoStreetsController");
 
 const router = express.Router();
@@ -51,10 +53,6 @@ const router = express.Router();
  *           type: number
  *           description: The accessibility score of the street.
  *           example: 2.5
- *         total:
- *           type: number
- *           description: The total score of the street.
- *           example: 3.8
  */
 
 /**
@@ -141,6 +139,7 @@ router.post("/getStreetByName", async (req, res) => {
  *         description: Internal server error
  */
 router.put("/updateStreetByName", async (req, res) => {
+  console.log("update", req.body);
   const updated = await updateStreet(req.query.name, req.body);
   res.send(updated);
 });
@@ -219,4 +218,15 @@ router.get("/removeDuplicates", async (req, res) => {
   res.send(dup);
 });
 
+router.get("/removeTotal", async (req, res) => {
+  console.log("remove total");
+  await removeTotalScoreForStreets();
+  res.send("done");
+});
+
+router.get("/updateTotal", async (req, res) => {
+  console.log("update total");
+  await updateVirtualScore();
+  res.send("done");
+});
 module.exports = router;
