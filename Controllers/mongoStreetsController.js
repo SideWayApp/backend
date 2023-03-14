@@ -1,4 +1,5 @@
 const Street = require("../models/Street");
+const { pushStreets } = require("../Controllers/scraperController");
 
 const getAllStreets = async () => {
   try {
@@ -66,16 +67,25 @@ const createStreet = async (street) => {
 
 const getTotalScoreForStreets = async (streetNames, field) => {
   try {
-    console.log("streetNames", streetNames);
+    console.log("streetNames", streetNames.length);
     const streets = await Street.find({
       name: { $regex: new RegExp(streetNames.join("|"), "i") },
     });
-    console.log("streets found", streets.length);
+    const matchedStreets = [];
+    for (const street of streets) {
+      matchedStreets.push(street.name);
+    }
+    const uniqueNames = [
+      ...streetNames.filter((name) => !matchedStreets.includes(name)),
+    ];
+    console.log("unmached streets", uniqueNames.length);
+    const formattedStreets = await pushStreets(uniqueNames, "Tel Aviv");
+    createStreets(formattedStreets);
     const totalScore = streets.reduce((acc, street) => acc + street[field], 0);
     console.log(`Total score for ${field} in streets:`, totalScore);
     return totalScore;
   } catch (err) {
-    console.Error(err);
+    console.error(err);
   }
 };
 
