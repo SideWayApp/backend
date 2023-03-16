@@ -22,6 +22,18 @@ const router = express.Router();
  * @swagger
  * components:
  *   schemas:
+ *     Score:
+ *       type: object
+ *       properties:
+ *         score:
+ *           type: number
+ *           description: The score value.
+ *           example: 4.5
+ *         timestamp:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the score was given.
+ *           example: '2023-03-15T12:30:00Z'
  *     Street:
  *       type: object
  *       properties:
@@ -38,21 +50,29 @@ const router = express.Router();
  *           description: The city in which the street is located.
  *           example: Los Angeles
  *         clean:
- *           type: number
- *           description: The cleanliness score of the street.
- *           example: 4.5
+ *           type: array
+ *           description: An array of cleanliness score objects.
+ *           items:
+ *             $ref: '#/components/schemas/Score'
  *         safe:
- *           type: number
- *           description: The safety score of the street.
- *           example: 3.8
+ *           type: array
+ *           description: An array of safety score objects.
+ *           items:
+ *             $ref: '#/components/schemas/Score'
  *         scenery:
- *           type: number
- *           description: The scenery score of the street.
- *           example: 4.2
+ *           type: array
+ *           description: An array of scenery score objects.
+ *           items:
+ *             $ref: '#/components/schemas/Score'
  *         accessible:
+ *           type: array
+ *           description: An array of accessibility score objects.
+ *           items:
+ *             $ref: '#/components/schemas/Score'
+ *         total:
  *           type: number
- *           description: The accessibility score of the street.
- *           example: 2.5
+ *           description: The average total score of the street.
+ *           example: 3.8
  */
 
 /**
@@ -224,7 +244,7 @@ router.get("/removeTotal", async (req, res) => {
   res.send("done");
 });
 
-router.get("/updateTotal", async (req, res) => {
+router.get("/updateStreets", async (req, res) => {
   console.log("update total");
   await updateVirtualScore();
   res.send("done");

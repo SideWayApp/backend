@@ -102,7 +102,6 @@ exports.pushStreets = async (names, city) => {
         clean: 0,
         scenery: 0,
         accessible: 0,
-        total: 0,
       };
     })
   );
@@ -119,17 +118,6 @@ exports.formateAllMongoStreets = async (req, res) => {
       return isEnglish && isNotNumber;
     });
     console.log(nonEnglishStreets.length);
-    // await Promise.all(
-    //   nonEnglishStreets.map(async (street) => {
-    //     const formattedName = await getFormatedStreetName(
-    //       street.name,
-    //       cities.TLV
-    //     );
-    //     const updated = await mongoController.updateStreet(street.name, {
-    //       name: formattedName,
-    //     });
-    //   })
-    // );
     res.send(nonEnglishStreets);
   } catch (error) {
     console.log(error);
