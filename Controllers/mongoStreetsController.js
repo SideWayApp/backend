@@ -22,7 +22,7 @@ const getSingleStreet = async (streetName) => {
 
 const deleteStreet = async (streetName) => {
   try {
-    const result = await Street.deleteOne({ name: streetName }).toJson();
+    const result = await Street.deleteOne({ name: streetName });
     console.log(`Deleted street "${streetName}":`, result);
     return result;
   } catch (err) {
