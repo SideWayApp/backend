@@ -22,7 +22,7 @@ const getSingleStreet = async (streetName) => {
 
 const deleteStreet = async (streetName) => {
   try {
-    const result = await Street.deleteOne({ name: streetName });
+    const result = await Street.deleteOne({ name: streetName }).toJson();
     console.log(`Deleted street "${streetName}":`, result);
     return result;
   } catch (err) {
@@ -30,12 +30,32 @@ const deleteStreet = async (streetName) => {
   }
 };
 
-const updateStreet = async (streetName, newStreet) => {
+const updateStreet = async (streetName, newStreetValue) => {
   try {
-    console.log(`Updating street "${streetName}":`, newStreet);
-    const result = await Street.updateOne({ name: streetName }, newStreet);
-    console.log(`Updated street "${streetName}":`, result);
-    return result;
+    const street = await Street.findOne({ name: streetName });
+    if (!street) {
+      throw new Error(`Street '${streetName}' not found`);
+    }
+
+    if (newStreetValue.scenery !== undefined) {
+      street.scenery.push({ score: newStreetValue.scenery });
+    }
+
+    if (newStreetValue.accessible !== undefined) {
+      street.accessible.push({ score: newStreetValue.accessible });
+    }
+
+    if (newStreetValue.safe !== undefined) {
+      street.safe.push({ score: newStreetValue.safe });
+    }
+
+    if (newStreetValue.clean !== undefined) {
+      street.clean.push({ score: newStreetValue.clean });
+    }
+
+    await street.save();
+
+    return street;
   } catch (err) {
     console.error(err);
   }
@@ -67,26 +87,48 @@ const createStreet = async (street) => {
 
 const getTotalScoreForStreets = async (streetNames, field) => {
   try {
-    console.log("streetNames", streetNames.length);
+    console.log(streetNames);
     const streets = await Street.find({
       name: { $regex: new RegExp(streetNames.join("|"), "i") },
     });
-    const matchedStreets = [];
-    for (const street of streets) {
-      matchedStreets.push(street.name);
+    if (field === "total") {
+      let totalScore = 0;
+      for (const street of streets) {
+        totalScore += street[field];
+      }
+      console.log("totalScore:", totalScore);
+      return totalScore;
+    } else {
+      const totalScore = streets.reduce((sum, street) => {
+        if (Array.isArray(street[field])) {
+          const fieldSum = street[field].reduce(
+            (scoreSum, scoreObj) => scoreSum + scoreObj.score,
+            0
+          );
+          return sum + fieldSum;
+        } else {
+          return sum;
+        }
+      }, 0);
+      console.log("totalScore", totalScore);
+      return totalScore;
     }
-    const uniqueNames = [
-      ...streetNames.filter((name) => !matchedStreets.includes(name)),
-    ];
-    console.log("unmached streets", uniqueNames.length);
-    const formattedStreets = await pushStreets(uniqueNames, "Tel Aviv");
-    createStreets(formattedStreets);
-    const totalScore = streets.reduce((acc, street) => acc + street[field], 0);
-    console.log(`Total score for ${field} in streets:`, totalScore);
-    return totalScore;
   } catch (err) {
     console.error(err);
   }
+};
+
+const findUniqueStreets = async (streetNames) => {
+  const matchedStreets = [];
+  for (const street of streets) {
+    matchedStreets.push(street.name);
+  }
+  const uniqueNames = [
+    ...streetNames.filter((name) => !matchedStreets.includes(name)),
+  ];
+  console.log("unmached streets", uniqueNames);
+  const formattedStreets = await pushStreets(uniqueNames, "Tel Aviv");
+  createStreets(formattedStreets);
 };
 
 async function removeDuplicates() {
@@ -134,19 +176,21 @@ const removeTotalScoreForStreets = async (streetNames) => {
 
 const updateVirtualScore = async () => {
   try {
-    const streets = await Street.find({});
-    const street = streets[50].total;
-    // street.total =
-    //   (street.clean + street.safe + street.accessible + street.scenery) / 4;
-    // await Street.updateOne({ _id: street._id }, street);
-    console.log("street", street);
-    // for (const street of streets) {
-    //   // street.total = (street.clean + street.safe + street.accessible + street.scenery)/4;
-    //   await street.save();
-    //   console.log("street", street);
-    // }
+    await Street.updateMany(
+      {},
+      {
+        $set: {
+          clean: [],
+          safe: [],
+          scenery: [],
+          accessible: [],
+        },
+      },
+      { strict: false }
+    );
+    console.log("Old street schema objects updated successfully");
   } catch (err) {
-    console.error(err);
+    console.log("Error updating old street schema objects: ", err);
   }
 };
 
