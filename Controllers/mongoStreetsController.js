@@ -1,5 +1,4 @@
 const Street = require("../models/Street");
-const { pushStreets } = require("../Controllers/scraperController");
 
 const getAllStreets = async () => {
   try {
@@ -85,12 +84,12 @@ const createStreet = async (street) => {
   }
 };
 
-const getTotalScoreForStreets = async (streetNames, field) => {
+const getFieldScoreForStreets = async (streetNames, field) => {
   try {
-    console.log(streetNames);
     const streets = await Street.find({
       name: { $regex: new RegExp(streetNames.join("|"), "i") },
     });
+    findUniqueStreets(streetNames, streets);
     if (field === "total") {
       let totalScore = 0;
       for (const street of streets) {
@@ -118,7 +117,7 @@ const getTotalScoreForStreets = async (streetNames, field) => {
   }
 };
 
-const findUniqueStreets = async (streetNames) => {
+const findUniqueStreets = async (streetNames, streets) => {
   const matchedStreets = [];
   for (const street of streets) {
     matchedStreets.push(street.name);
@@ -127,8 +126,6 @@ const findUniqueStreets = async (streetNames) => {
     ...streetNames.filter((name) => !matchedStreets.includes(name)),
   ];
   console.log("unmached streets", uniqueNames);
-  const formattedStreets = await pushStreets(uniqueNames, "Tel Aviv");
-  createStreets(formattedStreets);
 };
 
 async function removeDuplicates() {
@@ -201,7 +198,7 @@ module.exports = {
   updateStreet,
   createStreets,
   createStreet,
-  getTotalScoreForStreets,
+  getFieldScoreForStreets,
   removeDuplicates,
   removeTotalScoreForStreets,
   updateVirtualScore,

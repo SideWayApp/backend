@@ -1,5 +1,4 @@
 const app = require("../server");
-const request = require("supertest");
 const mongoose = require("mongoose");
 const {
   createStreet,
@@ -7,10 +6,9 @@ const {
   deleteStreet,
   updateStreet,
   getSingleStreet,
-  getTotalScoreForStreets,
+  getFieldScoreForStreets,
 } = require("../Controllers/mongoStreetsController");
 const Street = require("../models/Street");
-const e = require("express");
 beforeAll(async () => {
   await Street.deleteMany({ name: "Main Street" });
 });
@@ -107,19 +105,19 @@ describe("Testing Mongo Controller", () => {
       scenery: "scenery",
       accessible: "accessible",
     };
-    const total = await getTotalScoreForStreets(arr, fields.total);
+    const total = await getFieldScoreForStreets(arr, fields.total);
     expect(total).toBeDefined();
     expect(typeof total).toBe("number");
-    const clean = await getTotalScoreForStreets(arr, fields.clean);
+    const clean = await getFieldScoreForStreets(arr, fields.clean);
     expect(clean).toBeDefined();
     expect(typeof clean).toBe("number");
-    const safe = await getTotalScoreForStreets(arr, fields.safe);
+    const safe = await getFieldScoreForStreets(arr, fields.safe);
     expect(safe).toBeDefined();
     expect(typeof safe).toBe("number");
-    const scenery = await getTotalScoreForStreets(arr, fields.scenery);
+    const scenery = await getFieldScoreForStreets(arr, fields.scenery);
     expect(scenery).toBeDefined();
     expect(typeof scenery).toBe("number");
-    const accessible = await getTotalScoreForStreets(arr, fields.accessible);
-    expect(accessible).toBeDefined();
+    const accessible = await getFieldScoreForStreets(arr, fields.accessible);
+    expect(typeof accessible).toBe("number");
   });
 });
