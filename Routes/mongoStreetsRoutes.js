@@ -32,8 +32,8 @@ const router = express.Router();
  *         timestamp:
  *           type: string
  *           format: date-time
- *           description: The timestamp when the score was given.
- *           example: '2023-03-15T12:30:00Z'
+ *           description: The timestamp when the score was added.
+ *           example: '2022-03-15T10:30:00Z'
  *     Street:
  *       type: object
  *       properties:
@@ -51,28 +51,47 @@ const router = express.Router();
  *           example: Los Angeles
  *         clean:
  *           type: array
- *           description: An array of cleanliness score objects.
+ *           description: The cleanliness scores of the street.
  *           items:
  *             $ref: '#/components/schemas/Score'
  *         safe:
  *           type: array
- *           description: An array of safety score objects.
+ *           description: The safety scores of the street.
  *           items:
  *             $ref: '#/components/schemas/Score'
  *         scenery:
  *           type: array
- *           description: An array of scenery score objects.
+ *           description: The scenery scores of the street.
  *           items:
  *             $ref: '#/components/schemas/Score'
  *         accessible:
  *           type: array
- *           description: An array of accessibility score objects.
+ *           description: The accessibility scores of the street.
  *           items:
  *             $ref: '#/components/schemas/Score'
  *         total:
  *           type: number
- *           description: The average total score of the street.
+ *           description: The average of all scores.
+ *           example: 3.9
+ *     UpdateValues:
+ *       type: object
+ *       properties:
+ *         clean:
+ *           type: number
+ *           description: The cleanliness score to update.
+ *           example: 4.5
+ *         safe:
+ *           type: number
+ *           description: The safety score to update.
  *           example: 3.8
+ *         scenery:
+ *           type: number
+ *           description: The scenery score to update.
+ *           example: 4.2
+ *         accessible:
+ *           type: number
+ *           description: The accessibility score to update.
+ *           example: 2.5
  */
 
 /**
@@ -140,7 +159,7 @@ router.post("/getStreetByName", async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Street'
+ *             $ref: '#/components/schemas/UpdateValues'
  *     parameters:
  *       - name: name
  *         in: query
