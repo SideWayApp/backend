@@ -20,7 +20,7 @@ afterAll((done) => {
   done();
 });
 
-describe("Testing Mongo Controller", () => {
+describe("Testing Mongo Streets Controller", () => {
   test("should create a new street document", async () => {
     const streetData = {
       name: "Main Street",
