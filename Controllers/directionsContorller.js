@@ -1,11 +1,11 @@
 const axios = require("axios");
 require("dotenv").config();
 const {
-  getTotalScoreForStreets,
+  getFieldScoreForStreets,
 } = require("../Controllers/mongoStreetsController");
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-async function getStreetsInAlternative(index,origin,destination,preference){
+async function getStreetsInAlternative(index, origin, destination, preference) {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const mode = "walking";
   const alternatives = true;
@@ -16,30 +16,33 @@ async function getStreetsInAlternative(index,origin,destination,preference){
     const ret = response.data;
     let streetsPerAlternative = new Set();
     let arrPerAlt = [];
-    ret.routes[index].legs.map(leg => {
-        leg.steps.map(step=>{
-          const instruction = step.html_instructions;
-          const regex = /<b>(.*?)<\/b>/g;
-          const matches = instruction.match(regex);
-          const arr = matches ? matches.map(match => match.replace(/<\/?b>/g, '')) : [];
-          arr.map(elem => {
-            if (elem.includes("St")){
-              const formattedName = elem.replace(/\s*\bSt\.?\s*$/i, '').trim() + " St";
-              streetsPerAlternative.add(formattedName)
-              arrPerAlt = Array.from(streetsPerAlternative);
-            }
-          });
+    ret.routes[index].legs.map((leg) => {
+      leg.steps.map((step) => {
+        const instruction = step.html_instructions;
+        const regex = /<b>(.*?)<\/b>/g;
+        const matches = instruction.match(regex);
+        const arr = matches
+          ? matches.map((match) => match.replace(/<\/?b>/g, ""))
+          : [];
+        arr.map((elem) => {
+          if (elem.includes("St")) {
+            const formattedName =
+              elem.replace(/\s*\bSt\.?\s*$/i, "").trim() + " St";
+            streetsPerAlternative.add(formattedName);
+            arrPerAlt = Array.from(streetsPerAlternative);
+          }
         });
       });
+    });
     //console.log(streetsPerAlternative)
     return arrPerAlt;
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
-  }  
-};
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
 
-async function getBestAlternative(routes, origin, destination,preference) {
+async function getBestAlternative(routes, origin, destination, preference) {
   let maxWeight = 0;
   let bestIndex = 0;
   for (let i = 0; i < routes.length; i++) {
@@ -50,7 +53,8 @@ async function getBestAlternative(routes, origin, destination,preference) {
       preference
     );
     const totalWeightInAlternative = await getTotalWeightInAlternative(
-      streetsInAlternative,preference
+      streetsInAlternative,
+      preference
     );
     if (totalWeightInAlternative > maxWeight) {
       maxWeight = totalWeightInAlternative;
@@ -60,8 +64,8 @@ async function getBestAlternative(routes, origin, destination,preference) {
   return bestIndex;
 }
 
-async function getTotalWeightInAlternative(streetsInAlternative,preference) {
-  const totalWeightInAlternative = await getTotalScoreForStreets(
+async function getTotalWeightInAlternative(streetsInAlternative, preference) {
+  const totalWeightInAlternative = await getFieldScoreForStreets(
     streetsInAlternative,
     preference
   );
@@ -69,8 +73,8 @@ async function getTotalWeightInAlternative(streetsInAlternative,preference) {
 }
 
 exports.getDirections = async (req, res) => {
-  const { origin, destination ,preference} = req.body;
-  console.log(preference)
+  const { origin, destination, preference } = req.body;
+  console.log(preference);
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const mode = "walking";
   const alternatives = true;

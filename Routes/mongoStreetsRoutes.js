@@ -5,6 +5,9 @@ const {
   createStreet,
   deleteStreet,
   updateStreet,
+  removeDuplicates,
+  removeTotalScoreForStreets,
+  updateVirtualScore,
 } = require("../Controllers/mongoStreetsController");
 
 const router = express.Router();
@@ -12,13 +15,25 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: MongoDB Streets
- *   description: Endpoints for MongoDB operations
+ *   description: Endpoints for MongoDB Streets operations
  */
 
 /**
  * @swagger
  * components:
  *   schemas:
+ *     Score:
+ *       type: object
+ *       properties:
+ *         score:
+ *           type: number
+ *           description: The score value.
+ *           example: 4.5
+ *         timestamp:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the score was added.
+ *           example: '2022-03-15T10:30:00Z'
  *     Street:
  *       type: object
  *       properties:
@@ -35,25 +50,48 @@ const router = express.Router();
  *           description: The city in which the street is located.
  *           example: Los Angeles
  *         clean:
+ *           type: array
+ *           description: The cleanliness scores of the street.
+ *           items:
+ *             $ref: '#/components/schemas/Score'
+ *         safe:
+ *           type: array
+ *           description: The safety scores of the street.
+ *           items:
+ *             $ref: '#/components/schemas/Score'
+ *         scenery:
+ *           type: array
+ *           description: The scenery scores of the street.
+ *           items:
+ *             $ref: '#/components/schemas/Score'
+ *         accessible:
+ *           type: array
+ *           description: The accessibility scores of the street.
+ *           items:
+ *             $ref: '#/components/schemas/Score'
+ *         total:
  *           type: number
- *           description: The cleanliness score of the street.
+ *           description: The average of all scores.
+ *           example: 3.9
+ *     UpdateValues:
+ *       type: object
+ *       properties:
+ *         clean:
+ *           type: number
+ *           description: The cleanliness score to update.
  *           example: 4.5
  *         safe:
  *           type: number
- *           description: The safety score of the street.
+ *           description: The safety score to update.
  *           example: 3.8
  *         scenery:
  *           type: number
- *           description: The scenery score of the street.
+ *           description: The scenery score to update.
  *           example: 4.2
  *         accessible:
  *           type: number
- *           description: The accessibility score of the street.
+ *           description: The accessibility score to update.
  *           example: 2.5
- *         total:
- *           type: number
- *           description: The total score of the street.
- *           example: 3.8
  */
 
 /**
@@ -121,7 +159,7 @@ router.post("/getStreetByName", async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Street'
+ *             $ref: '#/components/schemas/UpdateValues'
  *     parameters:
  *       - name: name
  *         in: query
@@ -140,6 +178,7 @@ router.post("/getStreetByName", async (req, res) => {
  *         description: Internal server error
  */
 router.put("/updateStreetByName", async (req, res) => {
+  console.log("update", req.body);
   const updated = await updateStreet(req.query.name, req.body);
   res.send(updated);
 });
@@ -201,4 +240,32 @@ router.delete("/deleteStreetByName", async (req, res) => {
   res.send(deleted);
 });
 
+/**
+ * @swagger
+ * /mongo/removeDuplicates:
+ *   get:
+ *     summary: Remove duplicate streets
+ *     tags: [MongoDB Streets]
+ *     responses:
+ *       '200':
+ *         description: Duplicates removed successfully
+ *       '500':
+ *         description: Internal server error
+ */
+router.get("/removeDuplicates", async (req, res) => {
+  const dup = await removeDuplicates();
+  res.send(dup);
+});
+
+router.get("/removeTotal", async (req, res) => {
+  console.log("remove total");
+  await removeTotalScoreForStreets();
+  res.send("done");
+});
+
+router.get("/updateStreets", async (req, res) => {
+  console.log("update total");
+  await updateVirtualScore();
+  res.send("done");
+});
 module.exports = router;

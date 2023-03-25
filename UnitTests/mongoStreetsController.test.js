@@ -1,5 +1,4 @@
 const app = require("../server");
-const request = require("supertest");
 const mongoose = require("mongoose");
 const {
   createStreet,
@@ -7,10 +6,9 @@ const {
   deleteStreet,
   updateStreet,
   getSingleStreet,
-  getTotalScoreForStreets,
+  getFieldScoreForStreets,
 } = require("../Controllers/mongoStreetsController");
 const Street = require("../models/Street");
-const e = require("express");
 beforeAll(async () => {
   await Street.deleteMany({ name: "Main Street" });
 });
@@ -22,77 +20,67 @@ afterAll((done) => {
   done();
 });
 
-describe("Testing Mongo Controller", () => {
+describe("Testing Mongo Streets Controller", () => {
   test("should create a new street document", async () => {
     const streetData = {
       name: "Main Street",
       city: "Anytown",
-      clean: 4,
-      safe: 3,
-      scenery: 5,
-      accessible: 2,
-      total: 14,
+      clean: [],
+      safe: [],
+      scenery: [],
+      accessible: [],
     };
 
     const newStreet = await createStreet(streetData);
-
     expect(newStreet).toBeDefined();
     expect(newStreet.name).toBe(streetData.name);
     expect(newStreet.city).toBe(streetData.city);
-    expect(newStreet.clean).toBe(streetData.clean);
-    expect(newStreet.safe).toBe(streetData.safe);
-    expect(newStreet.scenery).toBe(streetData.scenery);
-    expect(newStreet.accessible).toBe(streetData.accessible);
-    expect(newStreet.total).toBe(streetData.total);
+    expect(newStreet.clean).toEqual([]);
+    expect(newStreet.safe).toEqual([]);
+    expect(newStreet.scenery).toEqual([]);
+    expect(newStreet.accessible).toEqual([]);
+    expect(newStreet.total).toBe(0);
+  });
 
+  test("should update street scores", async () => {
+    const streetName = "Main Street";
     const updateSt = { clean: 5, safe: 4, scenery: 4, accessible: 3 };
-    const update = await updateStreet(newStreet.name, updateSt);
+    const update = await updateStreet(streetName, updateSt);
+    expect(update).toBeDefined();
+    expect(update.clean.length).toBe(1);
+    expect(update.safe.length).toBe(1);
+    expect(update.scenery.length).toBe(1);
+    expect(update.accessible.length).toBe(1);
+    expect(update.total).toBe(
+      (updateSt.clean +
+        updateSt.safe +
+        updateSt.scenery +
+        updateSt.accessible) /
+        4
+    );
+  });
 
-    expect(update.matchedCount).toEqual(1);
+  test("should throw an error if required fields are missing", async () => {
+    const streetData = {
+      name: "Main Street",
+    };
 
-    const updatedStreet = await Street.findOne({ name: newStreet.name });
-    expect(updatedStreet.name).toEqual(newStreet.name);
-    expect(updatedStreet.city).toEqual(newStreet.city);
-    expect(updatedStreet.clean).toEqual(updateSt.clean);
-    expect(updatedStreet.safe).toEqual(updateSt.safe);
-    expect(updatedStreet.scenery).toEqual(updateSt.scenery);
-    expect(updatedStreet.accessible).toEqual(updateSt.accessible);
-    expect(updatedStreet.total).toEqual(newStreet.total);
+    await expect(createStreet(streetData)).rejects.toThrow();
   });
 
   test("should get a single street", async () => {
     const streetData = {
       name: "Main Street",
       city: "Anytown",
-      clean: 5,
-      safe: 4,
-      scenery: 4,
-      accessible: 3,
-      total: 14,
     };
-
     const street = await getSingleStreet(streetData.name);
     expect(street).toBeDefined();
     expect(street.name).toBe(streetData.name);
     expect(street.city).toBe(streetData.city);
-    expect(street.clean).toBe(streetData.clean);
-    expect(street.safe).toBe(streetData.safe);
-    expect(street.scenery).toBe(streetData.scenery);
-    expect(street.accessible).toBe(streetData.accessible);
-    expect(street.total).toBe(streetData.total);
-  });
-
-  test("should throw an error if required fields are missing", async () => {
-    const streetData = {
-      name: "Main Street",
-      clean: 4,
-      safe: 3,
-      scenery: 5,
-      accessible: 2,
-      total: 14,
-    };
-
-    await expect(createStreet(streetData)).rejects.toThrow();
+    expect(street.clean.length).toBe(1);
+    expect(street.safe.length).toBe(1);
+    expect(street.scenery.length).toBe(1);
+    expect(street.accessible.length).toBe(1);
   });
 
   test("should return an array of streets", async () => {
@@ -117,19 +105,19 @@ describe("Testing Mongo Controller", () => {
       scenery: "scenery",
       accessible: "accessible",
     };
-    const total = await getTotalScoreForStreets(arr, fields.total);
+    const total = await getFieldScoreForStreets(arr, fields.total);
     expect(total).toBeDefined();
     expect(typeof total).toBe("number");
-    const clean = await getTotalScoreForStreets(arr, fields.clean);
+    const clean = await getFieldScoreForStreets(arr, fields.clean);
     expect(clean).toBeDefined();
     expect(typeof clean).toBe("number");
-    const safe = await getTotalScoreForStreets(arr, fields.safe);
+    const safe = await getFieldScoreForStreets(arr, fields.safe);
     expect(safe).toBeDefined();
     expect(typeof safe).toBe("number");
-    const scenery = await getTotalScoreForStreets(arr, fields.scenery);
+    const scenery = await getFieldScoreForStreets(arr, fields.scenery);
     expect(scenery).toBeDefined();
     expect(typeof scenery).toBe("number");
-    const accessible = await getTotalScoreForStreets(arr, fields.accessible);
-    expect(accessible).toBeDefined();
+    const accessible = await getFieldScoreForStreets(arr, fields.accessible);
+    expect(typeof accessible).toBe("number");
   });
 });

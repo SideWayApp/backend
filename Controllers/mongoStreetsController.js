@@ -29,12 +29,32 @@ const deleteStreet = async (streetName) => {
   }
 };
 
-const updateStreet = async (streetName, newStreet) => {
+const updateStreet = async (streetName, newStreetValue) => {
   try {
-    console.log(`Updating street "${streetName}":`, newStreet);
-    const result = await Street.updateOne({ name: streetName }, newStreet);
-    console.log(`Updated street "${streetName}":`, result);
-    return result;
+    const street = await Street.findOne({ name: streetName });
+    if (!street) {
+      throw new Error(`Street '${streetName}' not found`);
+    }
+
+    if (newStreetValue.scenery !== undefined) {
+      street.scenery.push({ score: newStreetValue.scenery });
+    }
+
+    if (newStreetValue.accessible !== undefined) {
+      street.accessible.push({ score: newStreetValue.accessible });
+    }
+
+    if (newStreetValue.safe !== undefined) {
+      street.safe.push({ score: newStreetValue.safe });
+    }
+
+    if (newStreetValue.clean !== undefined) {
+      street.clean.push({ score: newStreetValue.clean });
+    }
+
+    await street.save();
+
+    return street;
   } catch (err) {
     console.error(err);
   }
@@ -64,19 +84,48 @@ const createStreet = async (street) => {
   }
 };
 
-const getTotalScoreForStreets = async (streetNames, field) => {
+const getFieldScoreForStreets = async (streetNames, field) => {
   try {
-    console.log("streetNames", streetNames);
     const streets = await Street.find({
       name: { $regex: new RegExp(streetNames.join("|"), "i") },
     });
-    console.log("streets found", streets.length);
-    const totalScore = streets.reduce((acc, street) => acc + street[field], 0);
-    console.log(`Total score for ${field} in streets:`, totalScore);
-    return totalScore;
+    findUniqueStreets(streetNames, streets);
+    if (field === "total") {
+      let totalScore = 0;
+      for (const street of streets) {
+        totalScore += street[field];
+      }
+      console.log("totalScore:", totalScore);
+      return totalScore;
+    } else {
+      const totalScore = streets.reduce((sum, street) => {
+        if (Array.isArray(street[field])) {
+          const fieldSum = street[field].reduce(
+            (scoreSum, scoreObj) => scoreSum + scoreObj.score,
+            0
+          );
+          return sum + fieldSum;
+        } else {
+          return sum;
+        }
+      }, 0);
+      console.log("totalScore", totalScore);
+      return totalScore;
+    }
   } catch (err) {
-    console.Error(err);
+    console.error(err);
   }
+};
+
+const findUniqueStreets = async (streetNames, streets) => {
+  const matchedStreets = [];
+  for (const street of streets) {
+    matchedStreets.push(street.name);
+  }
+  const uniqueNames = [
+    ...streetNames.filter((name) => !matchedStreets.includes(name)),
+  ];
+  console.log("unmached streets", uniqueNames);
 };
 
 async function removeDuplicates() {
@@ -106,6 +155,42 @@ async function removeDuplicates() {
   return duplicates;
 }
 
+const removeTotalScoreForStreets = async (streetNames) => {
+  try {
+    const streets = await Street.find({});
+
+    for (const street of streets) {
+      if (street.total != undefined) {
+        street.total = undefined;
+        console.log("street", street);
+        await street.save();
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const updateVirtualScore = async () => {
+  try {
+    await Street.updateMany(
+      {},
+      {
+        $set: {
+          clean: [],
+          safe: [],
+          scenery: [],
+          accessible: [],
+        },
+      },
+      { strict: false }
+    );
+    console.log("Old street schema objects updated successfully");
+  } catch (err) {
+    console.log("Error updating old street schema objects: ", err);
+  }
+};
+
 module.exports = {
   getAllStreets,
   getSingleStreet,
@@ -113,6 +198,8 @@ module.exports = {
   updateStreet,
   createStreets,
   createStreet,
-  getTotalScoreForStreets,
+  getFieldScoreForStreets,
   removeDuplicates,
+  removeTotalScoreForStreets,
+  updateVirtualScore,
 };
