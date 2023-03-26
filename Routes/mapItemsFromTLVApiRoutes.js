@@ -3,6 +3,22 @@ const mapItemsFromTLVApiController = require('../Controllers/mapItemsFromTLVApiC
 
 const router = express.Router();
 
-router.get("/allCameras",mapItemsFromTLVApiController.getAllCamerasFromTLVApi);
+// /**
+// * @swagger
+// * tags:
+// *  name: Cameras Api
+// *  description: Cameras from Tel-Aviv Api
+// */
+
+/**
+ * @swagger
+ * /mapitems/allCameras:
+ *   get:
+ *     summary: get all cameras from tlv api and add it to mongodb
+ *     tags: [Cameras Api]
+ *     responses:
+ *       200:
+ *         description: Cameras added to mongodb 
+ */router.get("/allCameras",mapItemsFromTLVApiController.getAllCamerasFromTLVApiAddToMongo);
 
 module.exports = router;
