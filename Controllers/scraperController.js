@@ -124,7 +124,7 @@ exports.formateAllMongoStreets = async (req, res) => {
   }
 };
 
-const getFormatedStreetName = async (name, city) => {
+exports.getFormatedStreetName = async (name, city) => {
   try {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
     const tmp = name + " " + city;

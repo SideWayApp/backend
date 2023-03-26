@@ -17,6 +17,14 @@ const mapItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  x:{
+    type: String,
+    required: true,
+  },
+  y:{
+    type: String,
+    required:true,
+  },
 });
 
 const MapItem = mongoose.model("MapItem", mapItemSchema);

@@ -24,29 +24,39 @@ describe("Testing Mongo Streets Controller", () => {
     type: "camera",
     streetName: "Main Street",
     city: "Los Angeles",
+    x: "34.75983054059476",
+    y: "32.044220466961974",
   };
   test("Testing Add Map Item ", async () => {
     const result = await addMapItem(
       mapItemData.type,
       mapItemData.streetName,
-      mapItemData.city
+      mapItemData.city,
+      mapItemData.x,
+      mapItemData.y,
     );
     expect(result).toBeDefined();
     expect(result.type).toBe(mapItemData.type);
     expect(result.streetName).toBe(mapItemData.streetName);
     expect(result.city).toBe(mapItemData.city);
-
+    expect(result.x).toBe(mapItemData.x);
+    expect(result.y).toBe(mapItemData.y);
+    
     const id = result._id;
     const updateValues = {
       type: "Tree",
       streetName: "Second Street",
       city: "Los Angeles",
+      x: "34.75983054059476",
+      y: "32.044220466961974",
     };
     const updatedResult = await updateMapItem(id, updateValues);
     expect(updatedResult).toBeDefined();
     expect(updatedResult.type).toBe(updateValues.type);
     expect(updatedResult.streetName).toBe(updateValues.streetName);
     expect(updatedResult.city).toBe(updateValues.city);
+    expect(updatedResult.x).toBe(updateValues.x);
+    expect(updatedResult.y).toBe(updateValues.y);
     expect(updatedResult._id).toEqual(id);
 
     const getItemsByType = await getMapItemsByType(updatedResult.type);
