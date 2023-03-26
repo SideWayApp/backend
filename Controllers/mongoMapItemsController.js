@@ -1,9 +1,9 @@
 const MapItem = require("../Models/MapItem");
 
 // Function to add a new map item
-const addMapItem = async (type, streetName, city) => {
+const addMapItem = async (type, streetName, city,x,y) => {
   try {
-    const newItem = new MapItem({ type, streetName, city });
+    const newItem = new MapItem({ type, streetName, city,x,y});
     const result = await newItem.save();
     return result;
   } catch (err) {
