@@ -5,7 +5,7 @@ const {
 } = require("../Controllers/mongoStreetsController");
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-exports.getStreetsInAlternative = async (index, origin, destination, preference,req,res) => {
+async function getStreetsInAlternative(index, origin, destination, preference,req,res) {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const mode = "walking";
   const alternatives = true;
@@ -42,7 +42,7 @@ exports.getStreetsInAlternative = async (index, origin, destination, preference,
   }
 }
 
-exports.getBestAlternative = async (routes, origin, destination, preference) =>{
+async function getBestAlternative(routes, origin, destination, preference){
   let maxWeight = 0;
   let bestIndex = 0;
   for (let i = 0; i < routes.length; i++) {
@@ -64,7 +64,7 @@ exports.getBestAlternative = async (routes, origin, destination, preference) =>{
   return bestIndex;
 }
 
-exports.getTotalWeightInAlternative = async (streetsInAlternative, preference,req,res) =>{
+async function getTotalWeightInAlternative(streetsInAlternative, preference,req,res) {
   const totalWeightInAlternative = await getFieldScoreForStreets(
     streetsInAlternative,
     preference
