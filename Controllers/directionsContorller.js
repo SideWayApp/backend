@@ -1,11 +1,11 @@
 const axios = require("axios");
 require("dotenv").config();
 const {
-  getpFieldScoreForStreets,
+  getFieldScoreForStreets,
 } = require("../Controllers/mongoStreetsController");
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-async function getStreetsInAlternative(index, origin, destination, preference) {
+exports.getStreetsInAlternative = async (index, origin, destination, preference,req,res) => {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const mode = "walking";
   const alternatives = true;
@@ -42,7 +42,7 @@ async function getStreetsInAlternative(index, origin, destination, preference) {
   }
 }
 
-async function getBestAlternative(routes, origin, destination, preference) {
+exports.getBestAlternative = async (routes, origin, destination, preference) =>{
   let maxWeight = 0;
   let bestIndex = 0;
   for (let i = 0; i < routes.length; i++) {
@@ -64,7 +64,7 @@ async function getBestAlternative(routes, origin, destination, preference) {
   return bestIndex;
 }
 
-async function getTotalWeightInAlternative(streetsInAlternative, preference) {
+exports.getTotalWeightInAlternative = async (streetsInAlternative, preference,req,res) =>{
   const totalWeightInAlternative = await getFieldScoreForStreets(
     streetsInAlternative,
     preference
