@@ -23,9 +23,20 @@ const router = express.Router()
 	"/allCameras",
 	mapItemsFromTLVApiController.getAllCamerasFromTLVApiAddToMongo
 )
-
+/**
+ * @swagger
+ * /mapitems/allDangerousConstrucions:
+ *   get:
+ *     summary: get all dangerous constructions from tlv api and add it to mongodb
+ *     tags: [Dangerous Construcions Api]
+ *     responses:
+ *       200:
+ *         description: Dangerous constructions added to mongodb
+ *
+ */
 router.get(
 	"/allDangerousConstrucions",
 	mapItemsFromTLVApiController.getAllDangerousConstructionsFromTLVApiAddToMongo
 )
+
 module.exports = router
