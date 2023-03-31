@@ -1,7 +1,7 @@
-const express = require("express");
-const directionsController = require("../Controllers/directionsContorller");
+const express = require("express")
+const directionsController = require("../Controllers/directionsContorller")
 
-const router = express();
+const router = express()
 
 // /**
 // * @swagger
@@ -50,6 +50,6 @@ const router = express();
  *     responses:
  *       200:
  *         description: The Best Route
- */ router.post("/directions", directionsController.getDirections);
+ */ router.post("/directions", directionsController.getDirections)
 
-module.exports = router;
+module.exports = router
