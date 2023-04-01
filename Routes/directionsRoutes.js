@@ -37,9 +37,9 @@ const router = express()
 
 /**
  * @swagger
- * /api/directions:
+ * /directions/bestAlternative:
  *   post:
- *     summary: get all streets in alternatives
+ *     summary: get best alternative's full route
  *     tags: [Directions Api]
  *     requestBody:
  *       required: true
@@ -50,6 +50,32 @@ const router = express()
  *     responses:
  *       200:
  *         description: The Best Route
- */ router.post("/directions", directionsController.getDirections)
+ */
+router.post("/bestAlternative", async (req, res) => {
+  const data = await directionsController.getDirections(req.body.origin, req.body.destination, req.body.preference);
+  res.send(data);
+});
+
+/**
+ * @swagger
+ * /directions/getXYListinBestRoute:
+ *   post:
+ *     summary: get best alternative's x,y of each step
+ *     tags: [Directions Api]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Directions'
+ *     responses:
+ *       200:
+ *         description: The x,y of the best route's steps
+ */
+router.post("/getXYListinBestRoute", async (req, res) => {
+  const data = await directionsController.getXYListinBestRoute(req.body.origin, req.body.destination, req.body.preference);
+  res.send(data);
+});
+
 
 module.exports = router

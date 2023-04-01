@@ -97,7 +97,6 @@ const getFieldScoreForStreets = async (streetNames, field) => {
       for (const street of streets) {
         totalScore += street[field];
       }
-      console.log("totalScore:", totalScore);
       return totalScore;
     } else {
       const totalScore = streets.reduce((sum, street) => {
@@ -111,7 +110,6 @@ const getFieldScoreForStreets = async (streetNames, field) => {
           return sum;
         }
       }, 0);
-      console.log("totalScore", totalScore);
       return totalScore;
     }
   } catch (err) {

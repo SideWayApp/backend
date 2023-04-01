@@ -11,7 +11,7 @@ const getAllCamerasFromTLVApiRoute = require("./Routes/mapItemsFromTLVApiRoutes"
 app.use(cors());
 app.use(express.json());
 app.use("/gis", getAllCamerasFromTLVApiRoute);
-app.use("/api", directionsRoute);
+app.use("/directions", directionsRoute);
 app.use("/scrape", scraperRoutes);
 app.use("/api/streets", streetsRoutes);
 app.use("/api/items", mapItemsRoutes);
