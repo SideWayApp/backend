@@ -11,8 +11,8 @@ const {
 /**
  * @swagger
  * tags:
- *   name: MongoDB Map Items
- *   description: API for managing map items in MongoDB
+ *   name: Map Items
+ *   description: API for managing map items
  */
 
 /**
@@ -49,15 +49,23 @@ const {
  *           type: string
  *           description: The city in which the map item is located.
  *           example: Los Angeles
+ *         x:
+ *           type: number
+ *           description: The x coordinate of the map item
+ *           example: 0
+ *         y:
+ *           type: number
+ *           description: The y coordinate of the map item
+ *           example: 0
  *
  */
 
 /**
  * @swagger
- * /mongo/addMapItem:
+ * /api/items/add:
  *   post:
- *     summary: Create a new street
- *     tags: [MongoDB Map Items]
+ *     summary: Create a new map item
+ *     tags: [Map Items]
  *     requestBody:
  *       required: true
  *       content:
@@ -76,34 +84,31 @@ const {
  *       '500':
  *         description: Internal server error
  */
-router.post("/addMapItem", async (req, res) => {
+router.post("/add", async (req, res) => {
   const item = await addMapItem(
     req.body.type,
     req.body.streetName,
-    req.body.city
+    req.body.city,
+    req.body.x,
+    req.body.y
   );
   res.send(item);
 });
 
 /**
  * @swagger
- * /mongo/getAllItemsByCity:
+ * /api/items/{city}:
  *   post:
  *     summary: Get all map items by city
- *     tags: [MongoDB Map Items]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               city:
- *                 type: string
- *                 description: The city to filter the map items by.
- *                 example: Los Angeles
- *             required:
- *               - city
+ *     tags: [Map Items]
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The city to filter the map items by.
+ *         example: Tel-Aviv
  *     responses:
  *       '200':
  *         description: A list of map items filtered by city.
@@ -119,76 +124,31 @@ router.post("/addMapItem", async (req, res) => {
  *         description: Internal server error.
  */
 
-router.post("/getAllItemsByCity", async (req, res) => {
-  const items = await getAllMapItemsByCity(req.body.city);
+router.post("/:city", async (req, res) => {
+  const items = await getAllMapItemsByCity(req.params.city);
   res.send(items);
 });
 
 /**
  * @swagger
- * /mongo/getMapItemsByType:
- *   post:
- *     summary: Get map items by type and city
- *     tags: [MongoDB Map Items]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               type:
- *                 type: string
- *                 description: The type of the map item.
- *                 example: Camera
- *               city:
- *                 type: string
- *                 description: The city to filter the map items by.
- *                 example: Los Angeles
- *             required:
- *               - type
- *               - city
- *     responses:
- *       '200':
- *         description: A list of map items filtered by type and city.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/MapItem'
- *       '400':
- *         description: Bad request. Type or city parameter is missing or invalid.
- *       '500':
- *         description: Internal server error.
- */
-router.post("/getMapItemsByType", async (req, res) => {
-  const item = await getMapItemsByType(req.body.type, req.body.city);
-  res.send(item);
-});
-
-/**
- * @swagger
- * /mongo/updateMapItem:
+ * /api/items/update/{itemId}:
  *   put:
  *     summary: Update a map item by ID
- *     tags: [MongoDB Map Items]
+ *     tags: [Map Items]
+ *     parameters:
+ *       - in: path
+ *         name: itemId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the map item to update.
+ *         example: 6125a5a9c8786e001b2da0a1
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               id:
- *                 type: string
- *                 description: The ID of the map item to update.
- *                 example: 6125a5a9c8786e001b2da0a1
- *               updates:
- *                 $ref: '#/components/schemas/MapItemUpdates'
- *             required:
- *               - id
- *               - updates
+ *             $ref: '#/components/schemas/MapItemUpdates'
  *     responses:
  *       '200':
  *         description: The updated map item.
@@ -197,37 +157,32 @@ router.post("/getMapItemsByType", async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/MapItem'
  *       '400':
- *         description: Bad request. ID or updates parameter is missing or invalid.
+ *         description: Bad request. Updates parameter is missing or invalid.
  *       '404':
  *         description: Map item not found.
  *       '500':
  *         description: Internal server error.
  */
 
-router.put("/updateMapItem", async (req, res) => {
-  const item = await updateMapItem(req.body.id, req.body.updates);
+router.put("/update/:itemId", async (req, res) => {
+  const item = await updateMapItem(req.params.itemId, req.body);
   res.send(item);
 });
 
 /**
  * @swagger
- * /mongo/deleteMapItem:
+ * /api/items/delete/{itemId}:
  *   delete:
  *     summary: Delete a map item by ID
- *     tags: [MongoDB Map Items]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               id:
- *                 type: string
- *                 description: The ID of the map item to delete.
- *                 example: 6125a5a9c8786e001b2da0a1
- *             required:
- *               - id
+ *     tags: [Map Items]
+ *     parameters:
+ *       - in: path
+ *         name: itemId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the map item to delete.
+ *         example: 6125a5a9c8786e001b2da0a1
  *     responses:
  *       '200':
  *         description: The deleted map item.
@@ -243,8 +198,9 @@ router.put("/updateMapItem", async (req, res) => {
  *         description: Internal server error.
  */
 
-router.delete("/deleteMapItem", async (req, res) => {
-  const item = await deleteMapItem(req.body.id);
+router.delete("/delete/:itemId", async (req, res) => {
+  const item = await deleteMapItem(req.params.itemId);
   res.send(item);
 });
+
 module.exports = router;
