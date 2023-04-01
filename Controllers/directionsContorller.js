@@ -34,7 +34,6 @@ async function getStreetsInAlternative(index, origin, destination, preference,re
         });
       });
     });
-    //console.log(streetsPerAlternative)
     return arrPerAlt;
   } catch (error) {
     console.error(error);
@@ -72,9 +71,7 @@ async function getTotalWeightInAlternative(streetsInAlternative, preference,req,
   return totalWeightInAlternative;
 }
 
-exports.getDirections = async (req, res) => {
-  const { origin, destination, preference } = req.body;
-  console.log(preference);
+exports.getDirections = async (origin, destination, preference) => {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const mode = "walking";
   const alternatives = true;
@@ -90,10 +87,35 @@ exports.getDirections = async (req, res) => {
       destination,
       preference
     );
-    res.send(ret.routes[bestAlternativeRouteIndex]);
-    //res.send({index: bestAlternativeRouteIndex})
+    return ret.routes[bestAlternativeRouteIndex];
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getXYListinBestRoute = async (origin, destination, preference) => {
+  try {
+    let arr = []
+    const response = await this.getDirections(origin, destination, preference);
+    const data = response.legs[0];
+    const steps = data.steps;
+    const size = steps.length;
+    
+    arr.push({start_location: {x:data.start_location.lng, y:data.start_location.lat}});
+    arr.push({end_location: {x:data.end_location.lng, y: data.end_location.lat}});
+    
+    for (let i = 0; i< size; i++){
+      const index = i+1;
+      const xStart = steps[i].start_location.lng;
+      const yStart = steps[i].start_location.lat;
+      const xEnd = steps[i].end_location.lng;
+      const yEnd = steps[i].end_location.lat;
+      arr.push({index: index, start:{x:xStart, y:yStart}, end:{x:xEnd,y:yEnd}});
+    }
+    return arr;
+    
+  } catch (error) {
+    console.error(error);
+  }
+};
+
