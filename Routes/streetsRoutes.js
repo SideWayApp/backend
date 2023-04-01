@@ -96,7 +96,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/streets/{city}:
+ * /api/streets/all-streets/{city}:
  *   post:
  *     summary: Get all streets from the MongoDB database for a given city
  *     tags: [Streets API]
@@ -119,7 +119,7 @@ const router = express.Router();
  *                 $ref: '#/components/schemas/Street'
  */
 
-router.post("/:city", async (req, res) => {
+router.post("/all-streets/:city", async (req, res) => {
   const allStreets = await getAllStreets(req.params.city);
   res.send(allStreets);
 });
@@ -214,10 +214,10 @@ router.put("/update/:city/:streetName", async (req, res) => {
 
 /**
  * @swagger
- * /mongo/createStreet:
+ * /api/streets/create:
  *   post:
  *     summary: Create a new street
- *     tags: [MongoDB Streets]
+ *     tags: [Streets API]
  *     requestBody:
  *       required: true
  *       content:
@@ -236,19 +236,26 @@ router.put("/update/:city/:streetName", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.post("/createStreet", async (req, res) => {
+router.post("/create", async (req, res) => {
+  console.log("create", req.body);
   const newStreet = await createStreet(req.body);
   res.send(newStreet);
 });
 
 /**
  * @swagger
- * /mongo/deleteStreetByName:
+ * /api/streets/delete/{city}/{streetName}:
  *   delete:
  *     summary: Delete a street by name
- *     tags: [MongoDB Streets]
+ *     tags: [Streets API]
  *     parameters:
- *       - name: name
+ *       - name: city
+ *         in: query
+ *         required: true
+ *         description: City of the street to delete
+ *         schema:
+ *           type: string
+ *       - name: streetName
  *         in: query
  *         required: true
  *         description: Name of the street to delete
@@ -264,24 +271,24 @@ router.post("/createStreet", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.delete("/deleteStreetByName", async (req, res) => {
-  const deleted = await deleteStreet(req.query.name);
+router.delete("/delete/:city/:streetName", async (req, res) => {
+  const deleted = await deleteStreet(req.params.city, req.params.streetName);
   res.send(deleted);
 });
 
 /**
  * @swagger
- * /mongo/removeDuplicates:
- *   get:
+ * /api/steets/remove-duplicates:
+ *   post:
  *     summary: Remove duplicate streets
- *     tags: [MongoDB Streets]
+ *     tags: [Streets API]
  *     responses:
  *       '200':
  *         description: Duplicates removed successfully
  *       '500':
  *         description: Internal server error
  */
-router.get("/removeDuplicates", async (req, res) => {
+router.post("/remove-duplicates", async (req, res) => {
   const dup = await removeDuplicates();
   res.send(dup);
 });
