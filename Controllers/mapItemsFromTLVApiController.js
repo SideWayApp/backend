@@ -48,7 +48,7 @@ exports.getAllItemsByTypeAndCode = async(code,type) => {
 		const layerCodeData = await this.getDataFromLayer(code);
 		const size = layerCodeData.length;
 		let addressArr = [];
-		for (let i=0; i < 1; i++){
+		for (let i=0; i < size; i++){
 			const address = layerCodeData[i].attributes.address;
 			const addressInEnglish = await this.hebrewAddressToEnglish(address);
 			const x = layerCodeData[i].geometry.x;
