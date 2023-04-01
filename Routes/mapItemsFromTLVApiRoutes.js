@@ -1,7 +1,7 @@
-const express = require("express");
-const mapItemsFromTLVApiController = require('../Controllers/mapItemsFromTLVApiController')
+const express = require("express")
+const mapItemsFromTLVApiController = require("../Controllers/mapItemsFromTLVApiController")
 
-const router = express.Router();
+const router = express.Router()
 
 // /**
 // * @swagger
@@ -18,7 +18,25 @@ const router = express.Router();
  *     tags: [Cameras Api]
  *     responses:
  *       200:
- *         description: Cameras added to mongodb 
- */router.get("/allCameras",mapItemsFromTLVApiController.getAllCamerasFromTLVApiAddToMongo);
+ *         description: Cameras added to mongodb
+ */ router.get(
+	"/allCameras",
+	mapItemsFromTLVApiController.getAllCamerasFromTLVApiAddToMongo
+)
+/**
+ * @swagger
+ * /mapitems/allDangerousConstrucions:
+ *   get:
+ *     summary: get all dangerous constructions from tlv api and add it to mongodb
+ *     tags: [Dangerous Construcions Api]
+ *     responses:
+ *       200:
+ *         description: Dangerous constructions added to mongodb
+ *
+ */
+router.get(
+	"/allDangerousConstrucions",
+	mapItemsFromTLVApiController.getAllDangerousConstructionsFromTLVApiAddToMongo
+)
 
-module.exports = router;
+module.exports = router
