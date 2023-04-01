@@ -14,8 +14,8 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: MongoDB Streets
- *   description: Endpoints for MongoDB Streets operations
+ *   name: Streets API
+ *   description: Endpoints for Streets operations
  */
 
 /**
@@ -96,13 +96,21 @@ const router = express.Router();
 
 /**
  * @swagger
- * /mongo/getAllStreets:
+ * /api/streets/{city}:
  *   post:
- *     summary: Get all streets from the MongoDB database
- *     tags: [MongoDB Streets]
+ *     summary: Get all streets from the MongoDB database for a given city
+ *     tags: [Streets API]
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The city for which to retrieve all streets.
+ *         example: Tel-Aviv
  *     responses:
  *       200:
- *         description: A list of all streets
+ *         description: A list of all streets for the given city.
  *         content:
  *           application/json:
  *             schema:
@@ -111,25 +119,32 @@ const router = express.Router();
  *                 $ref: '#/components/schemas/Street'
  */
 
-router.post("/getAllStreets", async (req, res) => {
-  console.log("get all streets");
-  const allStreets = await getAllStreets();
+router.post("/:city", async (req, res) => {
+  const allStreets = await getAllStreets(req.params.city);
   res.send(allStreets);
 });
 
 /**
  * @swagger
- * /mongo/getStreetByName:
+ * /api/streets/{city}/{streetName}:
  *   post:
  *     summary: Get a single street by name from the MongoDB database
- *     tags: [MongoDB Streets]
+ *     tags: [Streets API]
  *     parameters:
- *       - in: query
- *         name: name
+ *       - in: path
+ *         name: city
  *         schema:
  *           type: string
  *         required: true
- *         description: The name of the street to retrieve
+ *         description: The name of the city to search for the street in.
+ *         example: Tel-Aviv
+ *       - in: path
+ *         name: streetName
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name of the street to retrieve.
+ *         example: Main Street
  *     responses:
  *       200:
  *         description: The street with the specified name
@@ -137,10 +152,12 @@ router.post("/getAllStreets", async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Street'
+ *       404:
+ *         description: Street not found.
  */
-router.post("/getStreetByName", async (req, res) => {
-  console.log(req.query.name);
-  const street = await getSingleStreet(req.query.name);
+
+router.post("/:city/:streetName", async (req, res) => {
+  const street = await getSingleStreet(req.params.city, req.params.streetName);
   if (street) {
     res.send(street);
   } else {
@@ -150,10 +167,10 @@ router.post("/getStreetByName", async (req, res) => {
 
 /**
  * @swagger
- * /mongo/updateStreetByName:
+ * /api/streets/update/{city}/{streetName}:
  *   put:
  *     summary: Update a street by name
- *     tags: [MongoDB Streets]
+ *     tags: [Streets API]
  *     requestBody:
  *       required: true
  *       content:
@@ -161,12 +178,20 @@ router.post("/getStreetByName", async (req, res) => {
  *           schema:
  *             $ref: '#/components/schemas/UpdateValues'
  *     parameters:
- *       - name: name
- *         in: query
- *         description: Name of the street to update
- *         required: true
+ *       - in: path
+ *         name: city
  *         schema:
  *           type: string
+ *         required: true
+ *         description: The name of the city to search for the street in.
+ *         example: Tel-Aviv
+ *       - in: path
+ *         name: streetName
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name of the street to retrieve.
+ *         example: Main Street
  *     responses:
  *       '200':
  *         description: Street updated successfully
@@ -177,9 +202,13 @@ router.post("/getStreetByName", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.put("/updateStreetByName", async (req, res) => {
-  console.log("update", req.body);
-  const updated = await updateStreet(req.query.name, req.body);
+router.put("/update/:city/:streetName", async (req, res) => {
+  console.log(req.params);
+  const updated = await updateStreet(
+    req.params.city,
+    req.params.streetName,
+    req.body
+  );
   res.send(updated);
 });
 

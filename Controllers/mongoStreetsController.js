@@ -1,17 +1,18 @@
 const Street = require("../models/Street");
 
-const getAllStreets = async () => {
+const getAllStreets = async (city) => {
   try {
-    const results = await Street.find({});
+    const results = await Street.find({ city: city });
     return results;
   } catch (err) {
     console.error(err);
   }
 };
 
-const getSingleStreet = async (streetName) => {
+const getSingleStreet = async (city, streetName) => {
   try {
-    const result = await Street.findOne({ name: streetName });
+    console.log(streetName, city);
+    const result = await Street.findOne({ city: city, name: streetName });
     console.log(`Retrieved street "${streetName}":`, result);
     return result;
   } catch (err) {
@@ -29,9 +30,9 @@ const deleteStreet = async (streetName) => {
   }
 };
 
-const updateStreet = async (streetName, newStreetValue) => {
+const updateStreet = async (city, streetName, newStreetValue) => {
   try {
-    const street = await Street.findOne({ name: streetName });
+    const street = await Street.findOne({ city: city, name: streetName });
     if (!street) {
       throw new Error(`Street '${streetName}' not found`);
     }
