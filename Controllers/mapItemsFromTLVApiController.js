@@ -24,26 +24,36 @@ exports.getDataFromLayer = async (code)=>{
 	}
 }
 
+exports.hebrewAddressToEnglish = async (hebrewAddress) =>	{
+	try{
+		const lastIndex = hebrewAddress.length-1;
+		if (hebrewAddress[lastIndex] === ' '){
+				hebrewAddress = hebrewAddress.substring(0, hebrewAddress.length - 1);
+				const streetName = hebrewAddress.replace(/\d+/g, '').trim();
+				const addressInEnglish = await getFormatedStreetName(streetName,"tel-aviv")
+				return addressInEnglish;
+		}else{
+			
+			const streetName = hebrewAddress.replace(/\d+/g, '').trim();	
+			const addressInEnglish = await getFormatedStreetName(streetName,"tel-aviv")
+			return addressInEnglish;
+		}
+	}catch(error){
+		console.log(error);
+	}
+}
+
 exports.getAllItemsByTypeAndCode = async(code,type) => {
 	try{
 		const layerCodeData = await this.getDataFromLayer(code);
 		const size = layerCodeData.length;
 		let addressArr = [];
 		for (let i=0; i < 1; i++){
-			const lastIndex = layerCodeData[i].attributes.address.length-1
-			const x = layerCodeData[i].geometry.x
-			const y = layerCodeData[i].geometry.y
-			if (layerCodeData[i].attributes.address[lastIndex] === ' '){
-				let address = layerCodeData[i].attributes.address;
-				address = address.substring(0, address.length - 1);
-				const streetName = address.replace(/\d+/g, '').trim();
-				const addressInEnglish = await getFormatedStreetName(streetName,"tel-aviv")
-				addressArr.push({index: i+1,type:type,city:"tel-aviv", hebrew:address,english:addressInEnglish,x:x,y:y});
-			}else{
-				const streetName = layerCodeData[i].attributes.address.replace(/\d+/g, '').trim();
-				const addressInEnglish = await getFormatedStreetName(streetName,"tel-aviv")
-				addressArr.push({index: i+1,type:type, city: "tel-aviv",hebrew:layerCodeData[i].attributes.address,english:addressInEnglish,x:x,y:y});
-			}
+			const address = layerCodeData[i].attributes.address;
+			const addressInEnglish = await this.hebrewAddressToEnglish(address);
+			const x = layerCodeData[i].geometry.x;
+			const y = layerCodeData[i].geometry.y;
+			addressArr.push({index: i+1,type:type,city:"tel-aviv", hebrew:address,english:addressInEnglish,x:x,y:y});
 		}
 		return addressArr;
 	}catch(error){

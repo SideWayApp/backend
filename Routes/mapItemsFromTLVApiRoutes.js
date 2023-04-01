@@ -48,6 +48,45 @@ const router = express.Router()
 	res.send(data);
  })
 
+
+ /**
+ * @swagger
+ * /gis/tlv/hebrewAddressToEnglish/{hebrewAddress}:
+ *   post:
+ *     summary: Translate a Hebrew address to English
+ *     tags: [GIS Api]
+*     parameters:
+ *       - in: path
+ *         name: hebrewAddress
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Address in Hebrew to format in English
+ *         example: החלמונית 34
+ *     responses:
+ *       200:
+ *         description: The English translation of the Hebrew address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 englishAddress:
+ *                   type: string
+ *                   description: The English translation of the Hebrew address
+ *       400:
+ *         description: Bad request, missing or invalid parameter
+ *       500:
+ *         description: Internal server error
+ */ 
+ router.post("/tlv/hebrewAddressToEnglish/:hebrewAddress", async(req, res) => {
+  const data = await mapItemsFromTLVApiController.hebrewAddressToEnglish(req.params.hebrewAddress);
+  res.send(data);
+});
+
+
+
+
 /**
  * @swagger
  * /gis/tlv/getAllItemsByTypeAndCode/{code}/{type}:
