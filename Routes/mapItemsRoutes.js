@@ -11,7 +11,7 @@ const {
 /**
  * @swagger
  * tags:
- *   name: Map Items
+ *   name: Map Items API
  *   description: API for managing map items
  */
 
@@ -65,7 +65,7 @@ const {
  * /api/items/add:
  *   post:
  *     summary: Create a new map item
- *     tags: [Map Items]
+ *     tags: [Map Items API]
  *     requestBody:
  *       required: true
  *       content:
@@ -100,7 +100,7 @@ router.post("/add", async (req, res) => {
  * /api/items/{city}:
  *   post:
  *     summary: Get all map items by city
- *     tags: [Map Items]
+ *     tags: [Map Items API]
  *     parameters:
  *       - in: path
  *         name: city
@@ -134,7 +134,7 @@ router.post("/:city", async (req, res) => {
  * /api/items/update/{itemId}:
  *   put:
  *     summary: Update a map item by ID
- *     tags: [Map Items]
+ *     tags: [Map Items API]
  *     parameters:
  *       - in: path
  *         name: itemId
@@ -174,7 +174,7 @@ router.put("/update/:itemId", async (req, res) => {
  * /api/items/delete/{itemId}:
  *   delete:
  *     summary: Delete a map item by ID
- *     tags: [Map Items]
+ *     tags: [Map Items API]
  *     parameters:
  *       - in: path
  *         name: itemId

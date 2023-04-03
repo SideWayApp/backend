@@ -5,16 +5,18 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const directionsRoute = require("./Routes/directionsRoutes");
 const scraperRoutes = require("./Routes/scraperRoutes");
-const dbStreetsRoutes = require("./Routes/dbStreetsRoutes");
-const dbMapItemsRoutes = require("./Routes/dbMapItemsRoutes");
+const streetsRoutes = require("./Routes/streetsRoutes");
+const mapItemsRoutes = require("./Routes/mapItemsRoutes");
 const getAllCamerasFromTLVApiRoute = require("./Routes/mapItemsFromTLVApiRoutes");
+const AuthenticationRoutes = require("./Routes/authenticationRoutes")
 app.use(cors());
 app.use(express.json());
 app.use("/gis", getAllCamerasFromTLVApiRoute);
 app.use("/directions", directionsRoute);
 app.use("/scrape", scraperRoutes);
-app.use("/api/streets", dbStreetsRoutes);
-app.use("/api/items", dbMapItemsRoutes);
+app.use("/api/streets", streetsRoutes);
+app.use("/api/items", mapItemsRoutes);
+app.use("api/authentication",AuthenticationRoutes);
 
 if (process.env.NODE_ENV === "development") {
   const swaggerUI = require("swagger-ui-express");

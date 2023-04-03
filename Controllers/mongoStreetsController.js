@@ -20,9 +20,9 @@ const getSingleStreet = async (city, streetName) => {
   }
 };
 
-const deleteStreet = async (streetName) => {
+const deleteStreet = async (city, streetName) => {
   try {
-    const result = await Street.deleteOne({ name: streetName });
+    const result = await Street.deleteOne({ city: city, name: streetName });
     console.log(`Deleted street "${streetName}":`, result);
     return result;
   } catch (err) {
@@ -79,6 +79,7 @@ const createStreets = async (streets) => {
 const createStreet = async (street) => {
   try {
     const ret = await new Street(street).save();
+    console.log(ret);
     return ret;
   } catch (err) {
     throw err;
