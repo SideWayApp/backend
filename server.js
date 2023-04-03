@@ -16,7 +16,7 @@ app.use("/directions", directionsRoute);
 app.use("/scrape", scraperRoutes);
 app.use("/api/streets", streetsRoutes);
 app.use("/api/items", mapItemsRoutes);
-app.use("api/authentication",AuthenticationRoutes);
+app.use("/api/authentication",AuthenticationRoutes);
 
 if (process.env.NODE_ENV === "development") {
   const swaggerUI = require("swagger-ui-express");
