@@ -79,6 +79,7 @@ exports.getDirections = async (origin, destination, preference) => {
 
   try {
     const response = await axios.get(apiUrl);
+    console.log(response.data);
     const ret = response.data;
     let routes = ret.routes;
     const bestAlternativeRouteIndex = await getBestAlternative(
@@ -119,3 +120,19 @@ exports.getXYListinBestRoute = async (origin, destination, preference) => {
   }
 };
 
+exports.getWayPoints = async (origin,destination,preference) =>{
+  try{
+    let arr = [];
+    const response = await this.getDirections(origin, destination, preference);
+    const data = response.legs[0];
+    const steps = data.steps;
+    steps.map((step)=>{
+      arr.push({latitude: step.start_location.lat, longitude: step.start_location.lng});
+    })
+    const lastIndex = steps.length-1;
+    arr.push({latitude: steps[lastIndex].end_location.lat, longitude: steps[lastIndex].end_location.lng});
+    return arr;
+  }catch(error){
+    console.log(error);
+  }
+}
