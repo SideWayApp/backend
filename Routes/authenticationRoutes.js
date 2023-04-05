@@ -10,12 +10,7 @@
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       200:
  *         description: User registered successfully
@@ -30,6 +25,55 @@
  *         description: User already exists
  */
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *         preferences:
+ *           type: object
+ *           properties:
+ *             accessibility:
+ *               type: boolean
+ *               default: false
+ *             clean:
+ *               type: boolean
+ *               default: false
+ *             scenery:
+ *               type: boolean
+ *               default: false
+ *             security:
+ *               type: boolean
+ *               default: false
+ *             speed:
+ *               type: boolean
+ *               default: false
+ *           required:
+ *             - accessibility
+ *             - clean
+ *             - scenery
+ *             - security
+ *             - speed
+ *         signUpData:
+ *           type: object
+ *           properties:
+ *             name:
+ *               type: string
+ *             gender:
+ *               type: string
+ *             age:
+ *               type: string
+ *           required:
+ *             - name
+ *             - gender
+ *             - age
+ */
 /**
  * @swagger
  * /api/authentication/login:
