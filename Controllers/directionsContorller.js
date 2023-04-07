@@ -4,6 +4,23 @@ const {getFieldScoreForStreets} = require("../Controllers/mongoStreetsController
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
+
+
+
+exports.getAddressFromLatLng = (lat, lng) => {
+  const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+  return fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      const address = data.results[0].formatted_address;
+      return address;
+    })
+    .catch(error => console.error(error));
+};
+
+
+
+
 async function getStreetsInAlternative(route) {
   try {
     let streetsPerAlternative = new Set();
