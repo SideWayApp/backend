@@ -37,6 +37,29 @@ const router = express()
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Address:
+ *       type: object
+ *       required:
+ *         - latitude
+ *         - longitude
+ *       properties:
+ *         latitude:
+ *           type: string
+ *           description: The latitude's coords
+ *         longitude:
+ *           type: string
+ *           description: The longitude's coords
+ *       example:
+ *         latitude: '32.05169730746334'
+ *         longitude: '34.76187512527052'
+ */
+
+
+
+/**
+ * @swagger
  * /directions/bestAlternative:
  *   post:
  *     summary: get best alternative's full route
@@ -95,6 +118,27 @@ router.post("/getXYListinBestRoute", async (req, res) => {
  */
 router.post("/getWayPoints", async (req, res) => {
   const data = await directionsController.getWayPoints(req.body.origin, req.body.destination, req.body.preference);
+  res.send(data);
+});
+
+/**
+ * @swagger
+ * /directions/getAddressFromLatLng:
+ *   post:
+ *     summary: get address from latitude and longitude coordinates
+ *     tags: [Directions Api]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Address'
+ *     responses:
+ *       200:
+ *         description: An address from longitude and latitude
+ */
+router.post("/getAddressFromLatLng", async (req, res) => {
+  const data = await directionsController.getAddressFromLatLng(req.body.latitude, req.body.longitude);
   res.send(data);
 });
 
