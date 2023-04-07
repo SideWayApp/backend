@@ -6,6 +6,7 @@ const {
   getMapItemsByType,
   updateMapItem,
   deleteMapItem,
+  getMapItemsByRegion,
 } = require("../Controllers/mongoMapItemsController");
 
 /**
@@ -97,7 +98,7 @@ router.post("/add", async (req, res) => {
 
 /**
  * @swagger
- * /api/items/{city}:
+ * /api/items/city/{city}:
  *   post:
  *     summary: Get all map items by city
  *     tags: [Map Items API]
@@ -124,7 +125,7 @@ router.post("/add", async (req, res) => {
  *         description: Internal server error.
  */
 
-router.post("/:city", async (req, res) => {
+router.post("/city/:city", async (req, res) => {
   const items = await getAllMapItemsByCity(req.params.city);
   res.send(items);
 });
@@ -201,6 +202,44 @@ router.put("/update/:itemId", async (req, res) => {
 router.delete("/delete/:itemId", async (req, res) => {
   const item = await deleteMapItem(req.params.itemId);
   res.send(item);
+});
+
+/**
+ * @swagger
+ * /api/items/region:
+ *   post:
+ *     summary: Get map items by region
+ *     tags: [Map Items API]
+ *     requestBody:
+ *       description: Region object containing the current map region
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *              latitude:
+ *               type: number
+ *              longitude:
+ *                type: number
+ *              latitudeDelta:
+ *                type: number
+ *              longitudeDelta:
+ *                type: number
+ *           example: {"latitude": 32.05055472703401, "latitudeDelta": 0.018986824223155452, "longitude": 34.757151060159345, "longitudeDelta": 0.015121697826685931}
+ *     responses:
+ *       200:
+ *         description: OK
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/definitions/MapItem'
+ */
+
+router.post("/region", async (req, res) => {
+  console.log("region", req.body);
+  const items = await getMapItemsByRegion(req.body);
+  res.send(items);
 });
 
 module.exports = router;

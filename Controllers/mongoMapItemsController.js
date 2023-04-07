@@ -1,9 +1,9 @@
 const MapItem = require("../Models/MapItem");
 
 // Function to add a new map item
-const addMapItem = async (type, streetName, city,x,y) => {
+const addMapItem = async (type, streetName, city, x, y) => {
   try {
-    const newItem = new MapItem({ type, streetName, city,x,y});
+    const newItem = new MapItem({ type, streetName, city, x, y });
     const result = await newItem.save();
     return result;
   } catch (err) {
@@ -51,10 +51,27 @@ const getAllMapItemsByCity = async (city) => {
   }
 };
 
+const getMapItemsByRegion = async (region) => {
+  const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
+  console.log(latitude, longitude, latitudeDelta, longitudeDelta);
+  const minLatitude = latitude - latitudeDelta / 2;
+  const maxLatitude = latitude + latitudeDelta / 2;
+  const minLongitude = longitude - longitudeDelta / 2;
+  const maxLongitude = longitude + longitudeDelta / 2;
+
+  const items = await MapItem.find({
+    y: { $gte: minLatitude, $lte: maxLatitude },
+    x: { $gte: minLongitude, $lte: maxLongitude },
+  });
+  console.log(items.length);
+  return items;
+};
+
 module.exports = {
   addMapItem,
   updateMapItem,
   deleteMapItem,
   getMapItemsByType,
   getAllMapItemsByCity,
+  getMapItemsByRegion,
 };
