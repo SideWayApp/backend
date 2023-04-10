@@ -23,10 +23,7 @@
  *                   type: string
  *       409:
  *         description: User already exists
- */
-
-/**
- * @swagger
+ *
  * components:
  *   schemas:
  *     User:
@@ -34,8 +31,14 @@
  *       properties:
  *         email:
  *           type: string
+ *           required: true
  *         password:
  *           type: string
+ *           required: true
+ *         tokens:
+ *           type: array
+ *           items:
+ *             type: string
  *         preferences:
  *           type: object
  *           properties:
@@ -65,15 +68,15 @@
  *           properties:
  *             name:
  *               type: string
+ *               required: true
  *             gender:
  *               type: string
+ *               required: true
  *             age:
  *               type: string
- *           required:
- *             - name
- *             - gender
- *             - age
+ *               required: true
  */
+
 /**
  * @swagger
  * /api/authentication/login:
@@ -120,13 +123,39 @@
  *         description: Unauthorized access
  */
 
+/**
+ * @swagger
+ * /api/authentication/refreshToken:
+ *   post:
+ *     summary: Refresh authentication token
+ *     tags: [Authentication Api]
+ *     description: Use this endpoint to refresh an expired authentication token.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: New token generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized access
+ */
+
+
 const express = require("express");
 const router = express.Router();
+const authenticate = require('../Common/authentication_middleware')
 
 const AuthenticationRoutes  = require("../Controllers/authenticationController");
 
 router.post("/login", AuthenticationRoutes.login);
 router.post("/register", AuthenticationRoutes.register);
-router.post("/logout", AuthenticationRoutes.logout);
+router.post("/logout",authenticate, AuthenticationRoutes.logout);
+router.post("/refreshToken", AuthenticationRoutes.refreshToken)
 
 module.exports = router;
