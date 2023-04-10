@@ -1,24 +1,20 @@
 const app = require('../server')
 const request = require('supertest')
-const mongoosse = require('mongoose')
+const mongoose = require('mongoose')
 const { response } = require('../server')
 const User = require('../Models/User')
 
 const email = 'test@a.com'
 const pwd = '123456'
 
-beforeAll(done=>{
-    User.remove({'email' : email}, (err)=>{
-        done()
+beforeAll(async ()=>{
+    await User.deleteMany({'email' : email})
     })
-})
 
-afterAll(done=>{
-    User.remove({'email' : email}, (err)=>{
-        mongoosse.connection.close()
-        done()
-    })
-})
+afterAll((done) => {
+    mongoose.connection.close();
+    done();
+  });
 
 
 describe('Testing Auth API',()=>{
