@@ -11,6 +11,8 @@ const {
 } = require("../Controllers/mongoStreetsController");
 
 const router = express.Router();
+const authenticate = require('../Common/authentication_middleware')
+
 /**
  * @swagger
  * tags:
@@ -21,6 +23,11 @@ const router = express.Router();
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  *   schemas:
  *     Score:
  *       type: object
@@ -108,6 +115,8 @@ const router = express.Router();
  *         required: true
  *         description: The city for which to retrieve all streets.
  *         example: Tel-Aviv
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of all streets for the given city.
@@ -119,7 +128,7 @@ const router = express.Router();
  *                 $ref: '#/components/schemas/Street'
  */
 
-router.post("/all-streets/:city", async (req, res) => {
+router.post("/all-streets/:city",authenticate, async (req, res) => {
   const allStreets = await getAllStreets(req.params.city);
   res.send(allStreets);
 });
