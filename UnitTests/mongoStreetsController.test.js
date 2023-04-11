@@ -44,8 +44,9 @@ describe("Testing Mongo Streets Controller", () => {
 
   test("should update street scores", async () => {
     const streetName = "Main Street";
+    const city = "Anytown";
     const updateSt = { clean: 5, safe: 4, scenery: 4, accessible: 3 };
-    const update = await updateStreet(streetName, updateSt);
+    const update = await updateStreet(city, streetName, updateSt);
     expect(update).toBeDefined();
     expect(update.clean.length).toBe(1);
     expect(update.safe.length).toBe(1);
@@ -73,7 +74,7 @@ describe("Testing Mongo Streets Controller", () => {
       name: "Main Street",
       city: "Anytown",
     };
-    const street = await getSingleStreet(streetData.name);
+    const street = await getSingleStreet(streetData.city, streetData.name);
     expect(street).toBeDefined();
     expect(street.name).toBe(streetData.name);
     expect(street.city).toBe(streetData.city);
@@ -84,15 +85,16 @@ describe("Testing Mongo Streets Controller", () => {
   });
 
   test("should return an array of streets", async () => {
-    const res = await getAllStreets();
+    const city = "Anytown";
+    const res = await getAllStreets(city);
     expect(res).toBeDefined();
   });
 
   test("Test deleteCount, ", async () => {
-    const result = await deleteStreet("Main Street");
+    const result = await deleteStreet("Anytown", "Main Street");
     expect(result.deletedCount).toEqual(1);
 
-    const result2 = await deleteStreet("Main treet");
+    const result2 = await deleteStreet("Anytown", "Main treet");
     expect(result2.deletedCount).toEqual(0);
   });
 
