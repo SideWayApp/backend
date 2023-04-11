@@ -25,6 +25,11 @@
  *         description: User already exists
  *
  * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  *   schemas:
  *     User:
  *       type: object
@@ -121,6 +126,8 @@
  *         description: User logged out successfully
  *       401:
  *         description: Unauthorized access
+ *     security:
+ *       - bearerAuth: [] 
  */
 
 /**
