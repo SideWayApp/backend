@@ -59,10 +59,10 @@ const register = async (req,res) => {
     }
 };
 
-const login = async (req,res) => {
+const login = async (req,res,next) => {
+    console.log('login')
     const email = req.body.email
     const password = req.body.password
-
     if(email == null || password == null) return sendError(res,400,'wrong email or password')
     
     try{
@@ -70,9 +70,6 @@ const login = async (req,res) => {
         if(user == null) return sendError(res,400,'wrong email ')
 
         const match = await bcrypt.compare(password, user.password)
-        
-        console.log("pass is: " + password)
-        console.log("user pass is: " + user.password)
         if(!match) return sendError(res,400,'wrong password')
 
         const accessToken = jwt.sign(
@@ -133,9 +130,11 @@ const refreshToken = async  (req,res,next) =>{
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
         const userId = userInfo._id
+        console.log(userInfo._id)
         try{
-            user = await User.findById(userId)
-            if(user == null) return res.status(403).send('invalid request')
+            console.log("user id: " + userId )
+            const user = await User.findById(userId)
+            if(user == null) return res.status(403).send('invalid fucking request')
             if(!user.tokens.includes(token)){
                 user.tokens = []
                 await user.save()
@@ -161,10 +160,30 @@ const refreshToken = async  (req,res,next) =>{
     })
 }
 
+const getUser = async (req, res, next)=>{//GET user by refreshToken
+    const refreshToken = req.params.refreshToken
+    console.log(refreshToken)
+    try{
+       const user = await User.findOne({tokens:{$in:[refreshToken]}})
+        if (user == null){
+            return res.status(403).send({
+                'status':'fail',
+                'error':'access token forbiden'
+            })
+        }    
+        console.log(user)
+        res.status(200).send(user)    
+        return user 
+    }catch(error) {
+        console.error(error);
+    }
+}
+
 module.exports = {
     login,
     register,
     logout,
-    refreshToken
+    refreshToken,
+    getUser
 }
 

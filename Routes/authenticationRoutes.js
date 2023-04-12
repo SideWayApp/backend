@@ -153,6 +153,30 @@
  *         description: Unauthorized access
  */
 
+/**
+ * @swagger
+ * /api/authentication/users/{refreshToken}:
+ *   get:
+ *     summary: Get user information using access token
+ *     description: Returns user information based on the provided access token.
+ *     tags: [Authentication Api]
+ *     parameters:
+ *       - in: path
+ *         name: refreshToken
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Refresh token
+ *     responses:
+ *       '200':
+ *         description: User information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       '404':
+ *         description: not found
+ */
 
 const express = require("express");
 const router = express.Router();
@@ -164,5 +188,6 @@ router.post("/login", AuthenticationRoutes.login);
 router.post("/register", AuthenticationRoutes.register);
 router.post("/logout",authenticate, AuthenticationRoutes.logout);
 router.post("/refreshToken", AuthenticationRoutes.refreshToken)
+router.get("/users/:refreshToken",AuthenticationRoutes.getUser)
 
 module.exports = router;
