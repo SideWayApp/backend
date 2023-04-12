@@ -121,6 +121,29 @@ router.post("/getWayPoints", async (req, res) => {
   res.send(data);
 });
 
+
+/**
+ * @swagger
+ * /directions/getInstructions:
+ *   post:
+ *     summary: get instructions arr in direction
+ *     tags: [Directions Api]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Directions'
+ *     responses:
+ *       200:
+ *         description: An array of latitudes and longitudes
+ */
+router.post("/getInstructions", async (req, res) => {
+  const data = await directionsController.getInstructions(req.body.origin, req.body.destination, req.body.preference);
+  res.send(data);
+});
+
+
 /**
  * @swagger
  * /directions/getAddressFromLatLng:

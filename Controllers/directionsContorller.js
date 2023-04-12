@@ -4,9 +4,6 @@ const {getFieldScoreForStreets} = require("../Controllers/mongoStreetsController
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
-
-
-
 exports.getAddressFromLatLng = async (lat, lng) => {
   const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
   try {
@@ -123,6 +120,22 @@ exports.getXYListinBestRoute = async (origin, destination, preference) => {
     console.error(error);
   }
 };
+
+exports.getInstructions = async (origin,destination,preference) => {
+  try{
+    let arr = [];
+    const response = await this.getDirections(origin,destination,preference);
+    const data = response.legs[0];
+    const steps = data.steps;
+    steps.map((step)=>{
+      const strippedStr = step.html_instructions.replace(/<\/?b>/g, "");
+      arr.push({instruction: strippedStr})
+    })
+    return arr;
+  }catch(error){
+    console.log(error)
+  }
+}
 
 exports.getWayPoints = async (origin,destination,preference) =>{
   try{
