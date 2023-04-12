@@ -53,7 +53,7 @@ const getAllMapItemsByCity = async (city) => {
 
 const getMapItemsByRegion = async (region) => {
   const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
-  console.log(latitude, longitude, latitudeDelta, longitudeDelta);
+  // console.log(latitude, longitude, latitudeDelta, longitudeDelta);
   const minLatitude = latitude - latitudeDelta / 2;
   const maxLatitude = latitude + latitudeDelta / 2;
   const minLongitude = longitude - longitudeDelta / 2;
@@ -63,7 +63,7 @@ const getMapItemsByRegion = async (region) => {
     y: { $gte: minLatitude, $lte: maxLatitude },
     x: { $gte: minLongitude, $lte: maxLongitude },
   });
-  console.log(items.length);
+  // console.log(items.length);
   return items;
 };
 

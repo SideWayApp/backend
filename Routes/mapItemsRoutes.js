@@ -237,7 +237,7 @@ router.delete("/delete/:itemId", async (req, res) => {
  */
 
 router.post("/region", async (req, res) => {
-  console.log("region", req.body);
+  // console.log("region", req.body);
   const items = await getMapItemsByRegion(req.body);
   res.send(items);
 });
