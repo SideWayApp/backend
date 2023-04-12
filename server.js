@@ -30,6 +30,14 @@ if (process.env.NODE_ENV === "development") {
         description: "SideWays Library API",
       },
       servers: [{ url: "http://localhost:" + process.env.PORT }],
+      securityDefinitions: {
+        bearerAuth: {
+            type: 'apiKey',
+            name: 'Authorization',
+            scheme: 'bearer',
+            in: 'header',
+        },
+      }
     },
     apis: ["./Routes/*.js"],
   };

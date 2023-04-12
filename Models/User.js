@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  tokens: {
+    type:[String]
+  },
   preferences: {
     accessibility: {
       type: Boolean,
