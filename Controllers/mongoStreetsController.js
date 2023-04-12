@@ -117,6 +117,37 @@ const getFieldScoreForStreets = async (streetNames, field) => {
   }
 };
 
+//updated:
+
+// const getFieldScoreForStreets = async (streetNames, preferences) => {
+//   try {
+//     const streets = await Street.find({
+//       name: { $regex: new RegExp(streetNames.join("|"), "i") },
+//     });
+//     findUniqueStreets(streetNames, streets);
+//     let totalScore = 0;
+//     for (const street of streets) {
+//       let streetScore = 0;
+//       for (const preference in preferences) {
+//         if (preferences[preference]) {
+//           if (Array.isArray(street[preference])) {
+//             streetScore += street[preference].reduce(
+//               (sum, scoreObj) => sum + scoreObj.score,
+//               0
+//             );
+//           } else {
+//             streetScore += street[preference] || 0;
+//           }
+//         }
+//       }
+//       totalScore += streetScore;
+//     }
+//     return totalScore;
+//   } catch (err) {
+//     console.error(err);
+//   }
+// };
+
 const findUniqueStreets = async (streetNames, streets) => {
   const matchedStreets = [];
   for (const street of streets) {
