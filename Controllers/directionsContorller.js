@@ -112,6 +112,7 @@ exports.getXYListinBestRoute = async (origin, destination, preference) => {
       const yStart = steps[i].start_location.lat;
       const xEnd = steps[i].end_location.lng;
       const yEnd = steps[i].end_location.lat;
+      const strippedStr = steps[i].html_instructions.replace(/<\/?b>/g, "");
       arr.push({index: index, start:{x:xStart, y:yStart}, end:{x:xEnd,y:yEnd}});
     }
     return arr;
@@ -137,14 +138,15 @@ exports.getInstructions = async (origin,destination,preference) => {
   }
 }
 
-exports.getWayPoints = async (origin,destination,preference) =>{
+exports.getWayPointsAndInstructions = async (origin,destination,preference) =>{
   try{
     let arr = [];
     const response = await this.getDirections(origin, destination, preference);
     const data = response.legs[0];
     const steps = data.steps;
     steps.map((step)=>{
-      arr.push({latitude: step.start_location.lat, longitude: step.start_location.lng});
+      const strippedStr = step.html_instructions.replace(/<\/?b>/g, "");
+      arr.push({latitude: step.start_location.lat, longitude: step.start_location.lng, instruction: strippedStr});
     })
     const lastIndex = steps.length-1;
     arr.push({latitude: steps[lastIndex].end_location.lat, longitude: steps[lastIndex].end_location.lng});
