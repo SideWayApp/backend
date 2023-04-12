@@ -102,7 +102,7 @@ router.post("/getXYListinBestRoute", async (req, res) => {
 
 /**
  * @swagger
- * /directions/getWayPoints:
+ * /directions/getWayPointsAndInstructions:
  *   post:
  *     summary: get latitude and longitude for waypoints in direction
  *     tags: [Directions Api]
@@ -116,10 +116,33 @@ router.post("/getXYListinBestRoute", async (req, res) => {
  *       200:
  *         description: An array of latitudes and longitudes
  */
-router.post("/getWayPoints", async (req, res) => {
-  const data = await directionsController.getWayPoints(req.body.origin, req.body.destination, req.body.preference);
+router.post("/getWayPointsAndInstructions", async (req, res) => {
+  const data = await directionsController.getWayPointsAndInstructions(req.body.origin, req.body.destination, req.body.preference);
   res.send(data);
 });
+
+
+/**
+ * @swagger
+ * /directions/getInstructions:
+ *   post:
+ *     summary: get instructions arr in direction
+ *     tags: [Directions Api]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Directions'
+ *     responses:
+ *       200:
+ *         description: An array of latitudes and longitudes
+ */
+router.post("/getInstructions", async (req, res) => {
+  const data = await directionsController.getInstructions(req.body.origin, req.body.destination, req.body.preference);
+  res.send(data);
+});
+
 
 /**
  * @swagger
