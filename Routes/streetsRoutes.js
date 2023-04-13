@@ -1,17 +1,18 @@
-const express = require("express");
+const express = require("express")
 const {
-  getAllStreets,
-  getSingleStreet,
-  createStreet,
-  deleteStreet,
-  updateStreet,
-  removeDuplicates,
-  removeTotalScoreForStreets,
-  updateVirtualScore,
-} = require("../Controllers/mongoStreetsController");
+	getStreetsStartingWith,
+	getAllStreets,
+	getSingleStreet,
+	createStreet,
+	deleteStreet,
+	updateStreet,
+	removeDuplicates,
+	removeTotalScoreForStreets,
+	updateVirtualScore,
+} = require("../Controllers/mongoStreetsController")
 
-const router = express.Router();
-const authenticate = require('../Common/authentication_middleware')
+const router = express.Router()
+const authenticate = require("../Common/authentication_middleware")
 
 /**
  * @swagger
@@ -19,6 +20,42 @@ const authenticate = require('../Common/authentication_middleware')
  *   name: Streets API
  *   description: Endpoints for Streets operations
  */
+
+/**
+ * @swagger
+ * /api/streets/getStreetsStartingWith/{letters}:
+ *   post:
+ *     summary: Get all streets start with letters from the MongoDB database for a given letters.
+ *     tags: [Streets API]
+ *     parameters:
+ *       - in: path
+ *         name: letters
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The city for which to retrieve all streets start with letters.
+ *         example: A
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of all streets for the given city.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Street'
+ */
+
+router.post(
+	"/getStreetsStartingWith/:letters",
+
+	async (req, res) => {
+		const allStreetsStartWith = await getStreetsStartingWith(req.params.letters)
+		res.send(allStreetsStartWith)
+	}
+)
 
 /**
  * @swagger
@@ -128,10 +165,10 @@ const authenticate = require('../Common/authentication_middleware')
  *                 $ref: '#/components/schemas/Street'
  */
 
-router.post("/all-streets/:city",authenticate, async (req, res) => {
-  const allStreets = await getAllStreets(req.params.city);
-  res.send(allStreets);
-});
+router.post("/all-streets/:city", authenticate, async (req, res) => {
+	const allStreets = await getAllStreets(req.params.city)
+	res.send(allStreets)
+})
 
 /**
  * @swagger
@@ -166,13 +203,13 @@ router.post("/all-streets/:city",authenticate, async (req, res) => {
  */
 
 router.post("/:city/:streetName", async (req, res) => {
-  const street = await getSingleStreet(req.params.city, req.params.streetName);
-  if (street) {
-    res.send(street);
-  } else {
-    res.status(404).json({ message: "Street not found" });
-  }
-});
+	const street = await getSingleStreet(req.params.city, req.params.streetName)
+	if (street) {
+		res.send(street)
+	} else {
+		res.status(404).json({ message: "Street not found" })
+	}
+})
 
 /**
  * @swagger
@@ -212,14 +249,14 @@ router.post("/:city/:streetName", async (req, res) => {
  *         description: Internal server error
  */
 router.put("/update/:city/:streetName", async (req, res) => {
-  console.log(req.params);
-  const updated = await updateStreet(
-    req.params.city,
-    req.params.streetName,
-    req.body
-  );
-  res.send(updated);
-});
+	console.log(req.params)
+	const updated = await updateStreet(
+		req.params.city,
+		req.params.streetName,
+		req.body
+	)
+	res.send(updated)
+})
 
 /**
  * @swagger
@@ -246,10 +283,10 @@ router.put("/update/:city/:streetName", async (req, res) => {
  *         description: Internal server error
  */
 router.post("/create", async (req, res) => {
-  console.log("create", req.body);
-  const newStreet = await createStreet(req.body);
-  res.send(newStreet);
-});
+	console.log("create", req.body)
+	const newStreet = await createStreet(req.body)
+	res.send(newStreet)
+})
 
 /**
  * @swagger
@@ -281,9 +318,9 @@ router.post("/create", async (req, res) => {
  *         description: Internal server error
  */
 router.delete("/delete/:city/:streetName", async (req, res) => {
-  const deleted = await deleteStreet(req.params.city, req.params.streetName);
-  res.send(deleted);
-});
+	const deleted = await deleteStreet(req.params.city, req.params.streetName)
+	res.send(deleted)
+})
 
 /**
  * @swagger
@@ -298,19 +335,19 @@ router.delete("/delete/:city/:streetName", async (req, res) => {
  *         description: Internal server error
  */
 router.post("/remove-duplicates", async (req, res) => {
-  const dup = await removeDuplicates();
-  res.send(dup);
-});
+	const dup = await removeDuplicates()
+	res.send(dup)
+})
 
 router.get("/removeTotal", async (req, res) => {
-  console.log("remove total");
-  await removeTotalScoreForStreets();
-  res.send("done");
-});
+	console.log("remove total")
+	await removeTotalScoreForStreets()
+	res.send("done")
+})
 
 router.get("/updateStreets", async (req, res) => {
-  console.log("update total");
-  await updateVirtualScore();
-  res.send("done");
-});
-module.exports = router;
+	console.log("update total")
+	await updateVirtualScore()
+	res.send("done")
+})
+module.exports = router
