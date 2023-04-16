@@ -80,7 +80,19 @@
  *             age:
  *               type: string
  *               required: true
- */
+ *           required:
+ *             - name
+ *             - gender
+ *             - age
+ *         favorites:
+ *           type: array
+ *           items:
+ *             type: string
+ *         recents:
+ *           type: array
+ *           items:
+ *             type: string
+ */ 
 
 /**
  * @swagger
@@ -178,6 +190,68 @@
  *         description: not found
  */
 
+/**
+ * @swagger
+ * /api/authentication/users/{email}:
+ *   patch:
+ *     summary: Edit user information
+ *     description: Edit user information based on the provided email.
+ *     tags: [Authentication Api]
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: User email
+ *       - in: body
+ *         name: user
+ *         description: User object that needs to be updated
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/User'
+ *     responses:
+ *       '200':
+ *         description: User information updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       '404':
+ *         description: User not found
+ */
+
+/**
+ * @swagger
+ * /api/authentication/users/{email}:
+ *   delete:
+ *     summary: Delete a user by email
+ *     description: Delete a user by email address
+ *     tags: [Authentication Api]
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email address of the user to delete
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       '400':
+ *         description: Bad Request
+ *       '404':
+ *         description: Not Found
+ *       '500':
+ *         description: Internal Server Error
+ */
+
 const express = require("express");
 const router = express.Router();
 const authenticate = require('../Common/authentication_middleware')
@@ -187,7 +261,9 @@ const AuthenticationRoutes  = require("../Controllers/authenticationController")
 router.post("/login", AuthenticationRoutes.login);
 router.post("/register", AuthenticationRoutes.register);
 router.post("/logout",authenticate, AuthenticationRoutes.logout);
-router.post("/refreshToken", AuthenticationRoutes.refreshToken)
-router.get("/users/:refreshToken",AuthenticationRoutes.getUser)
+router.post("/refreshToken", AuthenticationRoutes.refreshToken);
+router.get("/users/:refreshToken",AuthenticationRoutes.getUser);
+router.patch("/users/:email",AuthenticationRoutes.editUser);
+router.delete("/users/:email",authenticate,AuthenticationRoutes.deleteUser);
 
 module.exports = router;
