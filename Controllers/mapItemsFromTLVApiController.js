@@ -1,7 +1,7 @@
 const axios = require("axios")
 const MapItem = require("../Models/MapItem")
 require("dotenv").config()
-const { getFormatedStreetName } = require("../Controllers/scraperController")
+const { getFormatedStreetName,getAllFormatedStreetNames } = require("../Controllers/scraperController")
 const { addMapItem } = require("../Controllers/mongoMapItemsController")
 
 exports.getAllLayersCodes = async () => {
@@ -24,20 +24,41 @@ exports.getDataFromLayer = async (code)=>{
 	}
 }
 
+exports.getAllStreetsPerLayerCode = async (code) => {
+	const apiUrl = `https://api.tel-aviv.gov.il/gis/Layer?layerCode=${code}`;
+	let arr = [];
+	try{
+		const response = await axios.get(apiUrl);
+		const features = response.data.features;
+		const size = features.length-1;
+		for (let i =0; i < 5; i++){
+			const address = features[i].attributes.address;
+			const lastIndex = address.length - 1;
+			let formatted = address;
+
+			if (address.slice(-1) === ' ') {
+			formatted = address.slice(0, -1);
+			}
+
+			formatted = formatted.replace(/\d+/g, '').trim();
+			const englishFormatted = await getFormatedStreetName(formatted,"tel-aviv")
+			arr.push({ index: i + 1, fullHebrewAddress: address, hebrew: formatted, english:englishFormatted });
+		}
+		return arr;
+	}catch(error){
+		console.log(error)
+	}
+}
+
 exports.hebrewAddressToEnglish = async (hebrewAddress) =>	{
 	try{
-		const lastIndex = hebrewAddress.length-1;
-		if (hebrewAddress[lastIndex] === ' '){
-				hebrewAddress = hebrewAddress.substring(0, hebrewAddress.length - 1);
-				const streetName = hebrewAddress.replace(/\d+/g, '').trim();
-				const addressInEnglish = await getFormatedStreetName(streetName,"tel-aviv")
-				return addressInEnglish;
-		}else{
-			
-			const streetName = hebrewAddress.replace(/\d+/g, '').trim();	
-			const addressInEnglish = await getFormatedStreetName(streetName,"tel-aviv")
-			return addressInEnglish;
+		let formatted = hebrewAddress;
+		if (hebrewAddress.slice(-1) === ' ') {
+		formatted = hebrewAddress.slice(0, -1);
 		}
+		formatted = formatted.replace(/\d+/g, '').trim();
+		const englishFormatted = await getFormatedStreetName(formatted,"tel-aviv")
+		return englishFormatted;
 	}catch(error){
 		console.log(error);
 	}
