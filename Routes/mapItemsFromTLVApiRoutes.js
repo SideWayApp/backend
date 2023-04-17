@@ -48,6 +48,31 @@ const router = express.Router()
 	res.send(data);
  })
 
+ /**
+ * @swagger
+ * /gis/tlv/getAllStreetsPerLayerCode/{code}:
+ *   post:
+ *     summary: get data from specific layer by code
+ *     tags: [GIS Api]
+ *     parameters:
+ *       - in: path
+ *         name: code
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The layer code of the layer to get the data
+ *         example: 506
+ *     responses:
+ *       200:
+ *         description: Data of layer by layer code
+ *       500:
+ *         description: Internal server error.
+ */ router.post("/tlv/getAllStreetsPerLayerCode/:code",async(req,res)=>{
+	const data = await mapItemsFromTLVApiController.getAllStreetsPerLayerCode(req.params.code);
+	res.send(data);
+ })
+
+
 
  /**
  * @swagger

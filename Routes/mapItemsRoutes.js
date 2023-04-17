@@ -5,6 +5,7 @@ const {
   getAllMapItemsByCity,
   getMapItemsByType,
   updateMapItem,
+  deleteMapItemByStreetName,
   deleteMapItem,
   getMapItemsByRegion,
 } = require("../Controllers/mongoMapItemsController");
@@ -203,6 +204,43 @@ router.delete("/delete/:itemId", async (req, res) => {
   const item = await deleteMapItem(req.params.itemId);
   res.send(item);
 });
+
+/**
+ * @swagger
+ * /api/items/delete/{streetName}:
+ *   delete:
+ *     summary: Delete a map item by street name
+ *     tags: [Map Items API]
+ *     parameters:
+ *       - in: path
+ *         name: streetName
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The street name of the map item to delete.
+ *         example: Tel Aviv-Yafo
+ *     responses:
+ *       '200':
+ *         description: The deleted map item.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MapItem'
+ *       '400':
+ *         description: Bad request. ID parameter is missing or invalid.
+ *       '404':
+ *         description: Map item not found.
+ *       '500':
+ *         description: Internal server error.
+ */
+
+router.delete("/delete/:streetName", async (req, res) => {
+  const item = await deleteMapItemByStreetName(req.params.streetName);
+  res.send(item);
+});
+
+
+
 
 /**
  * @swagger

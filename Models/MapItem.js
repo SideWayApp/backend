@@ -5,6 +5,10 @@ const mapItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  hebrew: {
+    type:String,
+    required: true,
+  },
   streetName: {
     type: String,
     required: true,

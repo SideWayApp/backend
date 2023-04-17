@@ -1,9 +1,9 @@
 const MapItem = require("../Models/MapItem");
 
 // Function to add a new map item
-const addMapItem = async (type, streetName, city, x, y) => {
+const addMapItem = async (type,hebrew, streetName, city, x, y) => {
   try {
-    const newItem = new MapItem({ type, streetName, city, x, y });
+    const newItem = new MapItem({ type,hebrew, streetName, city, x, y });
     const result = await newItem.save();
     return result;
   } catch (err) {
@@ -31,6 +31,18 @@ const deleteMapItem = async (id) => {
   }
 };
 
+// Function to delete a map item by street name
+const deleteMapItemByStreetName = async (streetName) => {
+  try {
+    const result = await MapItem.findOneAndDelete({ streetName });
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
 // Function to get a map item by its type
 const getMapItemsByType = async (type, city) => {
   try {
@@ -53,7 +65,6 @@ const getAllMapItemsByCity = async (city) => {
 
 const getMapItemsByRegion = async (region) => {
   const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
-  console.log(latitude, longitude, latitudeDelta, longitudeDelta);
   const minLatitude = latitude - latitudeDelta / 2;
   const maxLatitude = latitude + latitudeDelta / 2;
   const minLongitude = longitude - longitudeDelta / 2;
@@ -63,7 +74,6 @@ const getMapItemsByRegion = async (region) => {
     y: { $gte: minLatitude, $lte: maxLatitude },
     x: { $gte: minLongitude, $lte: maxLongitude },
   });
-  console.log(items.length);
   return items;
 };
 
