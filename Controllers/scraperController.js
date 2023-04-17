@@ -130,7 +130,7 @@ exports.getFormatedStreetName = async (name, city) => {
     const tmp = name + " " + city;
     const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${tmp}&components=country:IL&types=route&key=${apiKey}`;
     const response = await axios.get(apiUrl);
-    const res = response.data.results[0].address_components;
+    const res = response.data.results[0].address_components;    
     for (let i =0; i<res.length; i++){
       if (res[i].short_name.includes("St")){
         return res[i].short_name;

@@ -1,9 +1,9 @@
 const MapItem = require("../Models/MapItem");
 
 // Function to add a new map item
-const addMapItem = async (type, streetName, city, x, y) => {
+const addMapItem = async (type,hebrew, streetName, city, x, y) => {
   try {
-    const newItem = new MapItem({ type, streetName, city, x, y });
+    const newItem = new MapItem({ type,hebrew, streetName, city, x, y });
     const result = await newItem.save();
     return result;
   } catch (err) {
@@ -30,6 +30,18 @@ const deleteMapItem = async (id) => {
     throw error;
   }
 };
+
+// Function to delete a map item by street name
+const deleteMapItemByStreetName = async (streetName) => {
+  try {
+    const result = await MapItem.findOneAndDelete({ streetName });
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 
 // Function to get a map item by its type
 const getMapItemsByType = async (type, city) => {
