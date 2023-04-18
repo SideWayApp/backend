@@ -83,8 +83,14 @@ const login = async (req,res,next) => {
             process.env.REFRESH_TOKEN_SECRET
         )
 
-        if(user.tokens == null) user.tokens = [refreshToken]
-        else user.tokens.push(refreshToken)
+        if(user.tokens == null) {
+            user.tokens = [refreshToken]
+            user.tokens.push(accessToken)
+        }
+        else{
+            user.tokens.push(refreshToken)
+            user.tokens.push(accessToken)
+        }
         await user.save()
 
         res.status(200).send({
@@ -101,7 +107,7 @@ const logout = async (req,res) => {
     const token = authHeaders && authHeaders.split(' ')[1]
     if (token == null) return res.sendStatus('401')
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
         const userId = userInfo.id
         try{
@@ -161,53 +167,124 @@ const refreshToken = async  (req,res,next) =>{
     })
 }
 
-const getUser = async (req, res, next)=>{//GET user by refreshToken
-    const refreshToken = req.params.refreshToken
-    console.log(refreshToken)
-    try{
-       const user = await User.findOne({tokens:{$in:[refreshToken]}})
-        if (user == null){
-            return res.status(403).send({
-                'status':'fail',
-                'error':'access token forbiden'
-            })
-        }    
-        console.log(user)
-        res.status(200).send(user)    
-        return user 
-    }catch(error) {
-        console.error(error);
-    }
+const getUser = async (req, res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findById(userId)
+            if(user == null) return res.status(403).send('invalid request')
+
+            console.log("user info: " + user)
+            res.status(200).send(user)
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
 }
 
-const editUser = async (req,res)=>{
-    const email = req.params.email
-    if(email == null) return sendError(res,400,'wrong email')
+const editUserPreferences = async (req, res) => {
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    console.log(token)
+    if (token == null) return res.sendStatus('401')
 
-    const user = await User.findOneAndUpdate({'email': email},
-    {
-        ...req.body
-    },
-    { new: true })
+    const accessibility = req.body.preferences.accessibility
+    const clean = req.body.preferences.clean
+    const scenery = req.body.preferences.scenery
+    const security = req.body.preferences.security
+    const speed = req.body.preferences.speed
 
-    if (!user) {
-        res.status(404).json({ err: "No such user" });
-    }
-    
-    res.status(200).json(user);
-}
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findByIdAndUpdate(userId,
+                {'preferences' : {
+                    'accessibility' : accessibility,
+                    'clean' : clean,
+                    'scenery' : scenery,
+                    'security' : security,
+                    'speed' : speed,
+                    }
+                }, 
+            )
+            if(user == null) return res.status(403).send('invalid request')
+
+            await user.save()
+            res.status(200).send("preferences changed")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+};
+
 
 const deleteUser = async(req,res)=>{
-    const email = req.params.email
-    if(email == null) return sendError(res,400,'wrong email')
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    console.log(token)
+    if (token == null) return res.sendStatus('401')
 
-    const user = await User.findOneAndDelete({'email': email})
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findByIdAndDelete(userId)
+            if(user == null) return res.status(403).send('invalid request')
 
-    if (!user) {
-        res.status(404).json({ err: "No such user" });
-    }
-    
-    res.status(200).json(user);
+            res.status(200).send("user deleted")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+}
+
+const addFavorite = async(req,res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    console.log(token)
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findById(userId)
+            if(user == null) return res.status(403).send('invalid request')
+
+            user.favorites[user.favorites.length] = req.body.favorite
+            await user.save()
+            res.status(200).send("favorite added")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+}
+
+const addRecent = async (req,res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findById(userId)
+            if(user == null) return res.status(403).send('invalid request')
+
+            user.recents[user.recents.length] = req.body.recent
+            await user.save()
+            res.status(200).send("recent location added")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
 }
 
 module.exports = {
@@ -216,7 +293,10 @@ module.exports = {
     logout,
     refreshToken,
     getUser,
-    editUser,
-    deleteUser
+    editUserPreferences,
+    deleteUser,
+    addFavorite,
+    addRecent
 }
 
+ 
