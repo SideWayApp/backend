@@ -32,10 +32,10 @@ if (process.env.NODE_ENV === "development") {
       servers: [{ url: "http://localhost:" + process.env.PORT }],
       securityDefinitions: {
         bearerAuth: {
-            type: 'apiKey',
-            name: 'Authorization',
-            scheme: 'bearer',
-            in: 'header',
+          type: 'apiKey',
+          name: 'Authorization',
+          scheme: 'bearer',
+          in: 'header',  
         },
       }
     },
