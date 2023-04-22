@@ -12,7 +12,7 @@ const {
 } = require("../Controllers/mongoStreetsController")
 
 const router = express.Router()
-const authenticate = require("../Common/authentication_middleware")
+// const authenticate = require("../Common/authentication_middleware")
 
 /**
  * @swagger
@@ -165,7 +165,8 @@ router.post(
  *                 $ref: '#/components/schemas/Street'
  */
 
-router.post("/all-streets/:city", authenticate, async (req, res) => {
+//, authenticate
+router.post("/all-streets/:city", async (req, res) => {
 	const allStreets = await getAllStreets(req.params.city)
 	res.send(allStreets)
 })
