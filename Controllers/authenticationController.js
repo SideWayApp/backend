@@ -83,8 +83,14 @@ const login = async (req,res,next) => {
             process.env.REFRESH_TOKEN_SECRET
         )
 
-        if(user.tokens == null) user.tokens = [refreshToken]
-        else user.tokens.push(refreshToken)
+        if(user.tokens == null) {
+            user.tokens = [refreshToken]
+            user.tokens.push(accessToken)
+        }
+        else{
+            user.tokens.push(refreshToken)
+            user.tokens.push(accessToken)
+        }
         await user.save()
 
         res.status(200).send({
@@ -103,7 +109,7 @@ const logout = async (req,res) => {
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo._id
+        const userId = userInfo.id
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -125,15 +131,16 @@ const logout = async (req,res) => {
 const refreshToken = async  (req,res,next) =>{
     authHeaders = req.headers['authorization']
     const token = authHeaders && authHeaders.split(' ')[1]
+    console.log("token: " + token)
     if (token == null) return res.sendStatus('401')
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo._id
-        console.log(userInfo._id)
+        const userId = userInfo.id
+        console.log(userInfo.id)
         try{
-            console.log("user id: " + userId )
             const user = await User.findById(userId)
+            console.log(user)
             if(user == null) return res.status(403).send('invalid fucking request')
             if(!user.tokens.includes(token)){
                 user.tokens = []
@@ -160,23 +167,124 @@ const refreshToken = async  (req,res,next) =>{
     })
 }
 
-const getUser = async (req, res, next)=>{//GET user by refreshToken
-    const refreshToken = req.params.refreshToken
-    console.log(refreshToken)
-    try{
-       const user = await User.findOne({tokens:{$in:[refreshToken]}})
-        if (user == null){
-            return res.status(403).send({
-                'status':'fail',
-                'error':'access token forbiden'
-            })
-        }    
-        console.log(user)
-        res.status(200).send(user)    
-        return user 
-    }catch(error) {
-        console.error(error);
-    }
+const getUser = async (req, res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findById(userId)
+            if(user == null) return res.status(403).send('invalid request')
+
+            console.log("user info: " + user)
+            res.status(200).send(user)
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+}
+
+const editUserPreferences = async (req, res) => {
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    console.log(token)
+    if (token == null) return res.sendStatus('401')
+
+    const accessibility = req.body.preferences.accessibility
+    const clean = req.body.preferences.clean
+    const scenery = req.body.preferences.scenery
+    const security = req.body.preferences.security
+    const speed = req.body.preferences.speed
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findByIdAndUpdate(userId,
+                {'preferences' : {
+                    'accessibility' : accessibility,
+                    'clean' : clean,
+                    'scenery' : scenery,
+                    'security' : security,
+                    'speed' : speed,
+                    }
+                }, 
+            )
+            if(user == null) return res.status(403).send('invalid request')
+
+            await user.save()
+            res.status(200).send("preferences changed")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+};
+
+
+const deleteUser = async(req,res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    console.log(token)
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findByIdAndDelete(userId)
+            if(user == null) return res.status(403).send('invalid request')
+
+            res.status(200).send("user deleted")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+}
+
+const addFavorite = async(req,res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    console.log(token)
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findById(userId)
+            if(user == null) return res.status(403).send('invalid request')
+
+            user.favorites[user.favorites.length] = req.body.favorite
+            await user.save()
+            res.status(200).send("favorite added")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+}
+
+const addRecent = async (req,res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.findById(userId)
+            if(user == null) return res.status(403).send('invalid request')
+
+            user.recents[user.recents.length] = req.body.recent
+            await user.save()
+            res.status(200).send("recent location added")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
 }
 
 module.exports = {
@@ -184,6 +292,11 @@ module.exports = {
     register,
     logout,
     refreshToken,
-    getUser
+    getUser,
+    editUserPreferences,
+    deleteUser,
+    addFavorite,
+    addRecent
 }
 
+ 
