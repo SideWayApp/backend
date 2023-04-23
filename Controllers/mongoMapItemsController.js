@@ -1,9 +1,9 @@
 const MapItem = require("../Models/MapItem");
 
 // Function to add a new map item
-const addMapItem = async (type,hebrew, streetName, city, x, y) => {
+const addMapItem = async (type, hebrew, streetName, city, x, y) => {
   try {
-    const newItem = new MapItem({ type,hebrew, streetName, city, x, y });
+    const newItem = new MapItem({ type, hebrew, streetName, city, x, y });
     const result = await newItem.save();
     return result;
   } catch (err) {
@@ -41,13 +41,11 @@ const deleteMapItemByStreetName = async (streetName) => {
   }
 };
 
-
-
 // Function to get a map item by its type
-const getMapItemsByType = async (type, city) => {
+const getMapItemsByType = async (type) => {
   try {
-    const result = await MapItem.find({ type: type, city: city });
-    return result;
+    const result = await MapItem.find({ type: type });
+    return result.map((item) => ({ x: item.x, y: item.y }));
   } catch (error) {
     throw error;
   }
@@ -77,6 +75,18 @@ const getMapItemsByRegion = async (region) => {
   return items;
 };
 
+const getAllTypes = async () => {
+  const types = await MapItem.distinct("type");
+  return types;
+};
+
+const countTypes = async () => {
+  const count = await MapItem.aggregate([
+    { $group: { _id: "$type", count: { $sum: 1 } } },
+  ]);
+  return count;
+};
+
 module.exports = {
   addMapItem,
   updateMapItem,
@@ -84,4 +94,6 @@ module.exports = {
   getMapItemsByType,
   getAllMapItemsByCity,
   getMapItemsByRegion,
+  getAllTypes,
+  countTypes,
 };

@@ -1,7 +1,7 @@
-const express = require("express")
-const mapItemsFromTLVApiController = require("../Controllers/mapItemsFromTLVApiController")
+const express = require("express");
+const mapItemsFromTLVApiController = require("../Controllers/mapItemsFromTLVApiController");
 
-const router = express.Router()
+const router = express.Router();
 
 // /**
 // * @swagger
@@ -19,10 +19,10 @@ const router = express.Router()
  *     responses:
  *       200:
  *         description: All layer codes
- */ router.get("/tlv/allLayerCodes",async(req,res)=>{
-	const data = await mapItemsFromTLVApiController.getAllLayersCodes();
-	res.send(data);
- })
+ */ router.get("/tlv/allLayerCodes", async (req, res) => {
+  const data = await mapItemsFromTLVApiController.getAllLayersCodes();
+  res.send(data);
+});
 
 /**
  * @swagger
@@ -43,12 +43,14 @@ const router = express.Router()
  *         description: Data of layer by layer code
  *       500:
  *         description: Internal server error.
- */ router.post("/tlv/getDataFromLayer/:code",async(req,res)=>{
-	const data = await mapItemsFromTLVApiController.getDataFromLayer(req.params.code);
-	res.send(data);
- })
+ */ router.post("/tlv/getDataFromLayer/:code", async (req, res) => {
+  const data = await mapItemsFromTLVApiController.getDataFromLayer(
+    req.params.code
+  );
+  res.send(data);
+});
 
- /**
+/**
  * @swagger
  * /gis/tlv/getAllStreetsPerLayerCode/{code}:
  *   post:
@@ -67,20 +69,20 @@ const router = express.Router()
  *         description: Data of layer by layer code
  *       500:
  *         description: Internal server error.
- */ router.post("/tlv/getAllStreetsPerLayerCode/:code",async(req,res)=>{
-	const data = await mapItemsFromTLVApiController.getAllStreetsPerLayerCode(req.params.code);
-	res.send(data);
- })
+ */ router.post("/tlv/getAllStreetsPerLayerCode/:code", async (req, res) => {
+  const data = await mapItemsFromTLVApiController.getAllStreetsPerLayerCode(
+    req.params.code
+  );
+  res.send(data);
+});
 
-
-
- /**
+/**
  * @swagger
  * /gis/tlv/hebrewAddressToEnglish/{hebrewAddress}:
  *   post:
  *     summary: Translate a Hebrew address to English
  *     tags: [GIS Api]
-*     parameters:
+ *     parameters:
  *       - in: path
  *         name: hebrewAddress
  *         schema:
@@ -103,14 +105,13 @@ const router = express.Router()
  *         description: Bad request, missing or invalid parameter
  *       500:
  *         description: Internal server error
- */ 
- router.post("/tlv/hebrewAddressToEnglish/:hebrewAddress", async(req, res) => {
-  const data = await mapItemsFromTLVApiController.hebrewAddressToEnglish(req.params.hebrewAddress);
+ */
+router.post("/tlv/hebrewAddressToEnglish/:hebrewAddress", async (req, res) => {
+  const data = await mapItemsFromTLVApiController.hebrewAddressToEnglish(
+    req.params.hebrewAddress
+  );
   res.send(data);
 });
-
-
-
 
 /**
  * @swagger
@@ -136,9 +137,12 @@ const router = express.Router()
  *         description: Data of layer by layer code
  *       500:
  *         description: Internal server error.
- */ 
-router.post("/tlv/getAllItemsByTypeAndCode/:code/:type", async(req, res) => {
-  const data = await mapItemsFromTLVApiController.getAllItemsByTypeAndCode(req.params.code, req.params.type);
+ */
+router.post("/tlv/getAllItemsByTypeAndCode/:code/:type", async (req, res) => {
+  const data = await mapItemsFromTLVApiController.getAllItemsByTypeAndCode(
+    req.params.code,
+    req.params.type
+  );
   res.send(data);
 });
 
@@ -166,12 +170,60 @@ router.post("/tlv/getAllItemsByTypeAndCode/:code/:type", async(req, res) => {
  *         description: the items added to mongodb
  *       500:
  *         description: Internal server error.
- */ 
-router.post("/tlv/addItemsToMongoPerTypeAndCode/:code/:type", async(req, res) => {
-  const data = await mapItemsFromTLVApiController.addItemsToMongoPerTypeAndCode(req.params.code, req.params.type);
-  res.send(data);
+ */
+router.post(
+  "/tlv/addItemsToMongoPerTypeAndCode/:code/:type",
+  async (req, res) => {
+    const data =
+      await mapItemsFromTLVApiController.addItemsToMongoPerTypeAndCode(
+        req.params.code,
+        req.params.type
+      );
+    res.send(data);
+  }
+);
+
+/**
+ * @swagger
+ * /gis/tlv/count_missings:
+ *   get:
+ *     summary: Finds missing items per type and code in the MapItem collection.
+ *     tags: [GIS Api]
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: "The layer code of the layer to get the data. Example: 506"
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: "The type of the layer. Example: camera"
+ *     responses:
+ *       200:
+ *         description: Returns true if there are missing items, false otherwise.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 missing:
+ *                   type: boolean
+ *                   description: Indicates if there are missing items.
+ *                   example: true
+ *       500:
+ *         description: An error occurred while finding missing items.
+ */
+router.get("/tlv/count_missings", async (req, res) => {
+  const bool =
+    await mapItemsFromTLVApiController.findMissingItemsFromMongoPerTypeAndCode(
+      req.query.code,
+      req.query.type
+    );
+  res.send({ missing: bool });
 });
 
-
-
-module.exports = router
+module.exports = router;

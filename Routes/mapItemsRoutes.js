@@ -8,6 +8,8 @@ const {
   deleteMapItemByStreetName,
   deleteMapItem,
   getMapItemsByRegion,
+  getAllTypes,
+  countTypes,
 } = require("../Controllers/mongoMapItemsController");
 
 /**
@@ -239,9 +241,6 @@ router.delete("/delete/:streetName", async (req, res) => {
   res.send(item);
 });
 
-
-
-
 /**
  * @swagger
  * /api/items/region:
@@ -275,9 +274,63 @@ router.delete("/delete/:streetName", async (req, res) => {
  */
 
 router.post("/region", async (req, res) => {
-  console.log("region", req.body);
+  // console.log("region", req.body);
   const items = await getMapItemsByRegion(req.body);
   res.send(items);
+});
+
+/**
+ * @swagger
+ * /api/items/all_types:
+ *   get:
+ *     summary: Returns all unique values for the "type" field in the MapItem collection.
+ *     tags: [Map Items API]
+ *     responses:
+ *       200:
+ *         description: A list of unique "type" field values.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *                 example: Camera
+ *       500:
+ *         description: An error occurred while retrieving the types.
+ */
+router.get("/all_types", async (req, res) => {
+  const items = await getAllTypes();
+  res.send(items);
+});
+
+/**
+ * @swagger
+ * /api/items/all_types_counters:
+ *   get:
+ *     summary: Returns the count of each unique value for the "type" field in the MapItem collection.
+ *     tags: [Map Items API]
+ *     responses:
+ *       200:
+ *         description: A list of objects with "type" and "count" fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: Camera
+ *                   count:
+ *                     type: number
+ *                     example: 10
+ *       500:
+ *         description: An error occurred while retrieving the types counts.
+ */
+router.get("/all_types_counters", async (req, res) => {
+  const count = await countTypes();
+  res.send(count);
 });
 
 module.exports = router;
