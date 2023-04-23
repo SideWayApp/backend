@@ -1,6 +1,8 @@
-require('dotenv').config()
+require("dotenv").config();
 const axios = require("axios");
-const {getFieldScoreForStreets} = require("../Controllers/mongoStreetsController");
+const {
+  getFieldScoreForStreets,
+} = require("../Controllers/mongoStreetsController");
 
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
@@ -15,9 +17,6 @@ exports.getAddressFromLatLng = async (lat, lng) => {
     return null;
   }
 };
-
-
-
 
 async function getStreetsInAlternative(route) {
   try {
@@ -47,13 +46,11 @@ async function getStreetsInAlternative(route) {
   }
 }
 
-async function getBestAlternative(routes, origin, destination, preference){
+async function getBestAlternative(routes, origin, destination, preference) {
   let maxWeight = 0;
   let bestIndex = 0;
   for (let i = 0; i < routes.length; i++) {
-    const streetsInAlternative = await getStreetsInAlternative(
-      routes[i]
-    );
+    const streetsInAlternative = await getStreetsInAlternative(routes[i]);
     const totalWeightInAlternative = await getTotalWeightInAlternative(
       streetsInAlternative,
       preference
@@ -66,11 +63,17 @@ async function getBestAlternative(routes, origin, destination, preference){
   return bestIndex;
 }
 
-async function getTotalWeightInAlternative(streetsInAlternative, preference,req,res) {
+async function getTotalWeightInAlternative(
+  streetsInAlternative,
+  preference,
+  req,
+  res
+) {
   const totalWeightInAlternative = await getFieldScoreForStreets(
     streetsInAlternative,
     preference
   );
+  console.log(totalWeightInAlternative);
   return totalWeightInAlternative;
 }
 
@@ -78,7 +81,7 @@ exports.getDirections = async (origin, destination, preference) => {
   const mode = "walking";
   const alternatives = true;
   const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=${mode}&alternatives=${alternatives}`;
-  console.log(apiUrl)
+  console.log(apiUrl);
   try {
     const response = await axios.get(apiUrl);
     const ret = response.data;
@@ -97,61 +100,85 @@ exports.getDirections = async (origin, destination, preference) => {
 
 exports.getXYListinBestRoute = async (origin, destination, preference) => {
   try {
-    let arr = []
+    let arr = [];
     const response = await this.getDirections(origin, destination, preference);
     const data = response.legs[0];
     const steps = data.steps;
     const size = steps.length;
-    
-    arr.push({start_location: {x:data.start_location.lng, y:data.start_location.lat}});
-    arr.push({end_location: {x:data.end_location.lng, y: data.end_location.lat}});
-    
-    for (let i = 0; i< size; i++){
-      const index = i+1;
+
+    arr.push({
+      start_location: {
+        x: data.start_location.lng,
+        y: data.start_location.lat,
+      },
+    });
+    arr.push({
+      end_location: { x: data.end_location.lng, y: data.end_location.lat },
+    });
+
+    for (let i = 0; i < size; i++) {
+      const index = i + 1;
       const xStart = steps[i].start_location.lng;
       const yStart = steps[i].start_location.lat;
       const xEnd = steps[i].end_location.lng;
       const yEnd = steps[i].end_location.lat;
       const strippedStr = steps[i].html_instructions.replace(/<\/?b>/g, "");
-      arr.push({index: index, start:{x:xStart, y:yStart}, end:{x:xEnd,y:yEnd}});
+      arr.push({
+        index: index,
+        start: { x: xStart, y: yStart },
+        end: { x: xEnd, y: yEnd },
+      });
     }
     return arr;
-    
   } catch (error) {
     console.error(error);
   }
 };
 
-exports.getInstructions = async (origin,destination,preference) => {
-  try{
-    let arr = [];
-    const response = await this.getDirections(origin,destination,preference);
-    const data = response.legs[0];
-    const steps = data.steps;
-    steps.map((step)=>{
-      const strippedStr = step.html_instructions.replace(/<\/?b>/g, "");
-      arr.push({instruction: strippedStr})
-    })
-    return arr;
-  }catch(error){
-    console.log(error)
-  }
-}
-
-exports.getWayPointsAndInstructions = async (origin,destination,preference) =>{
-  try{
+exports.getInstructions = async (origin, destination, preference) => {
+  try {
     let arr = [];
     const response = await this.getDirections(origin, destination, preference);
     const data = response.legs[0];
     const steps = data.steps;
-    steps.map((step)=>{
-      const strippedStr = step.html_instructions.replace(/<\/?b>|<\/?div>/g, "");
-      arr.push({latitude: step.start_location.lat, longitude: step.start_location.lng, instruction: strippedStr});
-    })
-    const lastIndex = steps.length-1;
-    arr.push({latitude: steps[lastIndex].end_location.lat, longitude: steps[lastIndex].end_location.lng});
+    steps.map((step) => {
+      const strippedStr = step.html_instructions.replace(/<\/?b>/g, "");
+      arr.push({ instruction: strippedStr });
+    });
     return arr;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-}
+};
+
+exports.getWayPointsAndInstructions = async (
+  origin,
+  destination,
+  preference
+) => {
+  try {
+    let arr = [];
+    const response = await this.getDirections(origin, destination, preference);
+    const data = response.legs[0];
+    const steps = data.steps;
+    steps.map((step) => {
+      const strippedStr = step.html_instructions.replace(
+        /<\/?b>|<\/?div>/g,
+        ""
+      );
+      arr.push({
+        latitude: step.start_location.lat,
+        longitude: step.start_location.lng,
+        instruction: strippedStr,
+      });
+    });
+    const lastIndex = steps.length - 1;
+    arr.push({
+      latitude: steps[lastIndex].end_location.lat,
+      longitude: steps[lastIndex].end_location.lng,
+    });
+    return arr;
+  } catch (error) {
+    console.log(error);
+  }
+};

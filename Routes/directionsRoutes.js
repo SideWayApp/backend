@@ -1,7 +1,7 @@
-const express = require("express")
-const directionsController = require("../Controllers/directionsContorller")
+const express = require("express");
+const directionsController = require("../Controllers/directionsContorller");
 
-const router = express()
+const router = express();
 
 // /**
 // * @swagger
@@ -18,7 +18,7 @@ const router = express()
  *       required:
  *         - origin
  *         - destination
- *         - preference
+ *         - preferences
  *       properties:
  *         origin:
  *           type: string
@@ -26,13 +26,33 @@ const router = express()
  *         destination:
  *           type: string
  *           description: The Destination Address
- *         preference:
- *           type: string
- *           description: The preference
+ *         preferences:
+ *           type: object
+ *           properties:
+ *             accessibility:
+ *               type: boolean
+ *               description: The accessibility preference
+ *             clean:
+ *               type: boolean
+ *               description: The cleanliness preference
+ *             scenery:
+ *               type: boolean
+ *               description: The scenery preference
+ *             security:
+ *               type: boolean
+ *               description: The security preference
+ *             speed:
+ *               type: boolean
+ *               description: The speed preference
  *       example:
  *         origin: 'Louis Marshall 41, Tel Aviv'
  *         destination: 'Ahi Dakar 1, Tel Aviv'
- *         preference: 'clean'
+ *         preferences:
+ *           accessibility: true
+ *           clean: false
+ *           scenery: false
+ *           security: true
+ *           speed: false
  */
 
 /**
@@ -56,8 +76,6 @@ const router = express()
  *         longitude: '34.76187512527052'
  */
 
-
-
 /**
  * @swagger
  * /directions/bestAlternative:
@@ -75,7 +93,11 @@ const router = express()
  *         description: The Best Route
  */
 router.post("/bestAlternative", async (req, res) => {
-  const data = await directionsController.getDirections(req.body.origin, req.body.destination, req.body.preference);
+  const data = await directionsController.getDirections(
+    req.body.origin,
+    req.body.destination,
+    req.body.preferences
+  );
   res.send(data);
 });
 
@@ -96,7 +118,11 @@ router.post("/bestAlternative", async (req, res) => {
  *         description: The x,y of the best route's steps
  */
 router.post("/getXYListinBestRoute", async (req, res) => {
-  const data = await directionsController.getXYListinBestRoute(req.body.origin, req.body.destination, req.body.preference);
+  const data = await directionsController.getXYListinBestRoute(
+    req.body.origin,
+    req.body.destination,
+    req.body.preference
+  );
   res.send(data);
 });
 
@@ -117,10 +143,13 @@ router.post("/getXYListinBestRoute", async (req, res) => {
  *         description: An array of latitudes and longitudes
  */
 router.post("/getWayPointsAndInstructions", async (req, res) => {
-  const data = await directionsController.getWayPointsAndInstructions(req.body.origin, req.body.destination, req.body.preference);
+  const data = await directionsController.getWayPointsAndInstructions(
+    req.body.origin,
+    req.body.destination,
+    req.body.preference
+  );
   res.send(data);
 });
-
 
 /**
  * @swagger
@@ -139,10 +168,13 @@ router.post("/getWayPointsAndInstructions", async (req, res) => {
  *         description: An array of latitudes and longitudes
  */
 router.post("/getInstructions", async (req, res) => {
-  const data = await directionsController.getInstructions(req.body.origin, req.body.destination, req.body.preference);
+  const data = await directionsController.getInstructions(
+    req.body.origin,
+    req.body.destination,
+    req.body.preference
+  );
   res.send(data);
 });
-
 
 /**
  * @swagger
@@ -161,9 +193,11 @@ router.post("/getInstructions", async (req, res) => {
  *         description: An address from longitude and latitude
  */
 router.post("/getAddressFromLatLng", async (req, res) => {
-  const data = await directionsController.getAddressFromLatLng(req.body.latitude, req.body.longitude);
+  const data = await directionsController.getAddressFromLatLng(
+    req.body.latitude,
+    req.body.longitude
+  );
   res.send(data);
 });
 
-
-module.exports = router
+module.exports = router;

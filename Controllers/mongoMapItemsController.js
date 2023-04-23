@@ -87,6 +87,27 @@ const countTypes = async () => {
   return count;
 };
 
+const getDuplicateCoordinates = async (type) => {
+  const items = await MapItem.find({ type: type });
+
+  const coordinatesMap = new Map();
+
+  const duplicates = [];
+
+  for (const item of items) {
+    const { x, y } = item;
+
+    if (coordinatesMap.has(`${x},${y}`)) {
+      duplicates.push(item);
+    } else {
+      coordinatesMap.set(`${x},${y}`, true);
+    }
+  }
+
+  // Return the array of duplicates
+  return duplicates;
+};
+
 module.exports = {
   addMapItem,
   updateMapItem,
@@ -96,4 +117,5 @@ module.exports = {
   getMapItemsByRegion,
   getAllTypes,
   countTypes,
+  getDuplicateCoordinates,
 };
