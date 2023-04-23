@@ -147,9 +147,10 @@ exports.getWayPointsAndInstructions = async (origin,destination,preference) =>{
     steps.map((step)=>{
       const strippedStr = step.html_instructions.replace(/<\/?b>|<\/?div>/g, "");
       arr.push({latitude: step.start_location.lat, longitude: step.start_location.lng, instruction: strippedStr});
+      arr.push({latitude: step.end_location.lat, longitude: step.end_location.lng})
     })
-    const lastIndex = steps.length-1;
-    arr.push({latitude: steps[lastIndex].end_location.lat, longitude: steps[lastIndex].end_location.lng});
+    //const lastIndex = steps.length-1;
+    //arr.push({latitude: steps[lastIndex].end_location.lat, longitude: steps[lastIndex].end_location.lng});
     return arr;
   }catch(error){
     console.log(error);
