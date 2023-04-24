@@ -1,17 +1,17 @@
-const express = require("express")
+const express = require("express");
 const {
-	getStreetsStartingWith,
-	getAllStreets,
-	getSingleStreet,
-	createStreet,
-	deleteStreet,
-	updateStreet,
-	removeDuplicates,
-	removeTotalScoreForStreets,
-	updateVirtualScore,
-} = require("../Controllers/mongoStreetsController")
+  getStreetsStartingWith,
+  getAllStreets,
+  getSingleStreet,
+  createStreet,
+  deleteStreet,
+  updateStreet,
+  removeDuplicates,
+  removeTotalScoreForStreets,
+  updateVirtualScore,
+} = require("../Controllers/mongoStreetsController");
 
-const router = express.Router()
+const router = express.Router();
 // const authenticate = require("../Common/authentication_middleware")
 
 /**
@@ -49,13 +49,15 @@ const router = express.Router()
  */
 
 router.post(
-	"/getStreetsStartingWith/:letters",
+  "/getStreetsStartingWith/:letters",
 
-	async (req, res) => {
-		const allStreetsStartWith = await getStreetsStartingWith(req.params.letters)
-		res.send(allStreetsStartWith)
-	}
-)
+  async (req, res) => {
+    const allStreetsStartWith = await getStreetsStartingWith(
+      req.params.letters
+    );
+    res.send(allStreetsStartWith);
+  }
+);
 
 /**
  * @swagger
@@ -141,7 +143,7 @@ router.post(
 /**
  * @swagger
  * /api/streets/all-streets/{city}:
- *   post:
+ *   get:
  *     summary: Get all streets from the MongoDB database for a given city
  *     tags: [Streets API]
  *     parameters:
@@ -166,15 +168,15 @@ router.post(
  */
 
 //, authenticate
-router.post("/all-streets/:city", async (req, res) => {
-	const allStreets = await getAllStreets(req.params.city)
-	res.send(allStreets)
-})
+router.get("/all-streets/:city", async (req, res) => {
+  const allStreets = await getAllStreets(req.params.city);
+  res.send(allStreets);
+});
 
 /**
  * @swagger
  * /api/streets/{city}/{streetName}:
- *   post:
+ *   get:
  *     summary: Get a single street by name from the MongoDB database
  *     tags: [Streets API]
  *     parameters:
@@ -203,14 +205,14 @@ router.post("/all-streets/:city", async (req, res) => {
  *         description: Street not found.
  */
 
-router.post("/:city/:streetName", async (req, res) => {
-	const street = await getSingleStreet(req.params.city, req.params.streetName)
-	if (street) {
-		res.send(street)
-	} else {
-		res.status(404).json({ message: "Street not found" })
-	}
-})
+router.get("/:city/:streetName", async (req, res) => {
+  const street = await getSingleStreet(req.params.city, req.params.streetName);
+  if (street) {
+    res.send(street);
+  } else {
+    res.status(404).json({ message: "Street not found" });
+  }
+});
 
 /**
  * @swagger
@@ -250,14 +252,14 @@ router.post("/:city/:streetName", async (req, res) => {
  *         description: Internal server error
  */
 router.put("/update/:city/:streetName", async (req, res) => {
-	console.log(req.params)
-	const updated = await updateStreet(
-		req.params.city,
-		req.params.streetName,
-		req.body
-	)
-	res.send(updated)
-})
+  console.log(req.params);
+  const updated = await updateStreet(
+    req.params.city,
+    req.params.streetName,
+    req.body
+  );
+  res.send(updated);
+});
 
 /**
  * @swagger
@@ -284,10 +286,10 @@ router.put("/update/:city/:streetName", async (req, res) => {
  *         description: Internal server error
  */
 router.post("/create", async (req, res) => {
-	console.log("create", req.body)
-	const newStreet = await createStreet(req.body)
-	res.send(newStreet)
-})
+  console.log("create", req.body);
+  const newStreet = await createStreet(req.body);
+  res.send(newStreet);
+});
 
 /**
  * @swagger
@@ -319,14 +321,14 @@ router.post("/create", async (req, res) => {
  *         description: Internal server error
  */
 router.delete("/delete/:city/:streetName", async (req, res) => {
-	const deleted = await deleteStreet(req.params.city, req.params.streetName)
-	res.send(deleted)
-})
+  const deleted = await deleteStreet(req.params.city, req.params.streetName);
+  res.send(deleted);
+});
 
 /**
  * @swagger
  * /api/steets/remove-duplicates:
- *   post:
+ *   get:
  *     summary: Remove duplicate streets
  *     tags: [Streets API]
  *     responses:
@@ -335,20 +337,20 @@ router.delete("/delete/:city/:streetName", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.post("/remove-duplicates", async (req, res) => {
-	const dup = await removeDuplicates()
-	res.send(dup)
-})
+router.get("/remove-duplicates", async (req, res) => {
+  const dup = await removeDuplicates();
+  res.send(dup);
+});
 
 router.get("/removeTotal", async (req, res) => {
-	console.log("remove total")
-	await removeTotalScoreForStreets()
-	res.send("done")
-})
+  console.log("remove total");
+  await removeTotalScoreForStreets();
+  res.send("done");
+});
 
 router.get("/updateStreets", async (req, res) => {
-	console.log("update total")
-	await updateVirtualScore()
-	res.send("done")
-})
-module.exports = router
+  console.log("update total");
+  await updateVirtualScore();
+  res.send("done");
+});
+module.exports = router;

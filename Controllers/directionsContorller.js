@@ -46,14 +46,14 @@ async function getStreetsInAlternative(route) {
   }
 }
 
-async function getBestAlternative(routes, origin, destination, preference) {
+async function getBestAlternative(routes, origin, destination, preferences) {
   let maxWeight = 0;
   let bestIndex = 0;
   for (let i = 0; i < routes.length; i++) {
     const streetsInAlternative = await getStreetsInAlternative(routes[i]);
     const totalWeightInAlternative = await getTotalWeightInAlternative(
       streetsInAlternative,
-      preference
+      preferences
     );
     if (totalWeightInAlternative > maxWeight) {
       maxWeight = totalWeightInAlternative;
@@ -65,19 +65,19 @@ async function getBestAlternative(routes, origin, destination, preference) {
 
 async function getTotalWeightInAlternative(
   streetsInAlternative,
-  preference,
+  preferences,
   req,
   res
 ) {
   const totalWeightInAlternative = await getFieldScoreForStreets(
     streetsInAlternative,
-    preference
+    preferences
   );
   console.log(totalWeightInAlternative);
   return totalWeightInAlternative;
 }
 
-exports.getDirections = async (origin, destination, preference) => {
+exports.getDirections = async (origin, destination, preferences) => {
   const mode = "walking";
   const alternatives = true;
   const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=${mode}&alternatives=${alternatives}`;
@@ -90,7 +90,7 @@ exports.getDirections = async (origin, destination, preference) => {
       routes,
       origin,
       destination,
-      preference
+      preferences
     );
     return ret.routes[bestAlternativeRouteIndex];
   } catch (error) {
