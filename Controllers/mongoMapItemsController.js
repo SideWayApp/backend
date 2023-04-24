@@ -54,14 +54,14 @@ const getMapItemsByType = async (type) => {
 // Function to get all map items
 const getAllMapItemsByCity = async (city) => {
   try {
-    const items = await MapItem.find({ city: city });
+    const items = await MapItem.find({ city: city }).limit(1000);
     return items;
   } catch (error) {
     throw error;
   }
 };
 
-const getMapItemsByRegion = async (region) => {
+const getMapItemsByRegion = async (region, preferences) => {
   const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
   const minLatitude = latitude - latitudeDelta / 2;
   const maxLatitude = latitude + latitudeDelta / 2;

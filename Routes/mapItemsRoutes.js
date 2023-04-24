@@ -103,7 +103,7 @@ router.post("/add", async (req, res) => {
 /**
  * @swagger
  * /api/items/city/{city}:
- *   post:
+ *   get:
  *     summary: Get all map items by city
  *     tags: [Map Items API]
  *     parameters:
@@ -129,7 +129,7 @@ router.post("/add", async (req, res) => {
  *         description: Internal server error.
  */
 
-router.post("/city/:city", async (req, res) => {
+router.get("/city/:city", async (req, res) => {
   const items = await getAllMapItemsByCity(req.params.city);
   res.send(items);
 });
@@ -249,7 +249,7 @@ router.delete("/delete/:streetName", async (req, res) => {
  *     summary: Get map items by region
  *     tags: [Map Items API]
  *     requestBody:
- *       description: Region object containing the current map region
+ *       description: Region object containing the current map region and user preferences
  *       required: true
  *       content:
  *         application/json:
@@ -264,7 +264,21 @@ router.delete("/delete/:streetName", async (req, res) => {
  *                type: number
  *              longitudeDelta:
  *                type: number
- *           example: {"latitude": 32.05055472703401, "latitudeDelta": 0.018986824223155452, "longitude": 34.757151060159345, "longitudeDelta": 0.015121697826685931}
+ *              preferences:
+ *               type: object
+ *               properties:
+ *                accessibility:
+ *                  type: boolean
+ *                clean:
+ *                  type: boolean
+ *                scenery:
+ *                  type: boolean
+ *                security:
+ *                  type: boolean
+ *                speed:
+ *                  type: boolean
+ *               example: {"accessibility": true, "clean": false, "scenery": false, "security": false, "speed": false}
+ *           example: {"latitude": 32.05055472703401, "latitudeDelta": 0.018986824223155452, "longitude": 34.757151060159345, "longitudeDelta": 0.015121697826685931, "preferences": {"accessibility": true, "clean": false, "scenery": false, "security": false, "speed": false}}
  *     responses:
  *       200:
  *         description: OK
@@ -275,8 +289,10 @@ router.delete("/delete/:streetName", async (req, res) => {
  */
 
 router.post("/region", async (req, res) => {
-  // console.log("region", req.body);
-  const items = await getMapItemsByRegion(req.body);
+  const { latitude, longitude, latitudeDelta, longitudeDelta, preferences } =
+    req.body;
+  const region = { latitude, longitude, latitudeDelta, longitudeDelta };
+  const items = await getMapItemsByRegion(region, preferences);
   res.send(items);
 });
 
