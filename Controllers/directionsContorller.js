@@ -157,8 +157,9 @@ exports.getWayPointsAndInstructions = async (
   preference
 ) => {
   try {
-    let arr = [];
+    const arr = [];
     const response = await this.getDirections(origin, destination, preference);
+    const polyline = response.overview_polyline.points;
     const data = response.legs[0];
     const steps = data.steps;
     steps.map((step) => {
@@ -177,7 +178,11 @@ exports.getWayPointsAndInstructions = async (
       latitude: steps[lastIndex].end_location.lat,
       longitude: steps[lastIndex].end_location.lng,
     });
-    return arr;
+    const retData = {
+      arr: arr,
+      points: polyline,
+    };
+    return retData;
   } catch (error) {
     console.log(error);
   }
