@@ -203,7 +203,6 @@ const getUser = async (req, res)=>{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
 
-            console.log("user info: " + user)
             res.status(200).send(user)
         }catch(err){
             res.status(403).send(err.message)
@@ -302,8 +301,11 @@ const addRecent = async (req,res)=>{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
 
-            user.recents[user.recents.length] = req.body.recent
+            const newArr = [] 
+            newArr[0] = req.body.recent
+            user.recents =newArr.concat(user.recents)
             await user.save()
+
             res.status(200).send("recent location added")
         }catch(err){
             res.status(403).send(err.message)
