@@ -311,6 +311,44 @@ const addRecent = async (req,res)=>{
     })
 }
 
+const deleteFavorite = async (req,res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.updateOne({_id:userId},{$pull:{favorites:req.body.favorite}})
+            if(user == null) return res.status(403).send('invalid request')
+
+            res.status(200).send("favorite location deleted")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+}
+
+const deleteRecent = async (req,res)=>{
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    if (token == null) return res.sendStatus('401')
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo.id
+        try{
+            user = await User.updateOne({_id:userId},{$pull:{recents:req.body.recent}})
+            if(user == null) return res.status(403).send('invalid request')
+
+            res.status(200).send("recent location deleted")
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
+}
+
 module.exports = {
     login,
     register,
@@ -320,7 +358,9 @@ module.exports = {
     editUserPreferences,
     deleteUser,
     addFavorite,
-    addRecent
+    addRecent,
+    deleteFavorite,
+    deleteRecent
 }
 
  
