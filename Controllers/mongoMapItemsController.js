@@ -61,6 +61,66 @@ const getAllMapItemsByCity = async (city) => {
   }
 };
 
+const getTypesFromPrefrences = async (preferences) => {
+  const allTypes = {
+    Beaches: "Beaches",
+    Camera: "Camera",
+    DangerousBuildings: "Dangerous Buildings",
+    Defibrillator: "Defibrillator",
+    Fountain: "Fountain",
+    LightPost: "Light Post",
+    MADAStation: "MADA Station",
+    Museum: "Museum",
+    PollutedArea: "Polluted Area",
+    PublicShelter: "Public Shelter",
+    PublicWIFIHotspots: "Public WIFI Hotspots",
+  };
+  const selectedTypes = new Set();
+
+  for (let key in preferences) {
+    if (preferences[key]) {
+      switch (key) {
+        case "accessibility":
+          selectedTypes
+            .add(allTypes.Defibrillator)
+            .add(allTypes.DangerousBuildings)
+            .add(allTypes.Camera);
+          break;
+        case "clean":
+          selectedTypes
+            .add(allTypes.Fountain)
+            .add(allTypes.Museum)
+            .add(allTypes.Beaches)
+            .add(allTypes.Camera);
+          break;
+        case "scenery":
+          selectedTypes
+            .add(allTypes.Beaches)
+            .add(allTypes.Museum)
+            .add(allTypes.Fountain)
+            .add(allTypes.Camera);
+          break;
+        case "security":
+          selectedTypes
+            .add(allTypes.PublicShelter)
+            .add(allTypes.MADAStation)
+            .add(allTypes.Camera);
+          break;
+        case "speed":
+          selectedTypes
+            .add(allTypes.Camera)
+            .add(allTypes.LightPost)
+            .add(allTypes.Camera);
+          break;
+        default:
+          console.log("Unknown preference.");
+          break;
+      }
+    }
+  }
+  return selectedTypes;
+};
+
 const getMapItemsByRegion = async (region, preferences) => {
   const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
   const minLatitude = latitude - latitudeDelta / 2;
@@ -68,9 +128,12 @@ const getMapItemsByRegion = async (region, preferences) => {
   const minLongitude = longitude - longitudeDelta / 2;
   const maxLongitude = longitude + longitudeDelta / 2;
 
+  const types = await getTypesFromPrefrences(preferences);
+
   const items = await MapItem.find({
     y: { $gte: minLatitude, $lte: maxLatitude },
     x: { $gte: minLongitude, $lte: maxLongitude },
+    type: { $in: Array.from(types) },
   });
   return items;
 };
@@ -108,6 +171,80 @@ const getDuplicateCoordinates = async (type) => {
   return duplicates;
 };
 
+const groupItemsWithinRadius = async (type) => {
+  const items = await MapItem.aggregate([
+    {
+      $match: {
+        type: type, // match only items of the specified type
+      },
+    },
+    {
+      $group: {
+        _id: {
+          type: type,
+          x: { $trunc: [{ $toDouble: "$x" }, 5] },
+          y: { $trunc: [{ $toDouble: "$y" }, 5] },
+        },
+        items: { $push: "$$ROOT" },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id.type",
+        groups: {
+          $push: {
+            coordinates: "$_id",
+            items: "$items",
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        type: "$_id",
+        groups: {
+          $filter: {
+            input: "$groups",
+            as: "group",
+            cond: { $gt: [{ $size: "$$group.items" }, 1] },
+          },
+        },
+      },
+    },
+  ]);
+
+  return items;
+};
+
+const groupItemsByStreet = async (type) => {
+  try {
+    const items = await MapItem.aggregate([
+      {
+        $match: {
+          type: type, // match only items of the specified type
+        },
+      },
+      {
+        $group: {
+          _id: "$hebrew", // group by the hebrew field
+          items: { $push: "$$ROOT" }, // add all matching documents to an array
+        },
+      },
+    ]);
+    const ret = items
+      .filter((item) => item.items.length > 1)
+      .sort((a, b) => b.items.length - a.items.length);
+    const data = {
+      size: ret.length,
+      arr: ret,
+    };
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   addMapItem,
   updateMapItem,
@@ -118,4 +255,6 @@ module.exports = {
   getAllTypes,
   countTypes,
   getDuplicateCoordinates,
+  groupItemsWithinRadius,
+  groupItemsByStreet,
 };
