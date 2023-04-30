@@ -376,4 +376,76 @@ router.put("/addFavorite",AuthenticationRoutes.addFavorite);
 
 router.put("/addRecent",AuthenticationRoutes.addRecent);
 
+/**
+ * @swagger
+ * /api/authentication/deleteFavorite:
+ *   delete:
+ *     summary: deletes a favorite location from the user's list of favorites.
+ *     description: Deletes the specified favorite location from the user's list of favorites. Requires a valid JWT access token.
+ *     tags: [Authentication Api]
+ *     requestBody:
+ *       description: The favorite to add to the user's list.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               favorite:
+ *                 type: string
+ *                 description: The favorite to delete from the user's list.
+ *     security:
+ *       - bearerAuth: [] 
+ *     responses:
+ *       '200':
+ *         description: Successfully deleted the favorite location from the user's list of favorites.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               description: The message "favorite deleted".
+ *       '401':
+ *         description: Unauthorized - the request did not include a valid JWT access token.
+ *       '403':
+ *         description: Forbidden - the request was not authorized or there was an error processing the request.
+ */
+
+router.delete("/deleteFavorite",AuthenticationRoutes.deleteFavorite);
+
+/**
+ * @swagger
+ * /api/authentication/deleteRecent:
+ *   delete:
+ *     summary: deletes a recent location from the user's list of favorites.
+ *     description: Deletes the specified recent location from the user's list of favorites. Requires a valid JWT access token.
+ *     tags: [Authentication Api]
+ *     requestBody:
+ *       description: The recent to add to the user's list.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               recent:
+ *                 type: string
+ *                 description: The recent to delete from the user's list.
+ *     security:
+ *       - bearerAuth: [] 
+ *     responses:
+ *       '200':
+ *         description: Successfully deleted the recent location from the user's list of recents.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               description: The message "recent deleted".
+ *       '401':
+ *         description: Unauthorized - the request did not include a valid JWT access token.
+ *       '403':
+ *         description: Forbidden - the request was not authorized or there was an error processing the request.
+ */
+
+router.delete("/deleteRecent",AuthenticationRoutes.deleteRecent);
+
 module.exports = router;
