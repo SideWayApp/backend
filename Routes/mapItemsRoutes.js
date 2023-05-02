@@ -11,6 +11,9 @@ const {
   getAllTypes,
   countTypes,
   getDuplicateCoordinates,
+  groupItemsWithinRadius,
+  groupItemsByStreet,
+  deleteDuplicateItems,
 } = require("../Controllers/mongoMapItemsController");
 
 /**
@@ -380,5 +383,99 @@ router.get("/get_duplicates/:type", async (req, res) => {
   const duplicates = await getDuplicateCoordinates(type);
   res.send(duplicates);
 });
+/**
+ * @swagger
+ * /api/items/group_within_radius/{type}:
+ *   get:
+ *     summary: Groups all MapItems that are within a specified radius.
+ *     tags: [Map Items API]
+ *     parameters:
+ *       - in: path
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The type of the MapItems to retrieve.
+ *     responses:
+ *       200:
+ *         description: An array of MapItem arrays, where each array contains MapItems within the specified radius of each other.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/MapItem'
+ *       500:
+ *         description: An error occurred while grouping the MapItems.
+ */
+router.get("/group_within_radius/:type", async (req, res) => {
+  const type = req.params.type;
 
+  const groupedItems = await groupItemsWithinRadius(type);
+  res.send(groupedItems);
+});
+
+/**
+ * @swagger
+ * /api/items/group_within_street/{type}:
+ *   get:
+ *     summary: Groups all MapItems that are on the same street.
+ *     tags: [Map Items API]
+ *     parameters:
+ *       - in: path
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The type of the MapItems to retrieve.
+ *     responses:
+ *       200:
+ *         description: An array of MapItem arrays, where each array contains MapItems on the same street.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/MapItem'
+ *       500:
+ *         description: An error occurred while grouping the MapItems.
+ */
+router.get("/group_within_street/:type", async (req, res) => {
+  const type = req.params.type;
+  const groupedItems = await groupItemsByStreet(type);
+  res.send(groupedItems);
+});
+
+/**
+ * @swagger
+ * /api/items/delete_duplicate/{type}:
+ *   delete:
+ *     summary: Deletes duplicate MapItems of a specified type.
+ *     tags: [Map Items API]
+ *     parameters:
+ *       - in: path
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The type of the MapItems to delete duplicates for.
+ *     responses:
+ *       200:
+ *         description: The number of duplicate MapItems deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: integer
+ *       500:
+ *         description: An error occurred while deleting duplicate MapItems.
+ */
+router.delete("/delete_duplicate/:type", async (req, res) => {
+  const type = req.params.type;
+  const deleted = await deleteDuplicateItems(type);
+  res.send(deleted);
+});
 module.exports = router;
