@@ -13,6 +13,7 @@ const {
   getDuplicateCoordinates,
   groupItemsWithinRadius,
   groupItemsByStreet,
+  deleteDuplicateItems,
 } = require("../Controllers/mongoMapItemsController");
 
 /**
@@ -449,4 +450,32 @@ router.get("/group_within_street/:type", async (req, res) => {
   res.send(groupedItems);
 });
 
+/**
+ * @swagger
+ * /api/items/delete_duplicate/{type}:
+ *   delete:
+ *     summary: Deletes duplicate MapItems of a specified type.
+ *     tags: [Map Items API]
+ *     parameters:
+ *       - in: path
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The type of the MapItems to delete duplicates for.
+ *     responses:
+ *       200:
+ *         description: The number of duplicate MapItems deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: integer
+ *       500:
+ *         description: An error occurred while deleting duplicate MapItems.
+ */
+router.delete("/delete_duplicate/:type", async (req, res) => {
+  const type = req.params.type;
+  const deleted = await deleteDuplicateItems(type);
+  res.send(deleted);
+});
 module.exports = router;

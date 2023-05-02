@@ -182,39 +182,18 @@ const groupItemsWithinRadius = async (type) => {
       $group: {
         _id: {
           type: type,
-          x: { $trunc: [{ $toDouble: "$x" }, 5] },
-          y: { $trunc: [{ $toDouble: "$y" }, 5] },
+          x: { $trunc: [{ $toDouble: "$x" }, 4] },
+          y: { $trunc: [{ $toDouble: "$y" }, 4] },
         },
         items: { $push: "$$ROOT" },
       },
     },
-    {
-      $group: {
-        _id: "$_id.type",
-        groups: {
-          $push: {
-            coordinates: "$_id",
-            items: "$items",
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        type: "$_id",
-        groups: {
-          $filter: {
-            input: "$groups",
-            as: "group",
-            cond: { $gt: [{ $size: "$$group.items" }, 1] },
-          },
-        },
-      },
-    },
   ]);
 
-  return items;
+  const ret = items
+    .filter((item) => item.items.length > 1)
+    .sort((a, b) => b.items.length - a.items.length);
+  return ret;
 };
 
 const groupItemsByStreet = async (type) => {
@@ -235,14 +214,22 @@ const groupItemsByStreet = async (type) => {
     const ret = items
       .filter((item) => item.items.length > 1)
       .sort((a, b) => b.items.length - a.items.length);
-    const data = {
-      size: ret.length,
-      arr: ret,
-    };
-    return data;
+    return ret;
   } catch (err) {
     console.log(err);
   }
+};
+
+const deleteDuplicateItems = async (type) => {
+  const items = await groupItemsByStreet(type);
+  console.log(items.length);
+  items.forEach((item) => {
+    for (let i = 1; i < item.items.length; i++) {
+      const doc = item.items[i];
+    }
+  });
+
+  return [];
 };
 
 module.exports = {
@@ -257,4 +244,5 @@ module.exports = {
   getDuplicateCoordinates,
   groupItemsWithinRadius,
   groupItemsByStreet,
+  deleteDuplicateItems,
 };
