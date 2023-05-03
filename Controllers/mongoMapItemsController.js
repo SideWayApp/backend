@@ -11,6 +11,34 @@ const addMapItem = async (type, hebrew, formattedStreetName, city, longitude, la
   }
 };
 
+async function countStreetNamesByType(mapItems) {
+  const result = {};
+
+  for (const mapItem of mapItems) {
+    if (!result[mapItem.formattedStreetName]) {
+      result[mapItem.formattedStreetName] = {};
+    }
+    if (!result[mapItem.formattedStreetName][mapItem.type]) {
+      result[mapItem.formattedStreetName][mapItem.type] = 1;
+    } else {
+      result[mapItem.formattedStreetName][mapItem.type]++;
+    }
+  }
+
+  return result;
+}
+
+const getMapItemsPerStreet = async() => {
+  try{
+    const mapItems = await MapItem.find({});
+    // Count the street names by type
+    const result = await countStreetNamesByType(mapItems);    
+    return result;
+  }catch(error){
+    console.log(error);
+  }
+} 
+
 // Function to update a map item by its id
 const updateMapItem = async (id, updates) => {
   try {
@@ -229,7 +257,7 @@ const groupItemsByStreet = async (type) => {
       },
       {
         $group: {
-          _id: "$hebrew", // group by the hebrew field
+          _id: "$formattedStreetName", // group by the hebrew field
           items: { $push: "$$ROOT" }, // add all matching documents to an array
         },
       },
@@ -264,6 +292,7 @@ module.exports = {
   getMapItemsByRegion,
   getAllTypes,
   countTypes,
+  getMapItemsPerStreet,
   getAllNoneAddressedMapItem,
   getDuplicateCoordinates,
   groupItemsWithinRadius,
