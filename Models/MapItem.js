@@ -7,11 +7,11 @@ const mapItemSchema = new mongoose.Schema({
   },
   hebrew: {
     type:String,
-    required: true,
+    required: false,
   },
-  streetName: {
-    type: String,
-    required: true,
+  formattedStreetName:{
+    type:String,
+    required:false,
   },
   lastUpdated: {
     type: Date,
@@ -21,12 +21,12 @@ const mapItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  x:{
-    type: String,
+  longitude:{
+    type: Number,
     required: true,
   },
-  y:{
-    type: String,
+  latitude:{
+    type: Number,
     required:true,
   },
 });

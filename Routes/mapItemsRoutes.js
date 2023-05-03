@@ -6,6 +6,7 @@ const {
   getMapItemsByType,
   updateMapItem,
   deleteMapItemByStreetName,
+  getAllNoneAddressedMapItem,
   deleteMapItem,
   getMapItemsByRegion,
   getAllTypes,

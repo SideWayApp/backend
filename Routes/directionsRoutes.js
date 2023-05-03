@@ -59,7 +59,7 @@ const router = express();
  * @swagger
  * components:
  *   schemas:
- *     Address:
+ *     Coordinates:
  *       type: object
  *       required:
  *         - latitude
@@ -75,6 +75,24 @@ const router = express();
  *         latitude: '32.05169730746334'
  *         longitude: '34.76187512527052'
  */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Address:
+ *       type: object
+ *       required:
+ *         - address
+ *       properties:
+ *         address:
+ *           type: string
+ *           description: The Address
+ *       example:
+ *         address: 'Ha-Khelmonit 34, Rishon Le-Zion'
+ */
+
+
 
 /**
  * @swagger
@@ -187,7 +205,7 @@ router.post("/getInstructions", async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Address'
+ *             $ref: '#/components/schemas/Coordinates'
  *     responses:
  *       200:
  *         description: An address from longitude and latitude
@@ -199,5 +217,30 @@ router.post("/getAddressFromLatLng", async (req, res) => {
   );
   res.send(data);
 });
+
+
+/**
+ * @swagger
+ * /directions/getCoordsOfAddress:
+ *   post:
+ *     summary: get coordinates from address using geocoding
+ *     tags: [Directions Api]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Address'
+ *     responses:
+ *       200:
+ *         description: An address from longitude and latitude
+ */
+router.post("/getCoordsOfAddress", async (req, res) => {
+  const data = await directionsController.getCoordsOfAddress(
+    req.body.address,
+  );
+  res.send(data);
+});
+
 
 module.exports = router;
