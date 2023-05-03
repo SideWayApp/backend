@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {
+  getMapItemsPerStreet,
   addMapItem,
   getAllMapItemsByCity,
   getMapItemsByType,
@@ -137,6 +138,34 @@ router.get("/city/:city", async (req, res) => {
   const items = await getAllMapItemsByCity(req.params.city);
   res.send(items);
 });
+
+
+/**
+ * @swagger
+ * /api/items/getMapItemsPerStreet:
+ *   get:
+ *     summary: Get all map items per street
+ *     tags: [Map Items API]
+ *     responses:
+ *       '200':
+ *         description: A list of map items filtered by street.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MapItem'
+ *       '400':
+ *         description: Bad request.
+ *       '500':
+ *         description: Internal server error.
+ */
+
+router.get("/getMapItemsPerStreet", async (req, res) => {
+  const items = await getMapItemsPerStreet();
+  res.send(items);
+});
+
 
 /**
  * @swagger
@@ -479,4 +508,7 @@ router.delete("/delete_duplicate/:type", async (req, res) => {
   const deleted = await deleteDuplicateItems(type);
   res.send(deleted);
 });
+
+
+
 module.exports = router;
