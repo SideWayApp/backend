@@ -18,6 +18,30 @@ exports.getAddressFromLatLng = async (lat, lng) => {
   }
 };
 
+exports.getCoordsOfAddress = async(address)=>{
+  const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${apiKey}`
+  try{
+    const response = await axios.get(apiUrl);
+    return response.data;
+  }catch(error){
+    console.log(error);
+  }
+}
+
+exports.getAddressFromLatLngMapItem = async (lat, lng) => {
+  const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+  try {
+    const response = await axios.get(apiUrl);
+    //const address = response.data.results[0].address_components[1].short_name;
+    const add = response.data.results[0].formatted_address.split(",")[0];
+    const address = add.split(" ")[0]
+    return address;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 async function getStreetsInAlternative(route) {
   try {
     let streetsPerAlternative = new Set();

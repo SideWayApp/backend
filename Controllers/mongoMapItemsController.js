@@ -1,9 +1,9 @@
 const MapItem = require("../Models/MapItem");
-
+const {getAddressFromLatLngMapItem} = require('./directionsContorller');
 // Function to add a new map item
-const addMapItem = async (type, hebrew, streetName, city, x, y) => {
+const addMapItem = async (type, hebrew, formattedStreetName, city, longitude, latitude) => {
   try {
-    const newItem = new MapItem({ type, hebrew, streetName, city, x, y });
+    const newItem = new MapItem({ type, hebrew,formattedStreetName, city, longitude, latitude });
     const result = await newItem.save();
     return result;
   } catch (err) {
@@ -50,6 +50,29 @@ const getMapItemsByType = async (type) => {
     throw error;
   }
 };
+
+const getAllNoneAddressedMapItem = async(type) => {
+  try{
+    let arr = [];
+    const result = await MapItem.find({type: type});
+    for (let i=0; i<2; i++){
+      const address = await getAddressFromLatLngMapItem(result[i].y,result[i].x);
+      let isAddressInArr = false;
+      for (let j=0; j<arr.length; j++) {
+        if (arr[j].address === address) {
+          isAddressInArr = true;
+          break;
+        }
+      }
+      if (!isAddressInArr) {
+        arr.push({address: address});
+      }
+    }
+    return arr;
+  }catch(error){
+    throw error;
+  }
+}
 
 // Function to get all map items
 const getAllMapItemsByCity = async (city) => {
@@ -117,5 +140,6 @@ module.exports = {
   getMapItemsByRegion,
   getAllTypes,
   countTypes,
+  getAllNoneAddressedMapItem,
   getDuplicateCoordinates,
 };

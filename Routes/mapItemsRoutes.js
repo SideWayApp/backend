@@ -6,6 +6,7 @@ const {
   getMapItemsByType,
   updateMapItem,
   deleteMapItemByStreetName,
+  getAllNoneAddressedMapItem,
   deleteMapItem,
   getMapItemsByRegion,
   getAllTypes,
@@ -380,5 +381,38 @@ router.get("/get_duplicates/:type", async (req, res) => {
   const duplicates = await getDuplicateCoordinates(type);
   res.send(duplicates);
 });
+
+/**
+ * @swagger
+ * /api/items/getAllNoneAddressedMapItem/{type}:
+ *   get:
+ *     summary: Returns all MapItems of the given type that have duplicate coordinates.
+ *     tags: [Map Items API]
+ *     parameters:
+ *       - in: path
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The type of the MapItems to retrieve.
+ *     responses:
+ *       200:
+ *         description: An array of MapItems with duplicate coordinates.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MapItem'
+ *       500:
+ *         description: An error occurred while retrieving the MapItems.
+ */
+router.get("/getAllNoneAddressedMapItem/:type", async (req, res) => {
+  const type = req.params.type;
+  const result = await getAllNoneAddressedMapItem(type);
+  res.send(result);
+});
+
+
 
 module.exports = router;
