@@ -227,12 +227,12 @@ const getDuplicateCoordinates = async (type) => {
   const duplicates = [];
 
   for (const item of items) {
-    const { x, y } = item;
+    const { longitude, latitude } = item;
 
-    if (coordinatesMap.has(`${x},${y}`)) {
+    if (coordinatesMap.has(`${longitude},${latitude}`)) {
       duplicates.push(item);
     } else {
-      coordinatesMap.set(`${x},${y}`, true);
+      coordinatesMap.set(`${longitude},${latitude}`, true);
     }
   }
 
@@ -251,8 +251,8 @@ const groupItemsWithinRadius = async (type) => {
       $group: {
         _id: {
           type: type,
-          longitude: { $trunc: [{ $toDouble: "$x" }, 4] },
-          latitude: { $trunc: [{ $toDouble: "$y" }, 4] },
+          longitude: { $trunc: [{ $toDouble: "$longtitude" }, 4] },
+          latitude: { $trunc: [{ $toDouble: "$latitude" }, 4] },
         },
         items: { $push: "$$ROOT" },
       },
