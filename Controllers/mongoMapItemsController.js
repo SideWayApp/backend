@@ -251,8 +251,8 @@ const groupItemsWithinRadius = async (type) => {
       $group: {
         _id: {
           type: type,
-          x: { $trunc: [{ $toDouble: "$x" }, 4] },
-          y: { $trunc: [{ $toDouble: "$y" }, 4] },
+          longitude: { $trunc: [{ $toDouble: "$x" }, 4] },
+          latitude: { $trunc: [{ $toDouble: "$y" }, 4] },
         },
         items: { $push: "$$ROOT" },
       },
