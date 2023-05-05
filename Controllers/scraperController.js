@@ -124,6 +124,32 @@ exports.formateAllMongoStreets = async (req, res) => {
   }
 };
 
+exports.getFullStreetNameAndAddress = async(name, city)=>{
+  try {
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const tmp = name + " " + city;
+    const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${tmp}&components=country:IL&types=route&key=${apiKey}`;
+    const response = await axios.get(apiUrl);
+    let arr = [];
+    let isInArr = false;
+    const res = response.data.results[0].address_components;    
+    for (let i =0; i<res.length; i++){
+      if (res[i].short_name.includes("St")){
+        arr.push({shortName: res[i].short_name});
+         isInArr = true;
+         break; 
+      }
+    }
+    if (!isInArr){
+      arr.push({shortName: response.data.results[0].address_components[0].short_name});
+    }
+    arr.push({address:response.data.results[0].formatted_address,location:response.data.results[0].geometry.location});
+    return arr; 
+  }catch(error){
+    console.log(error)
+  }
+}
+
 exports.getFormatedStreetName = async (name, city) => {
   try {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
