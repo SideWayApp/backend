@@ -226,4 +226,18 @@ router.get("/tlv/count_missings", async (req, res) => {
   res.send({ missing: bool });
 });
 
+/**
+ * @swagger
+ * /gis/rishon/getDataFromRishonAPI:
+ *   get:
+ *     summary: get data from Rishon's GIS
+ *     tags: [GIS Api]
+ *     responses:
+ *       200:
+ *         description: All layer codes
+ */ router.get("/rishon/getDataFromRishonAPI", async (req, res) => {
+  const data = await mapItemsFromTLVApiController.getDataFromRishonAPI();
+  res.send(data);
+});
+
 module.exports = router;

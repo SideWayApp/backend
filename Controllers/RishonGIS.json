@@ -1,0 +1,24 @@
+{
+    "layers":{
+        "Shelter":{
+            "url": "https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/154/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A178716.73499999993%2C%22ymin%22%3A649908.1300000008%2C%22xmax%22%3A185096.25499999995%2C%22ymax%22%3A655857.5700000009%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=4a8b6124-3769-6ae3-b525-372d27eff732",
+            "type": "Shelter",
+            "addressWay": "כתובת"
+        },
+        "Defibrilator":{
+            "url": "https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/152/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A173555.98%2C%22ymin%22%3A650105.36%2C%22xmax%22%3A184343.82%2C%22ymax%22%3A657846.8%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=b03d66ee-8ad4-3295-49d8-51af8f0c8f57",
+            "type": "Defibrillator",
+            "addressWay": "שם_הא"
+        },
+        "Dogs Park":{
+            "url":"https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/133/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A173054.22%2C%22ymin%22%3A649868.8160546874%2C%22xmax%22%3A184917.25999999998%2C%22ymax%22%3A657144.3360546875%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=9bea52b5-bac9-7e8c-bddf-ec4ea8a651e3",
+            "type": "Dogs Park",
+            "addressWay":"כתובת"
+        },
+        "Pharmacy":{
+            "url":"https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/153/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A175007.5%2C%22ymin%22%3A650316.8160546874%2C%22xmax%22%3A183698.69999999998%2C%22ymax%22%3A656821.7760546876%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=7faa12c8-7c84-e2ba-cfc0-55c5eb735164",
+            "type": "Pharmacy",
+            "addressWay": "רחוב + בית"
+        }
+    }
+}
