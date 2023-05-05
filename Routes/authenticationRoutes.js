@@ -151,13 +151,13 @@ router.post("/login", AuthenticationRoutes.login);
  *       - bearerAuth: [] 
  */
 
-router.post("/logout",authenticate, AuthenticationRoutes.logout);
+router.post("/logout", AuthenticationRoutes.logout);
 
 /**
  * @swagger
  * /api/authentication/refreshToken:
  *   post:
- *     summary: Refresh authentication token
+ *     summary: Refresh authentication tokens using refresh token from header
  *     tags: [Authentication Api]
  *     description: Use this endpoint to refresh an expired authentication token.
  *     security:
