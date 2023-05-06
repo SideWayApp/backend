@@ -18,6 +18,38 @@ exports.getAddressFromLatLng = async (lat, lng) => {
   }
 };
 
+
+
+exports.getAddressFromCoordinates = async (latitude, longitude)=>{
+  try {
+    const response = await axios.get(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+      {
+        headers: {
+          'accept-language': 'en' // Replace 'en' with the desired language code
+        }
+      }
+    );
+
+    if (response.status === 200) {
+      const address = response.data.address;
+      const houseNumber = address.house_number || '';
+      const road = address.road || '';
+      const city = address.city || address.town || '';
+      const country = address.country || '';
+      const formattedAddress =  `${road} ${houseNumber}, ${city}, ${country}`;
+      return formattedAddress;
+    } else {
+      throw new Error('Unable to retrieve address');
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error('An error occurred while fetching the address');
+  }
+}
+
+
+
 exports.getCoordsOfAddress = async(address)=>{
   const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${apiKey}`
   try{
