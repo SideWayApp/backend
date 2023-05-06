@@ -67,7 +67,6 @@ const register = async (req,res) => {
         console.log("REFRESH token:", refreshToken)
 
         user.tokens = [refreshToken]
-        user.tokens.push(accessToken)
         await user.save()
 
         res.status(200).send({
@@ -109,11 +108,9 @@ const login = async (req,res,next) => {
 
         if(user.tokens == null) {
             user.tokens = [refreshToken]
-            user.tokens.push(accessToken)
         }
         else{
             user.tokens.push(refreshToken)
-            user.tokens.push(accessToken)
         }
         await user.save()
 
@@ -126,7 +123,7 @@ const login = async (req,res,next) => {
     }
 };
 
-const logout = async (req,res) => {
+const logout = async (req,res,next) => {
     authHeaders = req.headers['authorization']
     const token = authHeaders && authHeaders.split(' ')[1]
     if (token == null) return res.sendStatus('401')
@@ -155,16 +152,13 @@ const logout = async (req,res) => {
 const refreshToken = async  (req,res,next) =>{
     authHeaders = req.headers['authorization']
     const token = authHeaders && authHeaders.split(' ')[1]
-    console.log("token: " + token)
     if (token == null) return res.sendStatus('401')
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
         const userId = userInfo.id
-        console.log(userInfo.id)
         try{
             const user = await User.findById(userId)
-            console.log(user)
             if(user == null) return res.status(403).send('invalid fucking request')
             if(!user.tokens.includes(token)){
                 user.tokens = []

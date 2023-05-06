@@ -1,7 +1,7 @@
 const axios = require("axios");
 const MapItem = require("../Models/MapItem");
 require("dotenv").config();
-const { getFormatedStreetName } = require("../Controllers/scraperController");
+const { getFormatedStreetName,getFullStreetNameAndAddress } = require("../Controllers/scraperController");
 const {
   addMapItem,
   getMapItemsByType,
@@ -140,7 +140,8 @@ function findCircleCenter(coords) {
 
 exports.addItemsToMongoPerTypeAndCode = async (code, type) => {
   try {
-    const data = await this.getAllItemsByTypeAndCode(code, type);
+    //const data = await this.getAllItemsByTypeAndCode(code, type);
+    const data = await this.getDataFromRishonAPI();
     const size = data.length;
     let count = 0;
     for (let i = 0; i < size; i++) {
@@ -151,20 +152,20 @@ exports.addItemsToMongoPerTypeAndCode = async (code, type) => {
           console.log("Item already in mongodb...");
         } else {
           count++;
-          let address = data[i].formattedStreetName.split(",")[0];
-          let addressParts = address.split(" ");
-          let streetName = addressParts.slice(0, -1).join(" ");
-          if(streetName.includes("St")){
+          // let address = data[i].formattedStreetName.split(",")[0];
+          // let addressParts = address.split(" ");
+          // let streetName = addressParts.slice(0, -1).join(" ");
+          // if(streetName.includes("St")){
             const result = await addMapItem(
-              type,
+              data[i].type,
               data[i].hebrew,
-              // data[i].formattedStreetName,
-              streetName,
+              data[i].formattedStreetName,
+              // streetName,
               data[i].city,
               data[i].longitude,
               data[i].latitude,
             );
-          }
+          // }
         }
       }
     }
@@ -194,3 +195,67 @@ exports.findMissingItemsFromMongoPerTypeAndCode = async (code, type) => {
     console.log(error);
   }
 };
+
+exports.getAllMapItemsPerType = async (type) =>{
+  try{ 
+    const result = await MapItem.find({type: type,city:"Rishon Le-Zion"});
+    for (let i =0; i< result.length; i++){
+      await MapItem.findOneAndDelete({ _id: result[i]._id });
+    }
+    const result1 = await MapItem.find({type: type,city:"Rishon Le-Zion"});
+    return result1;
+  }catch(error){
+    console.log(error);
+  }
+}
+
+exports.getDataFromRishonAPI = async () => {
+  try{
+    const type =  "Pharmacy";
+    const currentMapItems = await this.getAllMapItemsPerType(type);
+    let arr = [];
+    const response = await axios.get("https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/153/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A175007.5%2C%22ymin%22%3A650316.8160546874%2C%22xmax%22%3A183698.69999999998%2C%22ymax%22%3A656821.7760546876%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=7faa12c8-7c84-e2ba-cfc0-55c5eb735164")
+    const data = response.data;
+    const features = data.features;
+    const size = features.length;
+    let count = 0;
+    for (let i=0; i < size; i++){
+      const hebrew = features[i].attributes.רחוב + " " + features[i].attributes.בית;
+      let isHebrew = false;
+      
+      for (let k =0; k < arr.length; k++){
+        if (arr[k].hebrew === hebrew){
+          isHebrew = true;
+          break;
+        }
+      }
+      
+      if (!isHebrew){
+        const result = await getFullStreetNameAndAddress(hebrew,"Rishon Le-Zion");
+        const fullAddress = result[1].address;
+        let isFullAddressInArr = false;
+        for (let j =0; j<arr.length; j++){
+          if (arr[j].fullAddress === fullAddress){
+            isFullAddressInArr = true;
+            break;
+          }
+        }
+        if (!isFullAddressInArr){
+          const formattedStreetName = result[0].shortName;
+          const location = result[1].location;
+          const latitude = location.lat;
+          const longitude = location.lng;
+
+          if (formattedStreetName.includes("St") || formattedStreetName.includes("Blvd")){
+            count++;
+            arr.push({city: "Rishon Le-Zion", type: type, hebrew: hebrew, fullAddress: fullAddress, formattedStreetName: formattedStreetName, latitude: latitude, longitude:longitude});
+          }
+        }
+      }
+    }
+    arr.push({count: count, currentLength: currentMapItems.length});
+    return arr;
+  }catch(error){
+    console.log(error)
+  }
+}
