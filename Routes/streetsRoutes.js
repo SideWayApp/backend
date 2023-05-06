@@ -9,6 +9,8 @@ const {
   removeDuplicates,
   removeTotalScoreForStreets,
   updateVirtualScore,
+  getAmountByCity,
+  deleteStreetsByName,
 } = require("../Controllers/mongoStreetsController");
 
 const router = express.Router();
@@ -175,7 +177,7 @@ router.get("/all-streets/:city", async (req, res) => {
 
 /**
  * @swagger
- * /api/streets/{city}/{streetName}:
+ * /api/streets/get_street/{city}/{streetName}:
  *   get:
  *     summary: Get a single street by name from the MongoDB database
  *     tags: [Streets API]
@@ -205,8 +207,9 @@ router.get("/all-streets/:city", async (req, res) => {
  *         description: Street not found.
  */
 
-router.get("/:city/:streetName", async (req, res) => {
+router.get("/get_street/:city/:streetName", async (req, res) => {
   const street = await getSingleStreet(req.params.city, req.params.streetName);
+  console.log("Street");
   if (street) {
     res.send(street);
   } else {
@@ -327,7 +330,7 @@ router.delete("/delete/:city/:streetName", async (req, res) => {
 
 /**
  * @swagger
- * /api/steets/remove-duplicates:
+ * /api/streets/remove-duplicates:
  *   get:
  *     summary: Remove duplicate streets
  *     tags: [Streets API]
@@ -340,6 +343,65 @@ router.delete("/delete/:city/:streetName", async (req, res) => {
 router.get("/remove-duplicates", async (req, res) => {
   const dup = await removeDuplicates();
   res.send(dup);
+});
+
+/**
+ * @swagger
+ * /api/streets/amount/{city}:
+ *   get:
+ *     summary: Get the amount for a given city
+ *     tags: [Streets API]
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name of the city for which to retrieve the street amount
+ *     responses:
+ *       '200':
+ *         description: number of street in a city
+ *       '500':
+ *         description: Internal server error
+ */
+router.get("/amount/:city", async (req, res) => {
+  const city = req.params.city;
+  console.log(city);
+  const amount = await getAmountByCity(city);
+  res.send(amount.toString());
+});
+
+/**
+ * @swagger
+ * /api/streets/delete-by-name:
+ *   delete:
+ *     summary: Delete all streets by name
+ *     tags: [Streets API]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name of the street to be deleted
+ *     responses:
+ *       '200':
+ *         description: Streets deleted successfully
+ *       '500':
+ *         description: Internal server error
+ */
+router.delete("/delete-by-name", async (req, res) => {
+  const name = req.query.name;
+  console.log(name);
+  try {
+    const result = await deleteStreetsByName(name);
+    res.status(200).json({
+      message: `Deleted ${result.deletedCount} streets with name ${name}`,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 router.get("/removeTotal", async (req, res) => {

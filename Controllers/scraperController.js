@@ -29,21 +29,30 @@ exports.getScarpedStreets = async (req, res) => {
   try {
     const st = [];
     const streets = await scrapeStreetsData(
-      "https://www.ad.co.il/city/tel-aviv/streets"
+      "https://www.ad.co.il/city/rishon-lezion/streets"
     );
     streets.forEach((street) => {
       if (!st.includes(street) && street != "") {
         st.push(street);
       }
     });
-    console.log(st.length);
-    const formattedStreets = await pushStreets(st, cities.TLV);
-    console.log("formattedStreets", formattedStreets.length);
-    const created = await mongoController.createStreets(formattedStreets);
+    const chunkSize = Math.ceil(st.length / 3); // calculate the chunk size
+    for (let i = chunkSize * 2; i < st.length; i += chunkSize) {
+      const tmp = st.slice(i, i + chunkSize);
+      const formattedStreets = await this.pushStreets(tmp, cities.Rishon);
+      const filtered = formattedStreets.filter((street) => {
+        const regex = /[\u0590-\u05FF]+/;
+        return (
+          street.name.includes("St") ||
+          regex.test(street.name) ||
+          street.name.includes("Blvd")
+        );
+      });
+      const created = await mongoController.createStreets(filtered);
+      console.log(created.length);
+    }
 
-    console.log(created.length);
-
-    res.send(created);
+    res.send("Done");
   } catch (error) {
     console.log(error);
   }
@@ -80,10 +89,10 @@ exports.getStreetsFromTLVGis = async (req, res) => {
         names.push(tmp);
       }
     });
-    //const streets = await pushStreets(names, cities.TLV);
+    const streets = await pushStreets(names, cities.Rishon);
     console.log("Scraped Streets len: ", streets.length);
-    res.send(streets);
-    // const created = await mongoController.createStreets(streets);
+    const created = await mongoController.createStreets(streets);
+    res.send(created);
   } catch (error) {
     console.log(error);
   }
@@ -92,16 +101,14 @@ exports.getStreetsFromTLVGis = async (req, res) => {
 exports.pushStreets = async (names, city) => {
   const streets = await Promise.all(
     names.map(async (name) => {
-      console.log("name: ", name);
-      const formattedName = await getFormatedStreetName(name, city);
-      console.log("formattedName", formattedName);
+      const formattedName = await this.getFormatedStreetName(name, city);
       return {
         name: formattedName,
-        safe: 0,
-        city: cities.TLV,
-        clean: 0,
-        scenery: 0,
-        accessible: 0,
+        city: cities.Rishon,
+        safe: [],
+        clean: [],
+        scenery: [],
+        accessible: [],
       };
     })
   );
@@ -130,12 +137,7 @@ exports.getFormatedStreetName = async (name, city) => {
     const tmp = name + " " + city;
     const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${tmp}&components=country:IL&types=route&key=${apiKey}`;
     const response = await axios.get(apiUrl);
-    const res = response.data.results[0].address_components;    
-    for (let i =0; i<res.length; i++){
-      if (res[i].short_name.includes("St")){
-        return res[i].short_name;
-      }
-    }
+    // const res = response.data.results[0].address_components;
     return response.data.results[0].address_components[0].short_name;
   } catch (error) {
     console.log(error);
@@ -145,4 +147,23 @@ exports.getFormatedStreetName = async (name, city) => {
 exports.removeDuplicateStreets = async (req, res) => {
   const duplicate = await mongoController.removeDuplicates();
   res.send(duplicate);
+};
+
+exports.getStreetsFromRISHONGis = async (req, res) => {
+  console.log("getStreetsFromRISHONGis");
+  const url =
+    "https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/15/query?f=json&text=%25&where=1%3D1&returnGeometry=false&spatialRel=esriSpatialRelIntersects";
+  const data = await axios.get(url);
+  console.log(data.data.features.length);
+  const features = data.data.features;
+  const ret = [];
+  for (const feature of features) {
+    const tmp = feature.attributes.LEGAL_NAME;
+    if (!ret.includes(tmp) && tmp != "" && tmp != undefined) {
+      ret.push(tmp);
+    }
+  }
+  console.log(ret.length);
+
+  res.send(ret);
 };
