@@ -242,6 +242,28 @@ const updateVirtualScore = async () => {
   }
 };
 
+const getAmountByCity = async (city) => {
+  try {
+    console.log("Getting amount", city);
+    const street = await Street.find({ city: city });
+    return street.length;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const deleteStreetsByName = async (name) => {
+  try {
+    const result = await Street.deleteMany({
+      city: "Rishon Le-Zion",
+      name: name,
+    });
+    console.log(`${result.deletedCount} streets deleted.`);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   getStreetsStartingWith,
   getAllStreets,
@@ -254,4 +276,6 @@ module.exports = {
   removeDuplicates,
   removeTotalScoreForStreets,
   updateVirtualScore,
+  getAmountByCity,
+  deleteStreetsByName,
 };
