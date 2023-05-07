@@ -240,7 +240,7 @@ exports.getWayPointsAndInstructions = async (
     const steps = data.steps;
     steps.map((step) => {
       const strippedStr = step.html_instructions.replace(
-        /<\/?b>|<\/?div>/g,
+        /<\/?b>|<\/?div(.*?)>/g,
         ""
       );
       arr.push({
