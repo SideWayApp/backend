@@ -211,17 +211,16 @@ exports.getAllMapItemsPerType = async (type) =>{
 
 exports.getDataFromRishonAPI = async () => {
   try{
-    const type =  "Camera";
+    const type =  "Dangerous Building";
     // const currentMapItems = await this.getAllMapItemsPerType(type);
     let arr = [];
-    const response = await axios.get("https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/148/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A173720.10421875%2C%22ymin%22%3A651299.1039453124%2C%22xmax%22%3A184230.18421875002%2C%22ymax%22%3A657167.9039453124%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=c90c2d32-bbd3-6c4e-1652-7f231555dd9e");
+    const response = await axios.get("https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/64/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A173569.47890625006%2C%22ymin%22%3A649174.6179687503%2C%22xmax%22%3A186077.63890625007%2C%22ymax%22%3A656772.6979687503%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=523de5ac-ef1c-c3ea-45b4-f813382f1632");
     const data = response.data;
     const features = data.features;
     const size = features.length;
     let count = 0;
-    console.log(size)
     for (let i=0; i < size; i++){
-      const hebrew = features[i].attributes.CameraName;
+      const hebrew = features[i].attributes.STR_SGN + " " + features[i].attributes.BLDG_NUM;
       let isHebrew = false;
       
       for (let k =0; k < arr.length; k++){
