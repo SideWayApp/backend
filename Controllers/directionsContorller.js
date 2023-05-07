@@ -49,6 +49,26 @@ exports.getAddressFromCoordinates = async (latitude, longitude)=>{
 }
 
 
+exports.getAddressCoordinates = async (address) =>{
+  try {
+    const encodedAddress = encodeURIComponent(address);
+    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}`;
+    const response = await axios.get(apiUrl);
+
+    if (response.data && response.data.length > 0) {
+      const result = response.data[0];
+      const latitude = parseFloat(result.lat);
+      const longitude = parseFloat(result.lon);
+      return { latitude, longitude };
+    } else {
+      throw new Error('No coordinates found for the address.');
+    }
+  } catch (error) {
+    console.error('Error fetching coordinates:', error.message);
+    throw error;
+  }
+}
+
 
 exports.getCoordsOfAddress = async(address)=>{
   const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${apiKey}`
