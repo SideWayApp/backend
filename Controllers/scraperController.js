@@ -137,6 +137,7 @@ exports.getFullStreetNameAndAddress = async(name, city)=>{
     const tmp = name + " " + city;
     const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${tmp}&components=country:IL&types=route&key=${apiKey}`;
     const response = await axios.get(apiUrl);
+    console.log(response.data)
     let arr = [];
     let isInArr = false;
     const res = response.data.results[0].address_components;    

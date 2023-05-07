@@ -243,4 +243,55 @@ router.post("/getCoordsOfAddress", async (req, res) => {
 });
 
 
+
+/**
+ * @swagger
+ * /directions/getAddressFromCoordinates:
+ *   post:
+ *     summary: get address from latitude and longitude coordinates
+ *     tags: [Directions Api]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Coordinates'
+ *     responses:
+ *       200:
+ *         description: An address from longitude and latitude
+ */
+router.post("/getAddressFromCoordinates", async (req, res) => {
+  const data = await directionsController.getAddressFromCoordinates(
+    req.body.latitude,
+    req.body.longitude
+  );
+  res.send(data);
+});
+
+/**
+ * @swagger
+ * /directions/getAddressCoordinates:
+ *   post:
+ *     summary: get coordinates from address using geocoding
+ *     tags: [Directions Api]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Address'
+ *     responses:
+ *       200:
+ *         description: An address from longitude and latitude
+ */
+router.post("/getAddressCoordinates", async (req, res) => {
+  const data = await directionsController.getAddressCoordinates(
+    req.body.address,
+  );
+  res.send(data);
+});
+
+
+
+
 module.exports = router;

@@ -211,16 +211,17 @@ exports.getAllMapItemsPerType = async (type) =>{
 
 exports.getDataFromRishonAPI = async () => {
   try{
-    const type =  "Pharmacy";
-    const currentMapItems = await this.getAllMapItemsPerType(type);
+    const type =  "Camera";
+    // const currentMapItems = await this.getAllMapItemsPerType(type);
     let arr = [];
-    const response = await axios.get("https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/153/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A175007.5%2C%22ymin%22%3A650316.8160546874%2C%22xmax%22%3A183698.69999999998%2C%22ymax%22%3A656821.7760546876%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=7faa12c8-7c84-e2ba-cfc0-55c5eb735164")
+    const response = await axios.get("https://v5.gis-net.co.il/proxy/proxy.ashx?http://arcgis006/arcgis/rest/services/rishon_le_zion/rishon_le_zion_maindata_new/MapServer/148/query?f=json&text=%25&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A173720.10421875%2C%22ymin%22%3A651299.1039453124%2C%22xmax%22%3A184230.18421875002%2C%22ymax%22%3A657167.9039453124%2C%22spatialReference%22%3A%7B%22wkid%22%3A2039%7D%7D&geometryType=esriGeometryEnvelope&inSR=2039&outFields=*&outSR=2039&guid=c90c2d32-bbd3-6c4e-1652-7f231555dd9e");
     const data = response.data;
     const features = data.features;
     const size = features.length;
     let count = 0;
+    console.log(size)
     for (let i=0; i < size; i++){
-      const hebrew = features[i].attributes.רחוב + " " + features[i].attributes.בית;
+      const hebrew = features[i].attributes.CameraName;
       let isHebrew = false;
       
       for (let k =0; k < arr.length; k++){
@@ -253,7 +254,7 @@ exports.getDataFromRishonAPI = async () => {
         }
       }
     }
-    arr.push({count: count, currentLength: currentMapItems.length});
+    arr.push({count: count});
     return arr;
   }catch(error){
     console.log(error)
