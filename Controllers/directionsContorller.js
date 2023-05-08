@@ -18,6 +18,58 @@ exports.getAddressFromLatLng = async (lat, lng) => {
   }
 };
 
+
+
+exports.getAddressFromCoordinates = async (latitude, longitude)=>{
+  try {
+    const response = await axios.get(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+      {
+        headers: {
+          'accept-language': 'en' // Replace 'en' with the desired language code
+        }
+      }
+    );
+
+    if (response.status === 200) {
+      const address = response.data.address;
+      const houseNumber = address.house_number || '';
+      const road = address.road || '';
+      const city = address.city || address.town || '';
+      const country = address.country || '';
+      const formattedAddress =  `${road} ${houseNumber}, ${city}, ${country}`;
+      return formattedAddress;
+    } else {
+      throw new Error('Unable to retrieve address');
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error('An error occurred while fetching the address');
+  }
+}
+
+
+exports.getAddressCoordinates = async (address) =>{
+  try {
+    const encodedAddress = encodeURIComponent(address);
+    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}`;
+    const response = await axios.get(apiUrl);
+
+    if (response.data && response.data.length > 0) {
+      const result = response.data[0];
+      const latitude = parseFloat(result.lat);
+      const longitude = parseFloat(result.lon);
+      return { latitude, longitude };
+    } else {
+      throw new Error('No coordinates found for the address.');
+    }
+  } catch (error) {
+    console.error('Error fetching coordinates:', error.message);
+    throw error;
+  }
+}
+
+
 exports.getCoordsOfAddress = async(address)=>{
   const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${apiKey}`
   try{
@@ -188,7 +240,7 @@ exports.getWayPointsAndInstructions = async (
     const steps = data.steps;
     steps.map((step) => {
       const strippedStr = step.html_instructions.replace(
-        /<\/?b>|<\/?div>/g,
+        /<\/?b>|<\/?div(.*?)>/g,
         ""
       );
       arr.push({
