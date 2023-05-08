@@ -6,12 +6,12 @@ const mapItemSchema = new mongoose.Schema({
     required: true,
   },
   hebrew: {
-    type:String,
+    type: String,
     required: false,
   },
-  formattedStreetName:{
-    type:String,
-    required:false,
+  formattedStreetName: {
+    type: String,
+    required: false,
   },
   lastUpdated: {
     type: Date,
@@ -21,15 +21,24 @@ const mapItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  longitude:{
+  longitude: {
     type: Number,
     required: true,
   },
-  latitude:{
+  latitude: {
     type: Number,
-    required:true,
+    required: true,
+  },
+  creator: {
+    type: String,
+    required: true,
+  },
+  exists: {
+    type: Boolean,
+    required: true,
   },
 });
+
 
 const MapItem = mongoose.model("MapItem", mapItemSchema);
 
