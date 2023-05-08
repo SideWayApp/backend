@@ -7,7 +7,9 @@ const addMapItem = async (
   formattedStreetName,
   city,
   longitude,
-  latitude
+  latitude,
+  creator,
+  exists,
 ) => {
   try {
     const newItem = new MapItem({
@@ -17,6 +19,8 @@ const addMapItem = async (
       city,
       longitude,
       latitude,
+      creator,
+      exists
     });
     const result = await newItem.save();
     return result;
