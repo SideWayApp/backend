@@ -1,21 +1,24 @@
 const Street = require("../models/Street")
 
 const getStreetsStartingWith = async (letters) => {
-	const regex = new RegExp(`${letters}`, "i") // modify regex to match substring
+	const regex = new RegExp(`${letters}`, "i")
 	const cities = await Street.distinct("city", { name: regex }).exec()
 
 	const streetNames = []
+	let suggestionCount = 0
 
 	for (const city of cities) {
 		const streets = await Street.find({ city, name: regex })
-			.limit(5)
+			.limit(5 - suggestionCount)
 			.select("name")
 			.exec()
 		const streetNamesInCity = streets.map((street) => `${street.name}, ${city}`)
 		streetNames.push(...streetNamesInCity)
+		suggestionCount += streetNamesInCity.length
+		if (suggestionCount >= 5) break
 	}
 
-	return streetNames
+	return streetNames.slice(0, 5)
 }
 
 const getAllStreets = async (city) => {
