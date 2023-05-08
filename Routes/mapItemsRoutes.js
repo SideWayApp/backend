@@ -98,10 +98,14 @@ const {
 router.post("/add", async (req, res) => {
   const item = await addMapItem(
     req.body.type,
-    req.body.streetName,
+    req.body.hebrew,
+    req.body.formatedStreetName,
     req.body.city,
-    req.body.x,
-    req.body.y
+    req.body.longitude,
+    req.body.latitude,
+    req.body.creator,
+    req.body.exists,
+    
   );
   res.send(item);
 });

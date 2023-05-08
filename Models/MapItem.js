@@ -35,7 +35,7 @@ const mapItemSchema = new mongoose.Schema({
   },
   exists: {
     type: Boolean,
-    required: true,
+    required: false,
   },
 });
 
