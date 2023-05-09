@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const MapItemsRoutes  = require("../Controllers/mongoMapItemsController");
 const {
   getMapItemsPerStreet,
+  addMapItemLatLong,
   addMapItem,
   getAllMapItemsByCity,
   getMapItemsByType,
@@ -70,6 +72,48 @@ const {
  *           example: 0
  *
  */
+
+/**
+ * @swagger
+ *
+ * /api/items/addFromLatLong:
+ *   post:
+ *     summary: Add map item from latitude and longitude coordinates
+ *     tags: [Map Items API]
+ *     requestBody:
+ *       description: Request body containing latitude, longitude, type, creator, and exists properties
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               latitude:
+ *                 type: number
+ *               longitude:
+ *                 type: number
+ *               type:
+ *                 type: string
+ *               creator:
+ *                 type: string
+ *               exists:
+ *                 type: boolean
+ *             required:
+ *               - latitude
+ *               - longitude
+ *               - type
+ *               - creator
+ *               - exists
+ *     responses:
+ *       200:
+ *         description: New map item added successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+
+router.post("/addFromLatLong" ,MapItemsRoutes.addMapItemLatLong);
 
 /**
  * @swagger

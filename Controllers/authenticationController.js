@@ -53,13 +53,13 @@ const register = async (req,res) => {
         
         //create access & refresh tokens
         const accessToken = jwt.sign(
-            {'id':user._id},
+            {'_id':user._id},
             process.env.ACCESS_TOKEN_SECRET,
             {expiresIn:process.env.JWT_EXPIRATION}
         )
 
         const refreshToken = await jwt.sign(
-            {'id':user._id},
+            {'_id':user._id},
             process.env.REFRESH_TOKEN_SECRET
         )
 
@@ -98,13 +98,13 @@ const login = async (req,res,next) => {
         if(!match) return sendError(res,400,'wrong password')
 
         const accessToken = jwt.sign(
-            {'id':user._id},
+            {'_id':user._id},
             process.env.ACCESS_TOKEN_SECRET,
             {expiresIn:process.env.JWT_EXPIRATION}
         )
 
         const refreshToken = await jwt.sign(
-            {'id':user._id},
+            {'_id':user._id},
             process.env.REFRESH_TOKEN_SECRET
         )
 
