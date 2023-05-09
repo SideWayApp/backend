@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const AuthenticationRoutes  = require("../Controllers/authenticationController");
-const authenticate = require('../Common/authentication_middleware')
+const AuthenticationRoutes = require("../Controllers/authenticationController");
+const authenticate = require("../Common/authentication_middleware");
 
 /**
  * @swagger
@@ -97,7 +97,7 @@ const authenticate = require('../Common/authentication_middleware')
  *           type: array
  *           items:
  *             type: string
- */ 
+ */
 
 router.post("/register", AuthenticationRoutes.register);
 
@@ -148,7 +148,7 @@ router.post("/login", AuthenticationRoutes.login);
  *       401:
  *         description: Unauthorized access
  *     security:
- *       - bearerAuth: [] 
+ *       - bearerAuth: []
  */
 
 router.post("/logout", AuthenticationRoutes.logout);
@@ -156,7 +156,7 @@ router.post("/logout", AuthenticationRoutes.logout);
 /**
  * @swagger
  * /api/authentication/refreshToken:
- *   post:
+ *   get:
  *     summary: Refresh authentication tokens using refresh token from header
  *     tags: [Authentication Api]
  *     description: Use this endpoint to refresh an expired authentication token.
@@ -176,7 +176,7 @@ router.post("/logout", AuthenticationRoutes.logout);
  *         description: Unauthorized access
  */
 
-router.post("/refreshToken", AuthenticationRoutes.refreshToken);
+router.get("/refreshToken", AuthenticationRoutes.refreshToken);
 
 /**
  * @swagger
@@ -186,7 +186,7 @@ router.post("/refreshToken", AuthenticationRoutes.refreshToken);
  *     description: Returns the user information associated with the provided JWT token
  *     tags: [Authentication Api]
  *     security:
- *       - bearerAuth: [] 
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: User information retrieved successfully
@@ -200,7 +200,7 @@ router.post("/refreshToken", AuthenticationRoutes.refreshToken);
  *         description: Forbidden - the request was not authorized or there was an error processing the request.
  */
 
-router.get("/user",AuthenticationRoutes.getUser);
+router.get("/user", AuthenticationRoutes.getUser);
 
 /**
  * @swagger
@@ -210,7 +210,7 @@ router.get("/user",AuthenticationRoutes.getUser);
  *     description: Updates the user's preferences based on the input data.
  *     tags: [Authentication Api]
  *     security:
- *       - bearerAuth: [] 
+ *       - bearerAuth: []
  *     requestBody:
  *       description: Object containing the user's preferences to update.
  *       required: true
@@ -274,7 +274,7 @@ router.get("/user",AuthenticationRoutes.getUser);
  *                   example: "Forbidden access."
  */
 
-router.put("/editUserPreferences",AuthenticationRoutes.editUserPreferences);
+router.put("/editUserPreferences", AuthenticationRoutes.editUserPreferences);
 
 /**
  * @swagger
@@ -284,7 +284,7 @@ router.put("/editUserPreferences",AuthenticationRoutes.editUserPreferences);
  *     description: Deletes the user associated with the authenticated JWT token.
  *     tags: [Authentication Api]
  *     security:
- *       - bearerAuth: [] 
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The user was successfully deleted.
@@ -302,7 +302,7 @@ router.put("/editUserPreferences",AuthenticationRoutes.editUserPreferences);
  *         description: Forbidden - the request was not authorized or there was an error processing the request.
  */
 
-router.delete("/deleteUser",AuthenticationRoutes.deleteUser);
+router.delete("/deleteUser", AuthenticationRoutes.deleteUser);
 
 /**
  * @swagger
@@ -323,7 +323,7 @@ router.delete("/deleteUser",AuthenticationRoutes.deleteUser);
  *                 type: string
  *                 description: The favorite to add to the user's list.
  *     security:
- *       - bearerAuth: [] 
+ *       - bearerAuth: []
  *     responses:
  *       '200':
  *         description: Successfully added the favorite to the user's list of favorites.
@@ -338,7 +338,7 @@ router.delete("/deleteUser",AuthenticationRoutes.deleteUser);
  *         description: Forbidden - the request was not authorized or there was an error processing the request.
  */
 
-router.put("/addFavorite",AuthenticationRoutes.addFavorite);
+router.put("/addFavorite", AuthenticationRoutes.addFavorite);
 
 /**
  * @swagger
@@ -359,7 +359,7 @@ router.put("/addFavorite",AuthenticationRoutes.addFavorite);
  *                 type: string
  *                 description: The recent to add to the user's list.
  *     security:
- *       - bearerAuth: [] 
+ *       - bearerAuth: []
  *     responses:
  *       '200':
  *         description: Successfully added the recent location to the user's list of recents.
@@ -374,7 +374,7 @@ router.put("/addFavorite",AuthenticationRoutes.addFavorite);
  *         description: Forbidden - the request was not authorized or there was an error processing the request.
  */
 
-router.put("/addRecent",AuthenticationRoutes.addRecent);
+router.put("/addRecent", AuthenticationRoutes.addRecent);
 
 /**
  * @swagger
@@ -395,7 +395,7 @@ router.put("/addRecent",AuthenticationRoutes.addRecent);
  *                 type: string
  *                 description: The favorite to delete from the user's list.
  *     security:
- *       - bearerAuth: [] 
+ *       - bearerAuth: []
  *     responses:
  *       '200':
  *         description: Successfully deleted the favorite location from the user's list of favorites.
@@ -410,7 +410,7 @@ router.put("/addRecent",AuthenticationRoutes.addRecent);
  *         description: Forbidden - the request was not authorized or there was an error processing the request.
  */
 
-router.delete("/deleteFavorite",AuthenticationRoutes.deleteFavorite);
+router.delete("/deleteFavorite", AuthenticationRoutes.deleteFavorite);
 
 /**
  * @swagger
@@ -431,7 +431,7 @@ router.delete("/deleteFavorite",AuthenticationRoutes.deleteFavorite);
  *                 type: string
  *                 description: The recent to delete from the user's list.
  *     security:
- *       - bearerAuth: [] 
+ *       - bearerAuth: []
  *     responses:
  *       '200':
  *         description: Successfully deleted the recent location from the user's list of recents.
@@ -446,6 +446,6 @@ router.delete("/deleteFavorite",AuthenticationRoutes.deleteFavorite);
  *         description: Forbidden - the request was not authorized or there was an error processing the request.
  */
 
-router.delete("/deleteRecent",AuthenticationRoutes.deleteRecent);
+router.delete("/deleteRecent", AuthenticationRoutes.deleteRecent);
 
 module.exports = router;
