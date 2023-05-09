@@ -7,7 +7,9 @@ const addMapItem = async (
   formattedStreetName,
   city,
   longitude,
-  latitude
+  latitude,
+  creator,
+  exists,
 ) => {
   try {
     const newItem = new MapItem({
@@ -17,6 +19,8 @@ const addMapItem = async (
       city,
       longitude,
       latitude,
+      creator,
+      exists
     });
     const result = await newItem.save();
     return result;
@@ -62,6 +66,18 @@ const updateMapItem = async (id, updates) => {
     throw err;
   }
 };
+
+const tempUpdateMapItems = async () => {
+  try {
+    const result = await MapItem.updateMany({}, { creator: "GIS", exists: true });
+    console.log("Fields added to existing documents successfully!");
+    return result; // Return the update result if needed
+  } catch (err) {
+    console.error(err);
+    throw err; // Rethrow the error if necessary
+  }
+};
+
 
 // Function to delete a map item by its id
 const deleteMapItem = async (id) => {
@@ -316,4 +332,5 @@ module.exports = {
   groupItemsWithinRadius,
   groupItemsByStreet,
   deleteDuplicateItems,
+  tempUpdateMapItems
 };

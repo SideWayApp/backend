@@ -6,6 +6,7 @@ const {
   getAllMapItemsByCity,
   getMapItemsByType,
   updateMapItem,
+  tempUpdateMapItems,
   deleteMapItemByStreetName,
   getAllNoneAddressedMapItem,
   deleteMapItem,
@@ -97,10 +98,14 @@ const {
 router.post("/add", async (req, res) => {
   const item = await addMapItem(
     req.body.type,
-    req.body.streetName,
+    req.body.hebrew,
+    req.body.formatedStreetName,
     req.body.city,
-    req.body.x,
-    req.body.y
+    req.body.longitude,
+    req.body.latitude,
+    req.body.creator,
+    req.body.exists,
+    
   );
   res.send(item);
 });
@@ -166,7 +171,6 @@ router.get("/getMapItemsPerStreet", async (req, res) => {
   res.send(items);
 });
 
-
 /**
  * @swagger
  * /api/items/update/{itemId}:
@@ -205,6 +209,40 @@ router.get("/getMapItemsPerStreet", async (req, res) => {
 router.put("/update/:itemId", async (req, res) => {
   const item = await updateMapItem(req.params.itemId, req.body);
   res.send(item);
+});
+
+
+
+
+/**
+ * @swagger
+ * /api/items/update/All:
+ *   post:
+ *     summary: Update all map items 
+ *     tags: [Map Items API]
+ *     responses:
+ *       '200':
+ *         description: The updated map item.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MapItem'
+ *       '400':
+ *         description: Bad request. Updates parameter is missing or invalid.
+ *       '404':
+ *         description: Map item not found.
+ *       '500':
+ *         description: Internal server error.
+ */
+
+router.post("/update/All", async (req, res) => {
+  try {
+    const items = await tempUpdateMapItems();
+    res.send(items);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 /**

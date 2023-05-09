@@ -237,6 +237,8 @@ exports.getWayPointsAndInstructions = async (
     const response = await this.getDirections(origin, destination, preference);
     const polyline = response.overview_polyline.points;
     const data = response.legs[0];
+    const distance = data.distance.text;
+    const duration = data.duration.text;
     const steps = data.steps;
     steps.map((step) => {
       const strippedStr = step.html_instructions.replace(
@@ -257,6 +259,8 @@ exports.getWayPointsAndInstructions = async (
     const retData = {
       arr: arr,
       points: polyline,
+      distance: distance,
+      duration: duration
     };
     return retData;
   } catch (error) {
