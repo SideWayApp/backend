@@ -158,7 +158,7 @@ const refreshToken = async  (req,res,next) =>{
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             const user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid fucking request')
