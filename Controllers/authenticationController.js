@@ -310,6 +310,7 @@ const addRecent = async (req,res)=>{
     })
 }
 
+//
 const deleteFavorite = async (req,res)=>{
     authHeaders = req.headers['authorization']
     const token = authHeaders && authHeaders.split(' ')[1]
