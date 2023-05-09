@@ -92,6 +92,8 @@ const login = async (req,res,next) => {
         const user = await User.findOne({'email': email})
         if(user == null) return sendError(res,400,'wrong email ')
 
+        console.log(user._id)
+
         const match = await bcrypt.compare(password, user.password)
         if(!match) return sendError(res,400,'wrong password')
 
@@ -130,7 +132,7 @@ const logout = async (req,res,next) => {
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -192,7 +194,8 @@ const getUser = async (req, res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
+        console.log(userId)
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -218,7 +221,7 @@ const editUserPreferences = async (req, res) => {
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findByIdAndUpdate(userId,
                 {'preferences' : {
@@ -249,7 +252,7 @@ const deleteUser = async(req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findByIdAndDelete(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -269,7 +272,7 @@ const addFavorite = async(req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -290,7 +293,7 @@ const addRecent = async (req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -314,7 +317,7 @@ const deleteFavorite = async (req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.updateOne({_id:userId},{$pull:{favorites:req.body.favorite}})
             if(user == null) return res.status(403).send('invalid request')
@@ -333,7 +336,7 @@ const deleteRecent = async (req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.updateOne({_id:userId},{$pull:{recents:req.body.recent}})
             if(user == null) return res.status(403).send('invalid request')
