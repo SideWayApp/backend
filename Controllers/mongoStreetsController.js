@@ -107,37 +107,6 @@ const createStreet = async (street) => {
 	}
 }
 
-// const getFieldScoreForStreets = async (streetNames, field) => {
-// 	try {
-// 		const streets = await Street.find({
-// 			name: { $regex: new RegExp(streetNames.join("|"), "i") },
-// 		})
-// 		findUniqueStreets(streetNames, streets)
-// 		if (field === "total") {
-// 			let totalScore = 0
-// 			for (const street of streets) {
-// 				totalScore += street[field]
-// 			}
-// 			return totalScore
-// 		} else {
-// 			const totalScore = streets.reduce((sum, street) => {
-// 				if (Array.isArray(street[field])) {
-// 					const fieldSum = street[field].reduce(
-// 						(scoreSum, scoreObj) => scoreSum + scoreObj.score,
-// 						0
-// 					)
-// 					return sum + fieldSum
-// 				} else {
-// 					return sum
-// 				}
-// 			}, 0)
-// 			return totalScore
-// 		}
-// 	} catch (err) {
-// 		console.error(err)
-// 	}
-// }
-
 //updated:
 
 const getFieldScoreForStreets = async (streetNames, preferences) => {
@@ -151,14 +120,23 @@ const getFieldScoreForStreets = async (streetNames, preferences) => {
 			let streetScore = 0
 			for (const preference in preferences) {
 				if (preferences[preference]) {
-					if (Array.isArray(street[preference])) {
-						streetScore += street[preference].reduce(
-							(sum, scoreObj) => sum + scoreObj.score,
-							0
-						)
-					} else {
-						streetScore += street[preference] || 0
+					let field = null;
+					switch (preference) {
+						case "accessibility":
+							field = "totalAccessible"
+							break;
+						case "clean":
+							field = "totalClean"
+							break;
+						case "scenery":
+							field = "totalScenery"
+							break;
+						case "security":
+							field = "totalSafe"
+							break;
+							
 					}
+					streetScore += street[field] || 0
 				}
 			}
 			totalScore += streetScore
