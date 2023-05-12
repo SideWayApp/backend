@@ -1,8 +1,46 @@
-const MapItem = require("../Models/MapItem")
-const Street = require("../models/Street")
 
-const { getAddressFromLatLngMapItem } = require("./directionsContorller")
+const MapItem = require("../Models/MapItem");
+const { getAddressFromCoordinates } = require("./directionsContorller");
 // Function to add a new map item
+const addMapItemLatLong = async (req,res)=>{
+  // type,longitude,latitude,creator,exists
+  const resFromLatLong = await getAddressFromCoordinates(req.body.latitude,req.body.longitude);
+  console.log(resFromLatLong)
+  const tempStreetName = resFromLatLong.split(', ')[0]
+  var cityName = resFromLatLong.split(', ')[1]
+
+  streetName = tempStreetName.replace(/[0-9]/g, '').concat(" St");
+  
+  switch(cityName){
+    case "Rishon LeZion":
+      cityName = "Rishon Le-Zion"
+      break;
+    case "Tel Aviv": 
+      cityName = "Tel-Aviv"
+      break;
+  }
+  try{
+    const mapItem = MapItem({
+      'type':req.body.type,
+      'hebrew':'hebrew',
+      'formattedStreetName':streetName,
+      'city':cityName,
+      'longitude':req.body.longitude,
+      'latitude':req.body.latitude,
+      'creator':req.body.creator,
+      'exists':req.body.exists 
+    });
+    newItem = await mapItem.save()
+  
+    res.status(200).send(newItem)
+  }catch(err){
+    res.status(400).send({
+      'status':'fail',
+      'error':err.message
+    })
+  }
+}
+  
 const addMapItem = async (
 	type,
 	hebrew,
@@ -409,20 +447,22 @@ async function updateStreetScores() {
 }
 
 module.exports = {
-	addMapItem,
-	updateMapItem,
-	deleteMapItem,
-	getMapItemsByType,
-	getAllMapItemsByCity,
-	getMapItemsByRegion,
-	getAllTypes,
-	countTypes,
-	getMapItemsPerStreet,
-	getAllNoneAddressedMapItem,
-	getDuplicateCoordinates,
-	groupItemsWithinRadius,
-	groupItemsByStreet,
-	deleteDuplicateItems,
-	tempUpdateMapItems,
-	updateStreetScores,
-}
+  addMapItemLatLong,
+  addMapItem,
+  updateMapItem,
+  deleteMapItem,
+  getMapItemsByType,
+  getAllMapItemsByCity,
+  getMapItemsByRegion,
+  getAllTypes,
+  countTypes,
+  getMapItemsPerStreet,
+  getAllNoneAddressedMapItem,
+  getDuplicateCoordinates,
+  groupItemsWithinRadius,
+  groupItemsByStreet,
+  deleteDuplicateItems,
+  tempUpdateMapItems,
+  updateStreetScores,
+};
+

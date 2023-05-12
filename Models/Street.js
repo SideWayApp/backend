@@ -49,6 +49,23 @@ streetSchema.virtual("total").get(function () {
 	return (cleanAvg + safeAvg + sceneryAvg + accessibleAvg) / 4
 })
 
-const Street = mongoose.model("Street", streetSchema)
+streetSchema.virtual("totalClean").get(function () {
+  return this.clean.reduce((total, score) => total + score.score, 0);
+});
+
+streetSchema.virtual("totalSafe").get(function () {
+  return this.safe.reduce((total, score) => total + score.score, 0);
+});
+
+streetSchema.virtual("totalScenery").get(function () {
+  return this.scenery.reduce((total, score) => total + score.score, 0);
+});
+
+streetSchema.virtual("totalAccessible").get(function () {
+  return this.accessible.reduce((total, score) => total + score.score, 0);
+});
+
+
+const Street = mongoose.model("Street", streetSchema);
 
 module.exports = Street

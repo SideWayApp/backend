@@ -53,13 +53,13 @@ const register = async (req,res) => {
         
         //create access & refresh tokens
         const accessToken = jwt.sign(
-            {'id':user._id},
+            {'_id':user._id},
             process.env.ACCESS_TOKEN_SECRET,
             {expiresIn:process.env.JWT_EXPIRATION}
         )
 
         const refreshToken = await jwt.sign(
-            {'id':user._id},
+            {'_id':user._id},
             process.env.REFRESH_TOKEN_SECRET
         )
 
@@ -84,25 +84,29 @@ const register = async (req,res) => {
 
 const login = async (req,res,next) => {
     console.log('login')
+    console.log(req.body)
     const email = req.body.email
     const password = req.body.password
+    console.log("Email = " + email + " , Password = " + password)
     if(email == null || password == null) return sendError(res,400,'wrong email or password')
     
     try{
         const user = await User.findOne({'email': email})
         if(user == null) return sendError(res,400,'wrong email ')
 
+        console.log(user._id)
+
         const match = await bcrypt.compare(password, user.password)
         if(!match) return sendError(res,400,'wrong password')
 
         const accessToken = jwt.sign(
-            {'id':user._id},
+            {'_id':user._id},
             process.env.ACCESS_TOKEN_SECRET,
             {expiresIn:process.env.JWT_EXPIRATION}
         )
 
         const refreshToken = await jwt.sign(
-            {'id':user._id},
+            {'_id':user._id},
             process.env.REFRESH_TOKEN_SECRET
         )
 
@@ -130,7 +134,7 @@ const logout = async (req,res,next) => {
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -156,7 +160,7 @@ const refreshToken = async  (req,res,next) =>{
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             const user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid fucking request')
@@ -192,7 +196,8 @@ const getUser = async (req, res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
+        console.log(userId)
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -218,7 +223,7 @@ const editUserPreferences = async (req, res) => {
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findByIdAndUpdate(userId,
                 {'preferences' : {
@@ -249,7 +254,7 @@ const deleteUser = async(req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findByIdAndDelete(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -269,7 +274,7 @@ const addFavorite = async(req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -290,7 +295,7 @@ const addRecent = async (req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
@@ -298,6 +303,10 @@ const addRecent = async (req,res)=>{
             const newArr = [] 
             newArr[0] = req.body.recent
             user.recents =newArr.concat(user.recents)
+            
+            if(user.recents.length > 5){
+                user.recents.length = 5
+            }
             await user.save()
 
             res.status(200).send("recent location added")
@@ -307,6 +316,7 @@ const addRecent = async (req,res)=>{
     })
 }
 
+//
 const deleteFavorite = async (req,res)=>{
     authHeaders = req.headers['authorization']
     const token = authHeaders && authHeaders.split(' ')[1]
@@ -314,7 +324,7 @@ const deleteFavorite = async (req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.updateOne({_id:userId},{$pull:{favorites:req.body.favorite}})
             if(user == null) return res.status(403).send('invalid request')
@@ -333,7 +343,7 @@ const deleteRecent = async (req,res)=>{
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
         if(err) return res.status(403).send(err.message)
-        const userId = userInfo.id
+        const userId = userInfo._id
         try{
             user = await User.updateOne({_id:userId},{$pull:{recents:req.body.recent}})
             if(user == null) return res.status(403).send('invalid request')
