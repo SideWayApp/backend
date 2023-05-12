@@ -84,8 +84,10 @@ const register = async (req,res) => {
 
 const login = async (req,res,next) => {
     console.log('login')
+    console.log(req.body)
     const email = req.body.email
     const password = req.body.password
+    console.log("Email = " + email + " , Password = " + password)
     if(email == null || password == null) return sendError(res,400,'wrong email or password')
     
     try{
@@ -301,6 +303,10 @@ const addRecent = async (req,res)=>{
             const newArr = [] 
             newArr[0] = req.body.recent
             user.recents =newArr.concat(user.recents)
+            
+            if(user.recents.length > 5){
+                user.recents.length = 5
+            }
             await user.save()
 
             res.status(200).send("recent location added")

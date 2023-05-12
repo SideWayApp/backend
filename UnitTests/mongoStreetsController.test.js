@@ -8,7 +8,7 @@ const {
   getSingleStreet,
   getFieldScoreForStreets,
 } = require("../Controllers/mongoStreetsController");
-const Street = require("../models/Street");
+const Street = require("../Models/Street");
 beforeAll(async () => {
   await Street.deleteMany({ name: "Main Street" });
 });
