@@ -1,23 +1,24 @@
-const express = require("express");
-const router = express.Router();
+const express = require("express")
+const router = express.Router()
 const {
-  getMapItemsPerStreet,
-  addMapItem,
-  getAllMapItemsByCity,
-  getMapItemsByType,
-  updateMapItem,
-  tempUpdateMapItems,
-  deleteMapItemByStreetName,
-  getAllNoneAddressedMapItem,
-  deleteMapItem,
-  getMapItemsByRegion,
-  getAllTypes,
-  countTypes,
-  getDuplicateCoordinates,
-  groupItemsWithinRadius,
-  groupItemsByStreet,
-  deleteDuplicateItems,
-} = require("../Controllers/mongoMapItemsController");
+	getMapItemsPerStreet,
+	addMapItem,
+	getAllMapItemsByCity,
+	getMapItemsByType,
+	updateMapItem,
+	tempUpdateMapItems,
+	deleteMapItemByStreetName,
+	getAllNoneAddressedMapItem,
+	deleteMapItem,
+	getMapItemsByRegion,
+	getAllTypes,
+	countTypes,
+	getDuplicateCoordinates,
+	groupItemsWithinRadius,
+	groupItemsByStreet,
+	deleteDuplicateItems,
+	updateStreetScores,
+} = require("../Controllers/mongoMapItemsController")
 
 /**
  * @swagger
@@ -96,19 +97,18 @@ const {
  *         description: Internal server error
  */
 router.post("/add", async (req, res) => {
-  const item = await addMapItem(
-    req.body.type,
-    req.body.hebrew,
-    req.body.formatedStreetName,
-    req.body.city,
-    req.body.longitude,
-    req.body.latitude,
-    req.body.creator,
-    req.body.exists,
-    
-  );
-  res.send(item);
-});
+	const item = await addMapItem(
+		req.body.type,
+		req.body.hebrew,
+		req.body.formatedStreetName,
+		req.body.city,
+		req.body.longitude,
+		req.body.latitude,
+		req.body.creator,
+		req.body.exists
+	)
+	res.send(item)
+})
 
 /**
  * @swagger
@@ -140,10 +140,9 @@ router.post("/add", async (req, res) => {
  */
 
 router.get("/city/:city", async (req, res) => {
-  const items = await getAllMapItemsByCity(req.params.city);
-  res.send(items);
-});
-
+	const items = await getAllMapItemsByCity(req.params.city)
+	res.send(items)
+})
 
 /**
  * @swagger
@@ -167,9 +166,9 @@ router.get("/city/:city", async (req, res) => {
  */
 
 router.get("/getMapItemsPerStreet", async (req, res) => {
-  const items = await getMapItemsPerStreet();
-  res.send(items);
-});
+	const items = await getMapItemsPerStreet()
+	res.send(items)
+})
 
 /**
  * @swagger
@@ -207,18 +206,15 @@ router.get("/getMapItemsPerStreet", async (req, res) => {
  */
 
 router.put("/update/:itemId", async (req, res) => {
-  const item = await updateMapItem(req.params.itemId, req.body);
-  res.send(item);
-});
-
-
-
+	const item = await updateMapItem(req.params.itemId, req.body)
+	res.send(item)
+})
 
 /**
  * @swagger
  * /api/items/update/All:
  *   post:
- *     summary: Update all map items 
+ *     summary: Update all map items
  *     tags: [Map Items API]
  *     responses:
  *       '200':
@@ -236,14 +232,14 @@ router.put("/update/:itemId", async (req, res) => {
  */
 
 router.post("/update/All", async (req, res) => {
-  try {
-    const items = await tempUpdateMapItems();
-    res.send(items);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
+	try {
+		const items = await tempUpdateMapItems()
+		res.send(items)
+	} catch (err) {
+		console.error(err)
+		res.status(500).send("Internal Server Error")
+	}
+})
 
 /**
  * @swagger
@@ -275,9 +271,9 @@ router.post("/update/All", async (req, res) => {
  */
 
 router.delete("/delete/:itemId", async (req, res) => {
-  const item = await deleteMapItem(req.params.itemId);
-  res.send(item);
-});
+	const item = await deleteMapItem(req.params.itemId)
+	res.send(item)
+})
 
 /**
  * @swagger
@@ -309,9 +305,9 @@ router.delete("/delete/:itemId", async (req, res) => {
  */
 
 router.delete("/delete/:streetName", async (req, res) => {
-  const item = await deleteMapItemByStreetName(req.params.streetName);
-  res.send(item);
-});
+	const item = await deleteMapItemByStreetName(req.params.streetName)
+	res.send(item)
+})
 
 /**
  * @swagger
@@ -360,12 +356,12 @@ router.delete("/delete/:streetName", async (req, res) => {
  */
 
 router.post("/region", async (req, res) => {
-  const { latitude, longitude, latitudeDelta, longitudeDelta, preferences } =
-    req.body;
-  const region = { latitude, longitude, latitudeDelta, longitudeDelta };
-  const items = await getMapItemsByRegion(region, preferences);
-  res.send(items);
-});
+	const { latitude, longitude, latitudeDelta, longitudeDelta, preferences } =
+		req.body
+	const region = { latitude, longitude, latitudeDelta, longitudeDelta }
+	const items = await getMapItemsByRegion(region, preferences)
+	res.send(items)
+})
 
 /**
  * @swagger
@@ -387,9 +383,9 @@ router.post("/region", async (req, res) => {
  *         description: An error occurred while retrieving the types.
  */
 router.get("/all_types", async (req, res) => {
-  const items = await getAllTypes();
-  res.send(items);
-});
+	const items = await getAllTypes()
+	res.send(items)
+})
 
 /**
  * @swagger
@@ -417,9 +413,9 @@ router.get("/all_types", async (req, res) => {
  *         description: An error occurred while retrieving the types counts.
  */
 router.get("/all_types_counters", async (req, res) => {
-  const count = await countTypes();
-  res.send(count);
-});
+	const count = await countTypes()
+	res.send(count)
+})
 
 /**
  * @swagger
@@ -447,10 +443,10 @@ router.get("/all_types_counters", async (req, res) => {
  *         description: An error occurred while retrieving the MapItems.
  */
 router.get("/get_duplicates/:type", async (req, res) => {
-  const type = req.params.type;
-  const duplicates = await getDuplicateCoordinates(type);
-  res.send(duplicates);
-});
+	const type = req.params.type
+	const duplicates = await getDuplicateCoordinates(type)
+	res.send(duplicates)
+})
 /**
  * @swagger
  * /api/items/group_within_radius/{type}:
@@ -479,11 +475,11 @@ router.get("/get_duplicates/:type", async (req, res) => {
  *         description: An error occurred while grouping the MapItems.
  */
 router.get("/group_within_radius/:type", async (req, res) => {
-  const type = req.params.type;
+	const type = req.params.type
 
-  const groupedItems = await groupItemsWithinRadius(type);
-  res.send(groupedItems);
-});
+	const groupedItems = await groupItemsWithinRadius(type)
+	res.send(groupedItems)
+})
 
 /**
  * @swagger
@@ -513,10 +509,10 @@ router.get("/group_within_radius/:type", async (req, res) => {
  *         description: An error occurred while grouping the MapItems.
  */
 router.get("/group_within_street/:type", async (req, res) => {
-  const type = req.params.type;
-  const groupedItems = await groupItemsByStreet(type);
-  res.send(groupedItems);
-});
+	const type = req.params.type
+	const groupedItems = await groupItemsByStreet(type)
+	res.send(groupedItems)
+})
 
 /**
  * @swagger
@@ -542,11 +538,29 @@ router.get("/group_within_street/:type", async (req, res) => {
  *         description: An error occurred while deleting duplicate MapItems.
  */
 router.delete("/delete_duplicate/:type", async (req, res) => {
-  const type = req.params.type;
-  const deleted = await deleteDuplicateItems(type);
-  res.send(deleted);
-});
+	const type = req.params.type
+	const deleted = await deleteDuplicateItems(type)
+	res.send(deleted)
+})
 
+/**
+ * @swagger
+ * /api/items/updateStreetScores:
+ *   get:
+ *     summary: Update street scores
+ *     tags: [Map Items API]
+ *     responses:
+ *       '200':
+ *         description: Update was good.
+ *       '400':
+ *         description: Bad request. City parameter is missing or invalid.
+ *       '500':
+ *         description: Internal server error.
+ */
 
+router.get("/updateStreetScores", async (req, res) => {
+	const items = await updateStreetScores()
+	res.send(items)
+})
 
-module.exports = router;
+module.exports = router
