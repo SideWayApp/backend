@@ -86,6 +86,7 @@ const login = async (req,res,next) => {
     console.log('login')
     const email = req.body.email
     const password = req.body.password
+    console.log("Email = " + email + " , Password = " + password)
     if(email == null || password == null) return sendError(res,400,'wrong email or password')
     
     try{
