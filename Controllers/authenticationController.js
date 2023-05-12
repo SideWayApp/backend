@@ -84,6 +84,7 @@ const register = async (req,res) => {
 
 const login = async (req,res,next) => {
     console.log('login')
+    console.log(req.body)
     const email = req.body.email
     const password = req.body.password
     console.log("Email = " + email + " , Password = " + password)
