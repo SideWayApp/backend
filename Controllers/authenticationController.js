@@ -301,6 +301,10 @@ const addRecent = async (req,res)=>{
             const newArr = [] 
             newArr[0] = req.body.recent
             user.recents =newArr.concat(user.recents)
+            
+            if(user.recents.length > 5){
+                user.recents.length = 5
+            }
             await user.save()
 
             res.status(200).send("recent location added")
