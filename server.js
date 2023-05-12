@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 const directionsRoute = require("./Routes/directionsRoutes");
 const scraperRoutes = require("./Routes/scraperRoutes");
 const streetsRoutes = require("./Routes/streetsRoutes");
@@ -11,6 +12,7 @@ const getAllCamerasFromTLVApiRoute = require("./Routes/mapItemsFromTLVApiRoutes"
 const AuthenticationRoutes = require("./Routes/authenticationRoutes")
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 app.use("/gis", getAllCamerasFromTLVApiRoute);
 app.use("/directions", directionsRoute);
 app.use("/scrape", scraperRoutes);
