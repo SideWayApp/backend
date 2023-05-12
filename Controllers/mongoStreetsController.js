@@ -1,4 +1,4 @@
-const Street = require("../models/Street")
+const Street = require("../Models/Street")
 
 const getStreetsStartingWith = async (letters) => {
 	const regex = new RegExp(`${letters}`, "i")
