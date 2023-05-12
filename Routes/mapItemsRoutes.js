@@ -20,6 +20,8 @@ const {
   groupItemsByStreet,
   deleteDuplicateItems,
 } = require("../Controllers/mongoMapItemsController");
+const authenticate = require("../Common/authentication_middleware");
+
 
 /**
  * @swagger
@@ -221,6 +223,8 @@ router.get("/getMapItemsPerStreet", async (req, res) => {
  *   put:
  *     summary: Update a map item by ID
  *     tags: [Map Items API]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: itemId
@@ -248,9 +252,15 @@ router.get("/getMapItemsPerStreet", async (req, res) => {
  *         description: Map item not found.
  *       '500':
  *         description: Internal server error.
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
-router.put("/update/:itemId", async (req, res) => {
+
+router.put("/update/:itemId",authenticate, async (req, res) => {
   const item = await updateMapItem(req.params.itemId, req.body);
   res.send(item);
 });
@@ -264,24 +274,34 @@ router.put("/update/:itemId", async (req, res) => {
  *   post:
  *     summary: Update all map items 
  *     tags: [Map Items API]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MapItemUpdates'
  *     responses:
  *       '200':
- *         description: The updated map item.
+ *         description: The updated map items.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/MapItem'
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MapItem'
  *       '400':
  *         description: Bad request. Updates parameter is missing or invalid.
  *       '404':
- *         description: Map item not found.
+ *         description: Map items not found.
  *       '500':
  *         description: Internal server error.
  */
 
-router.post("/update/All", async (req, res) => {
+ router.post("/update/All", authenticate, async (req, res) => {
   try {
-    const items = await tempUpdateMapItems();
+    const items = await updateAllMapItems(req.body);
     res.send(items);
   } catch (err) {
     console.error(err);
@@ -289,12 +309,15 @@ router.post("/update/All", async (req, res) => {
   }
 });
 
+
 /**
  * @swagger
  * /api/items/delete/{itemId}:
  *   delete:
  *     summary: Delete a map item by ID
  *     tags: [Map Items API]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: itemId
@@ -318,10 +341,11 @@ router.post("/update/All", async (req, res) => {
  *         description: Internal server error.
  */
 
-router.delete("/delete/:itemId", async (req, res) => {
+ router.delete("/delete/:itemId", authenticate,async (req, res) => {
   const item = await deleteMapItem(req.params.itemId);
   res.send(item);
 });
+
 
 /**
  * @swagger
@@ -329,6 +353,8 @@ router.delete("/delete/:itemId", async (req, res) => {
  *   delete:
  *     summary: Delete a map item by street name
  *     tags: [Map Items API]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: streetName
@@ -352,10 +378,11 @@ router.delete("/delete/:itemId", async (req, res) => {
  *         description: Internal server error.
  */
 
-router.delete("/delete/:streetName", async (req, res) => {
+ router.delete("/delete/:streetName", authenticate, async (req, res) => {
   const item = await deleteMapItemByStreetName(req.params.streetName);
   res.send(item);
 });
+
 
 /**
  * @swagger
@@ -585,7 +612,7 @@ router.get("/group_within_street/:type", async (req, res) => {
  *       500:
  *         description: An error occurred while deleting duplicate MapItems.
  */
-router.delete("/delete_duplicate/:type", async (req, res) => {
+router.delete("/delete_duplicate/:type", authenticate ,async (req, res) => {
   const type = req.params.type;
   const deleted = await deleteDuplicateItems(type);
   res.send(deleted);

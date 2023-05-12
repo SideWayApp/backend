@@ -12,6 +12,8 @@ const {
   getAmountByCity,
   deleteStreetsByName,
 } = require("../Controllers/mongoStreetsController");
+const authenticate = require("../Common/authentication_middleware");
+
 
 const router = express.Router();
 // const authenticate = require("../Common/authentication_middleware")
@@ -167,10 +169,15 @@ router.post(
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Street'
+ *     securitySchemes:
+ *       bearerAuth:
+ *         type: http
+ *         scheme: bearer
+ *         bearerFormat: JWT
  */
 
 //, authenticate
-router.get("/all-streets/:city", async (req, res) => {
+router.get("/all-streets/:city", authenticate, async (req, res) => {
   const allStreets = await getAllStreets(req.params.city);
   res.send(allStreets);
 });
@@ -181,6 +188,8 @@ router.get("/all-streets/:city", async (req, res) => {
  *   get:
  *     summary: Get a single street by name from the MongoDB database
  *     tags: [Streets API]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: city
@@ -203,11 +212,13 @@ router.get("/all-streets/:city", async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Street'
+ *       401:
+ *         description: Unauthorized access.
  *       404:
  *         description: Street not found.
  */
 
-router.get("/get_street/:city/:streetName", async (req, res) => {
+ router.get("/get_street/:city/:streetName", authenticate, async (req, res) => {
   const street = await getSingleStreet(req.params.city, req.params.streetName);
   console.log("Street");
   if (street) {
@@ -217,12 +228,15 @@ router.get("/get_street/:city/:streetName", async (req, res) => {
   }
 });
 
+
 /**
  * @swagger
  * /api/streets/update/{city}/{streetName}:
  *   put:
  *     summary: Update a street by name
  *     tags: [Streets API]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -254,7 +268,8 @@ router.get("/get_street/:city/:streetName", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.put("/update/:city/:streetName", async (req, res) => {
+
+ router.put("/update/:city/:streetName", authenticate, async (req, res) => {
   console.log(req.params);
   const updated = await updateStreet(
     req.params.city,
@@ -264,12 +279,15 @@ router.put("/update/:city/:streetName", async (req, res) => {
   res.send(updated);
 });
 
+
 /**
  * @swagger
  * /api/streets/create:
  *   post:
  *     summary: Create a new street
  *     tags: [Streets API]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -288,7 +306,7 @@ router.put("/update/:city/:streetName", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.post("/create", async (req, res) => {
+ router.post("/create", authenticate, async (req, res) => {
   console.log("create", req.body);
   const newStreet = await createStreet(req.body);
   res.send(newStreet);
@@ -300,6 +318,8 @@ router.post("/create", async (req, res) => {
  *   delete:
  *     summary: Delete a street by name
  *     tags: [Streets API]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: city
  *         in: query
@@ -323,10 +343,11 @@ router.post("/create", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.delete("/delete/:city/:streetName", async (req, res) => {
+ router.delete("/delete/:city/:streetName", authenticate, async (req, res) => {
   const deleted = await deleteStreet(req.params.city, req.params.streetName);
   res.send(deleted);
 });
+
 
 /**
  * @swagger
@@ -340,7 +361,7 @@ router.delete("/delete/:city/:streetName", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.get("/remove-duplicates", async (req, res) => {
+router.get("/remove-duplicates", authenticate,async (req, res) => {
   const dup = await removeDuplicates();
   res.send(dup);
 });
@@ -364,7 +385,7 @@ router.get("/remove-duplicates", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.get("/amount/:city", async (req, res) => {
+router.get("/amount/:city", authenticate,async (req, res) => {
   const city = req.params.city;
   console.log(city);
   const amount = await getAmountByCity(city);
@@ -390,7 +411,7 @@ router.get("/amount/:city", async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.delete("/delete-by-name", async (req, res) => {
+router.delete("/delete-by-name", authenticate,async (req, res) => {
   const name = req.query.name;
   console.log(name);
   try {
@@ -404,13 +425,13 @@ router.delete("/delete-by-name", async (req, res) => {
   }
 });
 
-router.get("/removeTotal", async (req, res) => {
+router.get("/removeTotal", authenticate,async (req, res) => {
   console.log("remove total");
   await removeTotalScoreForStreets();
   res.send("done");
 });
 
-router.get("/updateStreets", async (req, res) => {
+router.get("/updateStreets", authenticate,async (req, res) => {
   console.log("update total");
   await updateVirtualScore();
   res.send("done");
