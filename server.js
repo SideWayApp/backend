@@ -45,6 +45,14 @@ if (process.env.NODE_ENV === "development") {
   app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 }
 
+
+function checkRender(req, res) {
+  // Logic to check render
+  // ...
+  res.json({ message: "Render checked" });
+}
+app.get("/api/check-render", checkRender);
+
 //connect to db
 mongoose.set("strictQuery", true);
 mongoose
