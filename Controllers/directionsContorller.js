@@ -242,10 +242,7 @@ exports.getWayPointsAndInstructions = async (
     const duration = data.duration.text;
     const steps = data.steps;
     steps.map((step) => {
-      const strippedStr = step.html_instructions.replace(
-        /<\/?b>|<\/?div(.*?)>/g,
-        ""
-      );
+      const strippedStr = step.html_instructions.replace(/<[^>]+>/g, "");
       arr.push({
         latitude: step.start_location.lat,
         longitude: step.start_location.lng,
