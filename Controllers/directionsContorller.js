@@ -127,15 +127,17 @@ async function getBestAlternative(routes, origin, destination, preferences) {
   let bestIndex = 0;
   for (let i = 0; i < routes.length; i++) {
     const streetsInAlternative = await getStreetsInAlternative(routes[i]);
-    const totalWeightInAlternative = await getTotalWeightInAlternative(
+    const totalWeightInAlternative = await getFieldScoreForStreets(
       streetsInAlternative,
       preferences
     );
+    console.log("route: " + i + " weight: " + totalWeightInAlternative)
     if (totalWeightInAlternative > maxWeight) {
       maxWeight = totalWeightInAlternative;
       bestIndex = i;
     }
   }
+  console.log("bestIndex: " + bestIndex)
   return bestIndex;
 }
 
@@ -157,7 +159,6 @@ exports.getDirections = async (origin, destination, preferences) => {
   const mode = "walking";
   const alternatives = true;
   const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=${mode}&alternatives=${alternatives}`;
-  console.log(apiUrl);
   try {
     const response = await axios.get(apiUrl);
     const ret = response.data;
