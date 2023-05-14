@@ -1,5 +1,6 @@
 
 const MapItem = require("../Models/MapItem");
+const Street = require("../Models/Street");
 const { getAddressFromCoordinates } = require("./directionsContorller");
 // Function to add a new map item
 const addMapItemLatLong = async (req,res)=>{
@@ -31,6 +32,8 @@ const addMapItemLatLong = async (req,res)=>{
       'exists':req.body.exists 
     });
     newItem = await mapItem.save()
+
+    // addStreetScore(streetName,cityName,req.body.type);
   
     res.status(200).send(newItem)
   }catch(err){
@@ -39,6 +42,70 @@ const addMapItemLatLong = async (req,res)=>{
       'error':err.message
     })
   }
+}
+
+const addStreetScore = async(streetName,cityName,type)=>{
+
+  var newScore = 0;
+  var fields = [];
+
+  switch(type){
+    case "Blocked":
+      newScore = -10;
+      fields[0] = "accessible"
+      break;
+    case "Danger":
+      newScore = -5; 
+      fields[0] = "safe"
+      break;
+    case "Flood":
+      newScore = -4;
+      fields[0] = "accessible"
+      fields[1] = "safe"
+      break;
+    case "Protest":
+      newScore = -3; 
+      fields[0] = "accessible"
+      break;
+    case "Poop":
+      newScore = -3;
+      fields[0] = "clean"
+      break;
+    case "No lights":
+      newScore = -4;
+      fields[0] = "safe"
+      break;
+    case "Dirty":
+      newScore = -3;
+      fields[0] = "clean"
+      break;
+    case "No shadow":
+      newScore = -2;
+      fields[0] = "scenery"
+      break; 
+    case "Constraction":
+      newScore = -5;
+      fields[0] = "scenery"
+      break;
+	default:
+		break; 
+  }
+
+  try{
+    const street = await Street.findOne({
+      name: streetName,
+      city: cityName,
+    })
+
+    fields.forEach(field => {
+      street[field].push(newScore);
+    })
+
+    await street.save()
+    
+  }catch(err) {
+		throw err
+	}
 }
   
 const addMapItem = async (
