@@ -202,7 +202,24 @@ const getUser = async (req, res)=>{
             user = await User.findById(userId)
             if(user == null) return res.status(403).send('invalid request')
 
-            res.status(200).send(user)
+            const data = {
+                'preferences' : {
+                    'accessibility' : user.preferences.accessibility,
+                    'clean' : user.preferences.clean,
+                    'scenery' : user.preferences.scenery,
+                    'security' : user.preferences.security,
+                    'speed' : user.preferences.speed,
+                }, 
+                'signUpData':{
+                    'name': user.signUpData.name,
+                    'gender' : user.signUpData.gender,
+                    'age' : user.signUpData.age,
+                },
+                'favorites': user.favorites,
+                'recents':user.recents,
+            }
+
+            res.status(200).send(data)
         }catch(err){
             res.status(403).send(err.message)
         }  
@@ -303,7 +320,7 @@ const addRecent = async (req,res)=>{
             const newArr = [] 
             newArr[0] = req.body.recent
             user.recents =newArr.concat(user.recents)
-            
+
             if(user.recents.length > 5){
                 user.recents.length = 5
             }
