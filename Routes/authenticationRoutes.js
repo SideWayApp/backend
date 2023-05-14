@@ -138,7 +138,7 @@ router.post("/login", AuthenticationRoutes.login);
 /**
  * @swagger
  * /api/authentication/logout:
- *   post:
+ *   get:
  *     summary: Logout user
  *     tags: [Authentication Api]
  *     description: Use this endpoint to log out a user.
@@ -151,7 +151,7 @@ router.post("/login", AuthenticationRoutes.login);
  *       - bearerAuth: []
  */
 
-router.post("/logout", AuthenticationRoutes.logout);
+router.get("/logout", AuthenticationRoutes.logout);
 
 /**
  * @swagger
