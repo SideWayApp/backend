@@ -1,21 +1,22 @@
 
 const MapItem = require("../Models/MapItem");
+const Street = require("../Models/Street");
 const { getAddressFromCoordinates } = require("./directionsContorller");
-// Function to add a new map item
+
+//this function using lat & long to add new item map and to add score to the appropriate street
 const addMapItemLatLong = async (req,res)=>{
-  // type,longitude,latitude,creator,exists
   const resFromLatLong = await getAddressFromCoordinates(req.body.latitude,req.body.longitude);
   console.log(resFromLatLong)
   const tempStreetName = resFromLatLong.split(', ')[0]
   var cityName = resFromLatLong.split(', ')[1]
 
-  streetName = tempStreetName.replace(/[0-9]/g, '').concat(" St");
+  streetName = tempStreetName.replace(/[0-9]/g, '').concat("St");
   
   switch(cityName){
     case "Rishon LeZion":
       cityName = "Rishon Le-Zion"
       break;
-    case "Tel Aviv": 
+    case "Tel Aviv-Yafo": 
       cityName = "Tel-Aviv"
       break;
   }
@@ -31,6 +32,8 @@ const addMapItemLatLong = async (req,res)=>{
       'exists':req.body.exists 
     });
     newItem = await mapItem.save()
+
+    addStreetScore(streetName,cityName,req.body.type,newItem._id);
   
     res.status(200).send(newItem)
   }catch(err){
@@ -40,7 +43,74 @@ const addMapItemLatLong = async (req,res)=>{
     })
   }
 }
-  
+
+const addStreetScore = async(streetName,cityName,type,id)=>{
+
+  var newScore = 0;
+  var fields = [];
+
+  switch(type){
+    case "Blocked":
+      newScore = -10;
+      fields[0] = "accessible"
+      break;
+    case "Danger":
+      newScore = -5; 
+      fields[0] = "safe"
+      break;
+    case "Flood":
+      newScore = -4;
+      fields[0] = "accessible"
+      fields[1] = "safe"
+      break;
+    case "Protest":
+      newScore = -3; 
+      fields[0] = "accessible"
+      break;
+    case "Poop":
+      newScore = -3;
+      fields[0] = "clean"
+      break;
+    case "No lights":
+      newScore = -4;
+      fields[0] = "safe"
+      break;
+    case "Dirty":
+      newScore = -3;
+      fields[0] = "clean"
+      break;
+    case "No shadow":
+      newScore = -2;
+      fields[0] = "scenery"
+      break; 
+    case "Constraction":
+      newScore = -5;
+      fields[0] = "scenery"
+      break;
+	default:
+		break; 
+	}
+
+  const score = { foreignKey: id, score: newScore }
+
+  try{
+    const street = await Street.findOne({
+      name: streetName,
+      city: cityName,
+    })
+
+    fields.forEach(field => {
+      street[field].push(score);
+    })
+
+    await street.save()
+
+  }catch(err) {
+		throw err
+	}
+}
+
+// Function to add a new map item
 const addMapItem = async (
 	type,
 	hebrew,
