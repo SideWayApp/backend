@@ -10,13 +10,13 @@ const addMapItemLatLong = async (req,res)=>{
   const tempStreetName = resFromLatLong.split(', ')[0]
   var cityName = resFromLatLong.split(', ')[1]
 
-  streetName = tempStreetName.replace(/[0-9]/g, '').concat(" St");
+  streetName = tempStreetName.replace(/[0-9]/g, '').concat("St");
   
   switch(cityName){
     case "Rishon LeZion":
       cityName = "Rishon Le-Zion"
       break;
-    case "Tel Aviv": 
+    case "Tel Aviv-Yafo": 
       cityName = "Tel-Aviv"
       break;
   }
@@ -33,7 +33,7 @@ const addMapItemLatLong = async (req,res)=>{
     });
     newItem = await mapItem.save()
 
-    // addStreetScore(streetName,cityName,req.body.type);
+    addStreetScore(streetName,cityName,req.body.type,newItem._id);
   
     res.status(200).send(newItem)
   }catch(err){
@@ -44,7 +44,7 @@ const addMapItemLatLong = async (req,res)=>{
   }
 }
 
-const addStreetScore = async(streetName,cityName,type)=>{
+const addStreetScore = async(streetName,cityName,type,id)=>{
 
   var newScore = 0;
   var fields = [];
@@ -89,7 +89,9 @@ const addStreetScore = async(streetName,cityName,type)=>{
       break;
 	default:
 		break; 
-  }
+	}
+
+  const score = { foreignKey: id, score: newScore }
 
   try{
     const street = await Street.findOne({
@@ -98,16 +100,16 @@ const addStreetScore = async(streetName,cityName,type)=>{
     })
 
     fields.forEach(field => {
-      street[field].push(newScore);
+      street[field].push(score);
     })
 
     await street.save()
-    
+
   }catch(err) {
 		throw err
 	}
 }
-  
+
 const addMapItem = async (
 	type,
 	hebrew,
