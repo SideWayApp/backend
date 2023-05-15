@@ -2,9 +2,9 @@
 const MapItem = require("../Models/MapItem");
 const Street = require("../Models/Street");
 const { getAddressFromCoordinates } = require("./directionsContorller");
-// Function to add a new map item
+
+//this function using lat & long to add new item map and to add score to the appropriate street
 const addMapItemLatLong = async (req,res)=>{
-  // type,longitude,latitude,creator,exists
   const resFromLatLong = await getAddressFromCoordinates(req.body.latitude,req.body.longitude);
   console.log(resFromLatLong)
   const tempStreetName = resFromLatLong.split(', ')[0]
@@ -110,6 +110,7 @@ const addStreetScore = async(streetName,cityName,type,id)=>{
 	}
 }
 
+// Function to add a new map item
 const addMapItem = async (
 	type,
 	hebrew,
