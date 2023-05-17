@@ -20,6 +20,7 @@ const addMapItemLatLong = async (req,res)=>{
       cityName = "Tel-Aviv"
       break;
   }
+
   try{
     const mapItem = MapItem({
       'type':req.body.type,
@@ -33,14 +34,14 @@ const addMapItemLatLong = async (req,res)=>{
     });
     newItem = await mapItem.save()
 
+	res.status(200).send(newItem)
     addStreetScore(streetName,cityName,req.body.type,newItem._id);
-  
-    res.status(200).send(newItem)
   }catch(err){
     res.status(400).send({
       'status':'fail',
       'error':err.message
     })
+	console.log(err.message)
   }
 }
 
