@@ -203,6 +203,7 @@ const getUser = async (req, res)=>{
             if(user == null) return res.status(403).send('invalid request')
 
             const data = {
+                'email' : email,
                 'preferences' : {
                     'accessibility' : user.preferences.accessibility,
                     'clean' : user.preferences.clean,
