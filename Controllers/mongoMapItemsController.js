@@ -67,6 +67,7 @@ const addStreetScore = async(streetName,cityName,type,id)=>{
     case "Protest":
       newScore = -3; 
       fields[0] = "accessible"
+      fields[1] = "speed"
       break;
     case "Poop":
       newScore = -3;
@@ -265,6 +266,15 @@ const getTypesFromPrefrences = async (preferences) => {
 		PollutedArea: "Polluted Area",
 		PublicShelter: "Public Shelter",
 		PublicWIFIHotspots: "Public WIFI Hotspots",
+		Blocked:"Blocked",
+		Danger:"Danger",
+		Flood:"Flood",
+		Protest:"Protest",
+		Poop: "Poop",
+		No_lights:"No lights",
+		Dirty:"Dirty",
+		No_shadow:"No shadow",
+		Constraction:"Constraction"
 	}
 	const selectedTypes = new Set()
 
@@ -276,6 +286,9 @@ const getTypesFromPrefrences = async (preferences) => {
 						.add(allTypes.Defibrillator)
 						.add(allTypes.DangerousBuildings)
 						.add(allTypes.Camera)
+						.add(allTypes.Blocked)
+						.add(allTypes.Flood)
+						.add(allTypes.Protest)
 					break
 				case "clean":
 					selectedTypes
@@ -283,6 +296,8 @@ const getTypesFromPrefrences = async (preferences) => {
 						.add(allTypes.Museum)
 						.add(allTypes.Beaches)
 						.add(allTypes.Camera)
+						.add(allTypes.Poop)
+						.add(allTypes.Dirty)
 					break
 				case "scenery":
 					selectedTypes
@@ -290,18 +305,23 @@ const getTypesFromPrefrences = async (preferences) => {
 						.add(allTypes.Museum)
 						.add(allTypes.Fountain)
 						.add(allTypes.Camera)
+						.add(allTypes.No_shadow)
+						.add(allTypes.Constraction)
 					break
 				case "security":
 					selectedTypes
 						.add(allTypes.PublicShelter)
 						.add(allTypes.MADAStation)
 						.add(allTypes.Camera)
+						.add(allTypes.Danger)
+						.add(allTypes.Flood)
+						.add(allTypes.No_lights)
 					break
 				case "speed":
 					selectedTypes
 						.add(allTypes.Camera)
 						.add(allTypes.LightPost)
-						.add(allTypes.Camera)
+						.add(allTypes.Protest)
 					break
 				default:
 					console.log("Unknown preference.")
