@@ -121,6 +121,38 @@ router.post("/addFromLatLong" ,MapItemsRoutes.addMapItemLatLong);
 
 /**
  * @swagger
+ *
+ * /api/items/updateExistMapItem:
+ *   post:
+ *     summary: Update a map item or delete after 3 times
+ *     tags: [Map Items API]
+ *     requestBody:
+ *       description: Request body
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               _id:
+ *                 type: string
+ *               user:
+ *                 type: string
+ *             required:
+ *               - _id
+ *               - user
+ *     responses:
+ *       "200":
+ *         description: Map item updated or deleted successfully
+ *       "403":
+ *         description: Invalid request or error occurred
+ */
+
+router.post("/updateExistMapItem", MapItemsRoutes.updateExistMapItem);
+
+
+/**
+ * @swagger
  * /api/items/add:
  *   post:
  *     summary: Create a new map item
@@ -264,6 +296,30 @@ router.put("/update/:itemId",authenticate, async (req, res) => {
   const item = await updateMapItem(req.params.itemId, req.body);
   res.send(item);
 });
+
+/**
+ * @swagger
+ * /api/items/tempUpdateMapItems:
+ *   put:
+ *     tags: [Map Items API] 
+ *     summary: Update map items.
+ *     description: Update the `exists` property of all map items to 0.
+ *     responses:
+ *       200:
+ *         description: Map items updated successfully.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       403:
+ *         description: Error updating map items.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+router.put("/tempUpdateMapItems" , MapItemsRoutes.tempUpdateMapItems);
 
 /**
  * @swagger

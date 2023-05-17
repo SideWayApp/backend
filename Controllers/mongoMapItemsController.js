@@ -46,70 +46,127 @@ const addMapItemLatLong = async (req,res)=>{
 }
 
 const addStreetScore = async(streetName,cityName,type,id)=>{
-
-  var newScore = 0;
-  var fields = [];
-
-  switch(type){
-    case "Blocked":
-      newScore = -10;
-      fields[0] = "accessible"
-      break;
-    case "Danger":
-      newScore = -5; 
-      fields[0] = "safe"
-      break;
-    case "Flood":
-      newScore = -4;
-      fields[0] = "accessible"
-      fields[1] = "safe"
-      break;
-    case "Protest":
-      newScore = -3; 
-      fields[0] = "accessible"
-      fields[1] = "speed"
-      break;
-    case "Poop":
-      newScore = -3;
-      fields[0] = "clean"
-      break;
-    case "No lights":
-      newScore = -4;
-      fields[0] = "safe"
-      break;
-    case "Dirty":
-      newScore = -3;
-      fields[0] = "clean"
-      break;
-    case "No shadow":
-      newScore = -2;
-      fields[0] = "scenery"
-      break; 
-    case "Constraction":
-      newScore = -5;
-      fields[0] = "scenery"
-      break;
-	default:
-		break; 
-	}
-
-  const score = { foreignKey: id, score: newScore }
-
   try{
     const street = await Street.findOne({
       name: streetName,
       city: cityName,
     })
 
+	const fieldsAndScore = getFieldAndScoreByType(type)
+	const fields = fieldsAndScore.fields
+	const score = { foreignKey: id, score:fieldsAndScore.score}
+
     fields.forEach(field => {
       street[field].push(score);
     })
-
     await street.save()
 
   }catch(err) {
 		throw err
 	}
+}
+
+const getFieldAndScoreByType = (type)=>{
+	var score = 0;
+	const fields = []
+	switch(type){
+		case "Blocked":
+		  score = -10;
+		  fields[0] = "accessible"
+		  break;
+		case "Danger":
+		  score = -5; 
+		  fields[0] = "safe"
+		  break;
+		case "Flood":
+		  score = -4;
+		  fields[0] = "accessible"
+		  fields[1] = "safe"
+		  break;
+		case "Protest":
+		  score = -3; 
+		  fields[0] = "accessible"
+		  fields[1] = "speed"
+		  break;
+		case "Poop":
+		  score = -3;
+		  fields[0] = "clean"
+		  break;
+		case "No lights":
+		  score = -4;
+		  fields[0] = "safe"
+		  break;
+		case "Dirty":
+		  score = -3;
+		  fields[0] = "clean"
+		  break;
+		case "No shadow":
+		  score = -2;
+		  fields[0] = "scenery"
+		  break; 
+		case "Constraction":
+		  score = -5;
+		  fields[0] = "scenery"
+		  break;
+		default:
+			break; 
+		}
+	
+	return {fields,score}
+}
+
+//delete mapItem & streetScore from DB
+const updateExistMapItem = async (req,res)=>{
+	const mapItemId = req.body._id
+	const user = req.body.user
+	try{
+		mapItem = await MapItem.findById({_id:mapItemId});	
+		if(mapItem == null) return res.status(403).send('invalid request')
+
+		if(!mapItem.whoChanged){
+			mapItem.whoChanged[0] = user
+		}
+		else if(!mapItem.whoChanged.includes(user)){
+			if(mapItem.exists == -2){
+				deleteStreetScore(mapItem.formattedStreetName, mapItem.city, mapItemId ,mapItem.type )
+				mapItem = await MapItem.findByIdAndDelete({_id:mapItemId});
+				res.status(200).send("mapItem deleted")
+			}else{
+				mapItem.exists--
+				mapItem.whoChanged.push(user)
+				await mapItem.save()
+				res.status(200).send("mapItem updated")
+			}
+		} 
+    }catch(err){
+        res.status(403).send(err.message)
+    }  
+}
+
+const deleteStreetScore = async (streetName, cityName ,id , type)=>{
+	try{
+		const fields = getFieldAndScoreByType(type).fields
+
+		const street = await Street.findOne({
+			name: streetName,
+			city: cityName,
+		})
+
+		fields.forEach(field => {
+			const arr = street[field]
+			console.log(arr)
+			arrayRemove(arr,id)
+		  })
+		await street.save()
+
+	}catch(err){
+		console.log(err.message);
+	}
+}
+
+function arrayRemove(arr, id) { 
+	const index = arr.findIndex(item => item.foreignKey.toString() === id);
+	if(index!=-1)arr.splice(index,1);
 }
 
 // Function to add a new map item
@@ -179,13 +236,12 @@ const updateMapItem = async (id, updates) => {
 	}
 }
 
-const tempUpdateMapItems = async () => {
+const tempUpdateMapItems = async (req,res) => {
 	try {
-		const result = await MapItem.updateMany({}, { creator: "GIS", exists: true })
-		console.log("Fields added to existing documents successfully!")
-		return result // Return the update result if needed
+		const result = await MapItem.updateMany({}, { exists: 0 })
+		res.status(200).send("mapItems updated ")
 	} catch (err) {
-		console.error(err)
+		res.status(403).send(err.message);
 		throw err // Rethrow the error if necessary
 	}
 }
@@ -555,5 +611,6 @@ module.exports = {
   deleteDuplicateItems,
   tempUpdateMapItems,
   updateStreetScores,
+  updateExistMapItem
 };
 
