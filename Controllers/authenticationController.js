@@ -288,7 +288,7 @@ const getUserId = async (req,res)=>{
 
     var userId;
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
-        if(err) return res.status(403).send(err.message)
+        if(err) return sendError(res,403,'token expired')
         userId = userInfo._id
     })
     return userId;
