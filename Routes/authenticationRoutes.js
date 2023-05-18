@@ -278,6 +278,63 @@ router.put("/editUserPreferences", AuthenticationRoutes.editUserPreferences);
 
 /**
  * @swagger
+ * /api/authentication/editUserDetails:
+ *   put:
+ *     summary: Edit user details.
+ *     description: Updates the user's details based on the input data.
+ *     tags: [Authentication Api]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: Object containing the user's details to update.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               signUpData:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                   gender:
+ *                     type: string
+ *                   age:
+ *                     type: string
+ *                 required:
+ *                   - name
+ *                   - gender
+ *                   - age
+ *     responses:
+ *       200:
+ *         description: User details have been changed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Confirmation message.
+ *                   example: "User details changed."
+ *       403:
+ *         description: Invalid request or error occurred.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: "Invalid request."
+ */
+
+router.put("/editUserDetails", AuthenticationRoutes.editUserDetails);
+
+/**
+ * @swagger
  * /api/authentication/deleteUser:
  *   delete:
  *     summary: Delete a user.
