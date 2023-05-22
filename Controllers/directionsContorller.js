@@ -244,15 +244,16 @@ exports.getWayPointsAndInstructions = async (
     steps.map((step) => {
       const strippedStr = step.html_instructions.replace(/<[^>]+>/g, "");
       arr.push({
-        latitude: step.start_location.lat,
-        longitude: step.start_location.lng,
+        start: {
+          latitude: step.start_location.lat,
+          longitude:step.start_location.lng,
+        },
+        end:{
+          latitude: step.end_location.lat,
+          longitude:step.end_location.lng
+        },
         instruction: strippedStr,
-      });
-    });
-    const lastIndex = steps.length - 1;
-    arr.push({
-      latitude: steps[lastIndex].end_location.lat,
-      longitude: steps[lastIndex].end_location.lng,
+      })
     });
     const retData = {
       arr: arr,
