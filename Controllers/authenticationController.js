@@ -190,36 +190,41 @@ const refreshToken = async  (req,res,next) =>{//authorization based on refreshTo
 }
 
 const getUser = async (req, res)=>{
-    const userId = await getUserId(req);
-    try{
-        if(userId == null){
-           res.status(403).send({'fail':'problem in getUserId'}) 
-        }
-        user = await User.findById(userId)
-        if(user == null) return res.status(403).send('invalid request')
+    authHeaders = req.headers['authorization']
+    const token = authHeaders && authHeaders.split(' ')[1]
+    if (token == null) return res.sendStatus('401')
 
-        const data = {
-            'email' : user.email,
-            'preferences' : {
-                'accessibility' : user.preferences.accessibility,
-                'clean' : user.preferences.clean,
-                'scenery' : user.preferences.scenery,
-                'security' : user.preferences.security,
-                'speed' : user.preferences.speed,
-            }, 
-            'signUpData':{
-                'name': user.signUpData.name,
-                'gender' : user.signUpData.gender,
-                'age' : user.signUpData.age,
-            },
-            'favorites': user.favorites,
-            'recents':user.recents,
-        }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, userInfo)=>{
+        if(err) return res.status(403).send(err.message)
+        const userId = userInfo._id
+        console.log(userId)
+        try{
+            user = await User.findById(userId)
+            if(user == null) return res.status(403).send('invalid request')
 
-        res.status(200).send(data)
-    }catch(err){
-        res.status(403).send(err.message)
-    }              
+            const data = {
+                'email' : user.email,
+                'preferences' : {
+                    'accessibility' : user.preferences.accessibility,
+                    'clean' : user.preferences.clean,
+                    'scenery' : user.preferences.scenery,
+                    'security' : user.preferences.security,
+                    'speed' : user.preferences.speed,
+                }, 
+                'signUpData':{
+                    'name': user.signUpData.name,
+                    'gender' : user.signUpData.gender,
+                    'age' : user.signUpData.age,
+                },
+                'favorites': user.favorites,
+                'recents':user.recents,
+            }
+
+            res.status(200).send(data)
+        }catch(err){
+            res.status(403).send(err.message)
+        }  
+    })
 }
 
 const editUserPreferences = async (req, res) => {

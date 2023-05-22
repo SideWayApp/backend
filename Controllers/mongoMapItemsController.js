@@ -118,22 +118,22 @@ const getFieldAndScoreByType = (type)=>{
 //delete mapItem & streetScore from DB
 const updateExistMapItem = async (req,res)=>{
 	const mapItemId = req.body._id
-	const user = req.body.user
+	const userEmail = req.body.userEmail
 	try{
 		mapItem = await MapItem.findById({_id:mapItemId});	
 		if(mapItem == null) return res.status(403).send('invalid request')
 
 		if(!mapItem.whoChanged){
-			mapItem.whoChanged[0] = user
+			mapItem.whoChanged[0] = userEmail
 		}
-		else if(!mapItem.whoChanged.includes(user)){
+		else if(!mapItem.whoChanged.includes(userEmail)){
 			if(mapItem.exists == -2){
 				deleteStreetScore(mapItem.formattedStreetName, mapItem.city, mapItemId ,mapItem.type )
 				mapItem = await MapItem.findByIdAndDelete({_id:mapItemId});
 				res.status(200).send("mapItem deleted")
 			}else{
 				mapItem.exists--
-				mapItem.whoChanged.push(user)
+				mapItem.whoChanged.push(userEmail)
 				await mapItem.save()
 				res.status(200).send("mapItem updated")
 			}
