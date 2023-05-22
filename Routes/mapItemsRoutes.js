@@ -124,7 +124,7 @@ router.post("/addFromLatLong" ,MapItemsRoutes.addMapItemLatLong);
  *
  * /api/items/updateExistMapItem:
  *   post:
- *     summary: Update a map item or delete after 3 times
+ *     summary: Update a map item or delete mapItem &streetScore after 3 times
  *     tags: [Map Items API]
  *     requestBody:
  *       description: Request body
@@ -136,11 +136,11 @@ router.post("/addFromLatLong" ,MapItemsRoutes.addMapItemLatLong);
  *             properties:
  *               _id:
  *                 type: string
- *               user:
+ *               userEmail:
  *                 type: string
  *             required:
  *               - _id
- *               - user
+ *               - userEmail
  *     responses:
  *       "200":
  *         description: Map item updated or deleted successfully
