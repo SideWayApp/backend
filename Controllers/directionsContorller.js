@@ -159,7 +159,7 @@ exports.getDirections = async (origin, destination, preferences) => {
   const mode = "walking";
   const alternatives = true;
   const preferSideWalk = true;
-  const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=${mode}&prefer_sidewalks=${preferSideWalk}&alternatives=${alternatives}`;
+  const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=${mode}&alternatives=${alternatives}`;
   try {
     const response = await axios.get(apiUrl);
     const ret = response.data;
