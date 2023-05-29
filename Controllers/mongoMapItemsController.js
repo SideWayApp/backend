@@ -5,7 +5,12 @@ const { getAddressFromCoordinates } = require("./directionsContorller");
 
 //this function using lat & long to add new item map and to add score to the appropriate street
 const addMapItemLatLong = async (req,res)=>{
-  const resFromLatLong = await getAddressFromCoordinates(req.body.latitude,req.body.longitude);
+
+  const longitude = req.body.longitude
+  const latitude = req.body.latitude
+  const type = req.body.type
+
+  const resFromLatLong = await getAddressFromCoordinates(latitude,longitude);
   console.log(resFromLatLong)
   const tempStreetName = resFromLatLong.split(', ')[0]
   var cityName = resFromLatLong.split(', ')[1]
@@ -22,20 +27,26 @@ const addMapItemLatLong = async (req,res)=>{
   }
 
   try{
-    const mapItem = MapItem({
-      'type':req.body.type,
-      'hebrew':'hebrew',
-      'formattedStreetName':streetName,
-      'city':cityName,
-      'longitude':req.body.longitude,
-      'latitude':req.body.latitude,
-      'creator':req.body.creator,
-      'exists':req.body.exists 
-    });
-    newItem = await mapItem.save()
-
-	res.status(200).send(newItem)
-    addStreetScore(streetName,cityName,req.body.type,newItem._id);
+	const mapItem = await MapItem.findOne({'type':type,'longitude': longitude,'latitude':latitude})
+    if(mapItem != null){
+		res.status(200).send('mapItem already exists') 
+	}
+	else{
+		const mapItem = MapItem({
+			'type':type,
+			'hebrew':'hebrew',
+			'formattedStreetName':streetName,
+			'city':cityName,
+			'longitude':longitude,
+			'latitude':latitude,
+			'creator':req.body.creator,
+			'exists':req.body.exists 
+		  });
+		  newItem = await mapItem.save()
+	  
+		  res.status(200).send(newItem)
+		  addStreetScore(streetName,cityName,req.body.type,newItem._id);
+	} 
   }catch(err){
     res.status(400).send({
       'status':'fail',
