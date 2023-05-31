@@ -27,9 +27,20 @@ const addMapItemLatLong = async (req,res)=>{
   }
 
   try{
-	const mapItem = await MapItem.findOne({'type':type,'longitude': longitude,'latitude':latitude})
+	const fromLongitude = longitude.toFixed(3) 
+	const fromLatitude = latitude.toFixed(3) 
+	const maxRange = 999
+
+	const toLongitude = fromLongitude + maxRange
+	const toLatitude = fromLatitude + maxRange
+
+	const mapItem = await MapItem.findOne({'type':type,
+											'longitude':{$gt:fromLongitude,$lt :toLongitude},
+											'latitude':{$gt:fromLatitude,$lt :toLatitude}
+										})
+											
     if(mapItem != null){
-		res.status(200).send('mapItem already exists') 
+		res.status(200).send("mapItem already exist in this cords:\n" + mapItem) 
 	}
 	else{
 		const mapItem = MapItem({
