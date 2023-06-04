@@ -144,6 +144,34 @@ router.post("/getXYListinBestRoute", async (req, res) => {
   res.send(data);
 });
 
+
+/**
+ * @swagger
+ * /directions/getDurationAndDistance:
+ *   post:
+ *     summary: get latitude and longitude for waypoints in direction
+ *     tags: [Directions Api]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Directions'
+ *     responses:
+ *       200:
+ *         description: An array of latitudes and longitudes
+ */
+router.post("/getDurationAndDistance",async (req,res)=>{
+  const data = await directionsController.getDurationAndDistance(
+    req.body.origin,
+    req.body.destination,
+    req.body.preference
+  );
+  res.send(data);
+});
+
+
+
 /**
  * @swagger
  * /directions/getWayPointsAndInstructions:
