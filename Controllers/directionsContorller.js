@@ -155,6 +155,8 @@ async function getTotalWeightInAlternative(
   return totalWeightInAlternative;
 }
 
+
+
 exports.getDirections = async (origin, destination, preferences) => {
   const mode = "walking";
   const alternatives = true;
@@ -228,6 +230,22 @@ exports.getInstructions = async (origin, destination, preference) => {
     console.log(error);
   }
 };
+
+exports.getDurationAndDistance = async(
+  origin,
+  destination,
+  preference
+)=>{
+  try{
+    const response = await this.getDirections(origin,destination,preference);
+    const data = response.legs[0];
+    const distance = data.distance.text;
+    const duration = data.duration.text;
+    return {distance: distance, duration: duration}
+  }catch(error){
+    console.log(error);
+  }
+}
 
 exports.getWayPointsAndInstructions = async (
   origin,
