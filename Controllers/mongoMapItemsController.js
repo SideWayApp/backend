@@ -355,6 +355,15 @@ const getTypesFromPrefrences = async (preferences) => {
 		Constraction:"Constraction"
 	}
 	const selectedTypes = new Set()
+	selectedTypes.add(allTypes.Blocked)
+				.add(allTypes.Flood)
+				.add(allTypes.Protest)
+				.add(allTypes.Poop)
+				.add(allTypes.Dirty)
+				.add(allTypes.No_shadow)
+				.add(allTypes.Constraction)
+				.add(allTypes.Danger)
+				.add(allTypes.No_lights)
 
 	for (let key in preferences) {
 		if (preferences[key]) {
@@ -364,9 +373,6 @@ const getTypesFromPrefrences = async (preferences) => {
 						.add(allTypes.Defibrillator)
 						.add(allTypes.DangerousBuildings)
 						.add(allTypes.Camera)
-						.add(allTypes.Blocked)
-						.add(allTypes.Flood)
-						.add(allTypes.Protest)
 					break
 				case "clean":
 					selectedTypes
@@ -374,8 +380,6 @@ const getTypesFromPrefrences = async (preferences) => {
 						.add(allTypes.Museum)
 						.add(allTypes.Beaches)
 						.add(allTypes.Camera)
-						.add(allTypes.Poop)
-						.add(allTypes.Dirty)
 					break
 				case "scenery":
 					selectedTypes
@@ -383,23 +387,17 @@ const getTypesFromPrefrences = async (preferences) => {
 						.add(allTypes.Museum)
 						.add(allTypes.Fountain)
 						.add(allTypes.Camera)
-						.add(allTypes.No_shadow)
-						.add(allTypes.Constraction)
 					break
 				case "security":
 					selectedTypes
 						.add(allTypes.PublicShelter)
 						.add(allTypes.MADAStation)
 						.add(allTypes.Camera)
-						.add(allTypes.Danger)
-						.add(allTypes.Flood)
-						.add(allTypes.No_lights)
 					break
 				case "speed":
 					selectedTypes
 						.add(allTypes.Camera)
 						.add(allTypes.LightPost)
-						.add(allTypes.Protest)
 					break
 				default:
 					console.log("Unknown preference.")
